@@ -6,20 +6,43 @@ using UnityEngine;
 [RequireComponent(typeof(ActorIdentity))]
 public sealed class GhostReplayController : MonoBehaviour
 {
+    [Header("Physics")]
+    [SerializeField] private float moveSpeed = 2.85f;
+    [SerializeField] private float jumpSpeed = 6.7f;
+    [SerializeField] private float gravity = 20.5f;
+    [SerializeField] private float fallGravityMultiplier = 1.22f;
+    [SerializeField] private float maxFallSpeed = 9.2f;
+
+    [Header("Reverse Gravity（1 = 正常方向，-1 = 反转）")]
+    [SerializeField] private float gravityDirection = 1f;
+
+    [Header("Collision")]
+    [SerializeField] private LayerMask solidMask;
+    [SerializeField] private float skinWidth = 0.02f;
+
+    [Header("Interaction")]
     [SerializeField] private float playerHeight = 0.42f;
     [SerializeField] private LayerMask playerMask;
 
     private readonly List<DeathAnchorReplayFrame> frames = new List<DeathAnchorReplayFrame>();
+    private readonly RaycastHit2D[] castHits = new RaycastHit2D[8];
+
     private Rigidbody2D rb;
     private BoxCollider2D box;
+    private ContactFilter2D solidFilter;
     private Vector2 anchorFootPosition;
     private float startedAt;
     private float duration;
     private float previousLocalTime;
     private bool hasRecord;
+    private float verticalSpeed;
+    private bool grounded;
+    private Collider2D groundCollider;
+    private Vector2 previousPosition;
 
     public Vector2 LastDelta { get; private set; }
     public bool LoopedThisFrame { get; private set; }
+    public float GravityDirection => gravityDirection;
 
     private void Awake()
     {
@@ -29,6 +52,13 @@ public sealed class GhostReplayController : MonoBehaviour
         rb.freezeRotation = true;
         rb.useFullKinematicContacts = true;
         GetComponent<ActorIdentity>().SetKind(DeathAnchorActorKind.Ghost);
+
+        solidFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            useTriggers = false,
+            layerMask = solidMask
+        };
     }
 
     private void FixedUpdate()
@@ -40,15 +70,50 @@ public sealed class GhostReplayController : MonoBehaviour
             return;
         }
 
+        float dt = Time.fixedDeltaTime;
         float localTime = Mathf.Repeat(Time.time - startedAt, duration);
         LoopedThisFrame = localTime < previousLocalTime;
         previousLocalTime = localTime;
 
+        if (LoopedThisFrame)
+        {
+            // Reset physics state on loop
+            verticalSpeed = 0f;
+        }
+
         DeathAnchorReplayFrame frame = Sample(localTime);
-        Vector2 nextFoot = anchorFootPosition + frame.footOffset;
-        Vector2 nextPosition = nextFoot + Vector2.up * playerHeight * 0.5f;
-        LastDelta = LoopedThisFrame ? Vector2.zero : nextPosition - rb.position;
-        rb.position = nextPosition;
+        float input = frame.horizontalInput;
+
+        ProbeGround();
+
+        // Jump
+        if (frame.jumpPressed && grounded)
+        {
+            verticalSpeed = jumpSpeed * gravityDirection;
+            grounded = false;
+            groundCollider = null;
+        }
+
+        // Gravity
+        if (!grounded)
+        {
+            float gravityThisFrame = verticalSpeed * gravityDirection < 0f
+                ? gravity * fallGravityMultiplier
+                : gravity;
+            verticalSpeed -= gravityDirection * gravityThisFrame * dt;
+            verticalSpeed = Mathf.Clamp(verticalSpeed, -maxFallSpeed, maxFallSpeed);
+        }
+        else if (verticalSpeed * gravityDirection < 0f)
+        {
+            verticalSpeed = 0f;
+        }
+
+        // Horizontal movement
+        Move(Vector2.right, input * moveSpeed * dt);
+
+        // Vertical movement
+        Vector2 verticalDir = gravityDirection > 0f ? Vector2.up : Vector2.down;
+        Move(verticalDir, verticalSpeed * dt);
 
         PlaceOnPlayerIfNeeded();
     }
@@ -75,10 +140,27 @@ public sealed class GhostReplayController : MonoBehaviour
         startedAt = Time.time;
         previousLocalTime = 0f;
         hasRecord = true;
+        verticalSpeed = 0f;
+        grounded = false;
+        groundCollider = null;
         gameObject.SetActive(true);
 
-        DeathAnchorReplayFrame first = frames[0];
-        rb.position = anchorFootPosition + first.footOffset + Vector2.up * playerHeight * 0.5f;
+        // Place ghost at anchor position
+        Vector2 footPos = gravityDirection > 0f
+            ? anchorFootPosition
+            : anchorFootPosition + Vector2.down * playerHeight;
+        rb.position = footPos + Vector2.up * playerHeight * 0.5f;
+        previousPosition = rb.position;
+        LastDelta = Vector2.zero;
+    }
+
+    /// <summary>
+    /// Set gravity direction. +1 = normal (down), -1 = reverse (up).
+    /// </summary>
+    public void SetGravityDirection(float direction)
+    {
+        gravityDirection = Mathf.Sign(direction);
+        if (gravityDirection == 0f) gravityDirection = 1f;
     }
 
     private DeathAnchorReplayFrame Sample(float time)
@@ -95,16 +177,91 @@ public sealed class GhostReplayController : MonoBehaviour
                 continue;
             }
 
+            // Use the earlier frame's input (no interpolation for inputs)
+            // If closer to next frame, use next frame
             DeathAnchorReplayFrame previous = frames[i - 1];
             DeathAnchorReplayFrame next = frames[i];
             float t = Mathf.InverseLerp(previous.time, next.time, time);
-            return new DeathAnchorReplayFrame(
-                time,
-                Vector2.Lerp(previous.footOffset, next.footOffset, t),
-                t < 0.5f ? previous.facing : next.facing);
+            return t < 0.5f ? previous : next;
         }
 
         return frames[frames.Count - 1];
+    }
+
+    private void ProbeGround()
+    {
+        Vector2 castDirection = gravityDirection > 0f ? Vector2.down : Vector2.up;
+        int count = box.Cast(castDirection, solidFilter, castHits, skinWidth + 0.04f);
+        grounded = false;
+        groundCollider = null;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (castHits[i].collider == null || castHits[i].collider.isTrigger)
+            {
+                continue;
+            }
+
+            float expectedNormal = gravityDirection > 0f ? 1f : -1f;
+            if (castHits[i].normal.y * expectedNormal > 0.45f)
+            {
+                grounded = true;
+                groundCollider = castHits[i].collider;
+                if (verticalSpeed * gravityDirection < 0f)
+                {
+                    verticalSpeed = 0f;
+                }
+                return;
+            }
+        }
+    }
+
+    private void Move(Vector2 direction, float distance)
+    {
+        if (Mathf.Abs(distance) <= 0.0001f)
+        {
+            return;
+        }
+
+        float sign = Mathf.Sign(distance);
+        float magnitude = Mathf.Abs(distance);
+        Vector2 castDirection = direction * sign;
+        int count = box.Cast(castDirection, solidFilter, castHits, magnitude + skinWidth);
+        float allowedDistance = magnitude;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (castHits[i].collider == null || castHits[i].collider.isTrigger)
+            {
+                continue;
+            }
+
+            if (IsInitialOverlap(castHits[i]))
+            {
+                continue;
+            }
+
+            allowedDistance = Mathf.Min(allowedDistance, Mathf.Max(0f, castHits[i].distance - skinWidth));
+        }
+
+        Vector2 delta = castDirection * allowedDistance;
+        rb.position += delta;
+
+        if (allowedDistance < magnitude && direction.y != 0f)
+        {
+            verticalSpeed = 0f;
+        }
+    }
+
+    private bool IsInitialOverlap(RaycastHit2D hit)
+    {
+        if (hit.collider == null)
+        {
+            return false;
+        }
+
+        ColliderDistance2D distance = Physics2D.Distance(box, hit.collider);
+        return distance.isOverlapped;
     }
 
     private void PlaceOnPlayerIfNeeded()
