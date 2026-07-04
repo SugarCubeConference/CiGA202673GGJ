@@ -1,10 +1,7 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 /// <summary>
-/// 选关界面控制器——管理关卡按钮网格，点击后异步加载对应关卡场景。
+/// 选关界面控制器——管理关卡按钮网格，点击后通过CRT转场加载对应关卡场景。
 /// 按钮布局由 C# 在 InitializeGrid 中动态生成，与图片设计一致：
 ///   第 0 行: [0]
 ///   第 1 行: [1] [2] [3] [4] [5]
@@ -28,7 +25,7 @@ public class LevelSelectUI : MonoBehaviour
         "第十关（0705）"
     };
 
-    /// <summary>异步加载指定序号的关卡</summary>
+    /// <summary>CRT转场加载指定序号的关卡</summary>
     public void LoadLevel(int levelIndex)
     {
         if (levelIndex < 0 || levelIndex >= levelSceneNames.Length)
@@ -36,29 +33,9 @@ public class LevelSelectUI : MonoBehaviour
             Debug.LogWarning("[LevelSelectUI] Invalid level index: " + levelIndex);
             return;
         }
-        StartCoroutine(LoadLevelAsync(levelSceneNames[levelIndex]));
-    }
 
-    private IEnumerator LoadLevelAsync(string sceneName)
-    {
-        if (Application.CanStreamedLevelBeLoaded(sceneName))
-        {
-            SceneManager.LoadScene(sceneName);
-            yield break;
-        }
-
+        string sceneName = levelSceneNames[levelIndex];
         string fullPath = "Assets/Scenes/DeathAnchor/" + sceneName + ".unity";
-        AsyncOperation asyncOp = SceneManager.LoadSceneAsync(fullPath);
-        if (asyncOp == null)
-        {
-            Debug.LogError("[LevelSelectUI] Cannot load scene: " + sceneName);
-            yield break;
-        }
-
-        asyncOp.allowSceneActivation = true;
-        while (!asyncOp.isDone)
-        {
-            yield return null;
-        }
+        CRTTransition.Ensure().TransitionToScene(sceneName, fullPath);
     }
 }

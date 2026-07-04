@@ -10,6 +10,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
     [SerializeField] private GhostReplayController ghost;
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private Transform anchorMarker;
+    [SerializeField] private AnchorCountdownHud countdownHud;
     [SerializeField] private Text countdownText;
 
     [Header("Rules")]
@@ -68,7 +69,13 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             anchorMarker.gameObject.SetActive(false);
         }
 
+        if (countdownHud != null)
+        {
+            countdownHud.Configure(recordWindowSec);
+        }
+
         SetCountdownVisible(false);
+        UpdateCountdownUi(recordWindowSec);
     }
 
     private void Update()
@@ -85,7 +92,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            CRTTransition.Ensure().RestartScene();
         }
 
         if (ghost != null && ghost.gameObject.activeSelf && player != null)
@@ -115,17 +122,23 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             SampleRecording();
         }
 
-        UpdateCountdownText();
+        UpdateCountdownUi(Mathf.Max(0f, recordWindowSec - (Time.time - recordingStartedAt)));
     }
 
-    public void Configure(float recordWindowSec, DeathAnchorPlayerController player, GhostReplayController ghost, Transform spawnPoint, Transform anchorMarker, Text countdownText)
+    public void Configure(float recordWindowSec, DeathAnchorPlayerController player, GhostReplayController ghost, Transform spawnPoint, Transform anchorMarker, AnchorCountdownHud countdownHud, Text countdownText)
     {
         this.recordWindowSec = Mathf.Max(1f, recordWindowSec);
         this.player = player;
         this.ghost = ghost;
         this.spawnPoint = spawnPoint;
         this.anchorMarker = anchorMarker;
+        this.countdownHud = countdownHud;
         this.countdownText = countdownText;
+        if (this.countdownHud != null)
+        {
+            this.countdownHud.Configure(this.recordWindowSec);
+        }
+        UpdateCountdownUi(this.recordWindowSec);
     }
 
     public void RegisterKey(KeyPickup key)
@@ -195,7 +208,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         int nextIndex = currentIndex + 1;
         if (nextIndex >= 0 && nextIndex < SceneManager.sceneCountInBuildSettings)
         {
-            SceneManager.LoadScene(nextIndex);
+            CRTTransition.Ensure().TransitionToScene(nextIndex);
         }
         else
         {
@@ -224,7 +237,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
 
         SampleRecording();
         SetCountdownVisible(true);
-        UpdateCountdownText();
+        UpdateCountdownUi(recordWindowSec);
     }
 
     private void CancelRecording()
@@ -347,19 +360,28 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         }
     }
 
-    private void UpdateCountdownText()
+    private void UpdateCountdownUi(float remaining)
     {
+        if (countdownHud != null)
+        {
+            countdownHud.SetRemaining(remaining);
+        }
+
         if (countdownText == null)
         {
             return;
         }
 
-        float remaining = Mathf.Max(0f, recordWindowSec - (Time.time - recordingStartedAt));
         countdownText.text = $"ANCHOR REC {remaining:0.0}s";
     }
 
     private void SetCountdownVisible(bool visible)
     {
+        if (countdownHud != null)
+        {
+            countdownHud.SetVisible(visible);
+        }
+
         if (countdownText != null)
         {
             countdownText.gameObject.SetActive(visible);

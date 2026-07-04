@@ -1,11 +1,88 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    [Header("UI References")]
+    public Button startButton;
+    public Button exitButton;
+    public GameObject buttonContainer;
+    public GameObject levelGrid;
+    public Image levelGridBackground;
+
+    [Header("Fade Settings")]
+    public float fadeDuration = 0.3f;
+
+    private CanvasGroup _btnCG;
+    private CanvasGroup _gridCG;
+    private bool _isGridOpen;
+
+    private static readonly string[] LevelScenes = {
+        "第零关（0705重置）",
+        "第一关（0705重置）",
+        "第二关（0705重置）",
+        "第三关（0705重置）",
+        "第四关（0705重置）",
+        "第五关（0705重置）",
+        "第六关",
+        "第七关",
+        "第八关",
+        "第九关（0705重置）",
+        "第十关（0705）"
+    };
+
+    void Awake()
+    {
+        _btnCG = GetOrAdd(buttonContainer);
+        _gridCG = GetOrAdd(levelGrid);
+
+        levelGrid.SetActive(false);
+        _btnCG.alpha = 1f;
+        _gridCG.alpha = 0f;
+
+        // Bind Start / Exit buttons
+        startButton.onClick.AddListener(OnStartGame);
+        exitButton.onClick.AddListener(OnQuit);
+
+        // Bind level buttons
+        for (int i = 0; i < levelGrid.transform.childCount; i++)
+        {
+            var btn = levelGrid.transform.GetChild(i).GetComponent<Button>();
+            if (btn == null) continue;
+            int idx = i;
+            btn.onClick.AddListener(() => OnLevelClick(idx));
+        }
+
+        // Bind background click to close grid
+        if (levelGridBackground != null)
+        {
+            var bgBtn = levelGridBackground.GetComponent<Button>();
+            if (bgBtn == null) bgBtn = levelGridBackground.gameObject.AddComponent<Button>();
+            bgBtn.transition = Selectable.Transition.None;
+            bgBtn.onClick.AddListener(OnBackgroundClick);
+        }
+    }
+
     public void OnStartGame()
     {
-        SceneManager.LoadScene("第零关（0705重置）");
+        if (_isGridOpen) return;
+        _isGridOpen = true;
+        StartCoroutine(FadeTransition(false, true));
+    }
+
+    public void OnBackgroundClick()
+    {
+        if (!_isGridOpen) return;
+        _isGridOpen = false;
+        StartCoroutine(FadeTransition(true, false));
+    }
+
+    public void OnLevelClick(int levelIndex)
+    {
+        if (levelIndex >= 0 && levelIndex < LevelScenes.Length)
+            CRTTransition.Ensure().TransitionToScene(LevelScenes[levelIndex]);
     }
 
     public void OnQuit()
@@ -15,5 +92,43 @@ public class MainMenu : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    private IEnumerator FadeTransition(bool showButtons, bool showGrid)
+    {
+        if (showGrid) levelGrid.SetActive(true);
+        if (showButtons) buttonContainer.SetActive(true);
+
+        float t = 0f;
+        float fromBtn = _btnCG.alpha;
+        float toBtn = showButtons ? 1f : 0f;
+        float fromGrid = _gridCG.alpha;
+        float toGrid = showGrid ? 1f : 0f;
+
+        while (t < fadeDuration)
+        {
+            t += Time.unscaledDeltaTime;
+            float r = Mathf.Clamp01(t / fadeDuration);
+            _btnCG.alpha = Mathf.Lerp(fromBtn, toBtn, r);
+            _gridCG.alpha = Mathf.Lerp(fromGrid, toGrid, r);
+            yield return null;
+        }
+
+        _btnCG.alpha = toBtn;
+        _gridCG.alpha = toGrid;
+        _btnCG.interactable = showButtons;
+        _btnCG.blocksRaycasts = showButtons;
+        _gridCG.interactable = showGrid;
+        _gridCG.blocksRaycasts = showGrid;
+
+        if (!showButtons) buttonContainer.SetActive(false);
+        if (!showGrid) levelGrid.SetActive(false);
+    }
+
+    private static CanvasGroup GetOrAdd(GameObject go)
+    {
+        var cg = go.GetComponent<CanvasGroup>();
+        if (cg == null) cg = go.AddComponent<CanvasGroup>();
+        return cg;
     }
 }
