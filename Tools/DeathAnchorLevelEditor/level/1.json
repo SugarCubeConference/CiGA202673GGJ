@@ -1,6 +1,6 @@
 {
   "schema": "death-anchor-level-v1",
-  "title": "第一关",
+  "title": "第一关（0705重置）",
   "ruleNotes": "",
   "experience": "",
   "rules": {
@@ -48,7 +48,7 @@
     "id": "spawn",
     "type": "spawn",
     "label": "出生点",
-    "x": 160,
+    "x": 64,
     "y": 480,
     "w": 32,
     "h": 32,
@@ -66,23 +66,7 @@
       "type": "goal",
       "label": "出口",
       "x": 928,
-      "y": 448,
-      "w": 64,
-      "h": 64,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "goal"
-      ],
-      "notes": ""
-    },
-    {
-      "id": "goal-1",
-      "type": "goal",
-      "label": "出口",
-      "x": 928,
-      "y": 32,
+      "y": 96,
       "w": 64,
       "h": 64,
       "rotation": 0,
@@ -112,22 +96,6 @@
       "notes": "按 32x32 地形块拼接。"
     },
     {
-      "id": "platform-1",
-      "type": "platform",
-      "label": "地形",
-      "x": 704,
-      "y": 96,
-      "w": 320,
-      "h": 352,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "platform"
-      ],
-      "notes": ""
-    },
-    {
       "id": "platform-2",
       "type": "platform",
       "label": "地形",
@@ -150,7 +118,7 @@
       "x": 32,
       "y": 0,
       "w": 992,
-      "h": 32,
+      "h": 96,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -163,10 +131,58 @@
       "id": "platform-4",
       "type": "platform",
       "label": "地形",
-      "x": 32,
-      "y": 416,
+      "x": 704,
+      "y": 320,
+      "w": 320,
+      "h": 192,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-1",
+      "type": "platform",
+      "label": "地形",
+      "x": 800,
+      "y": 160,
+      "w": 224,
+      "h": 160,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-5",
+      "type": "platform",
+      "label": "地形",
+      "x": 992,
+      "y": 96,
+      "w": 32,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-6",
+      "type": "platform",
+      "label": "地形",
+      "x": 576,
+      "y": 192,
       "w": 96,
-      "h": 96,
+      "h": 64,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -182,9 +198,26 @@
       "id": "spike-1",
       "type": "spike",
       "label": "尖刺",
-      "x": 384,
+      "x": 288,
       "y": 480,
-      "w": 224,
+      "w": 192,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "spike"
+      ],
+      "notes": "",
+      "affects": "player"
+    },
+    {
+      "id": "spike-2",
+      "type": "spike",
+      "label": "尖刺",
+      "x": 768,
+      "y": 288,
+      "w": 32,
       "h": 32,
       "rotation": 0,
       "channel": "",
@@ -199,31 +232,15 @@
   "lasers": [],
   "keys": [
     {
-      "id": "key-1",
-      "type": "key",
-      "label": "钥匙",
-      "x": 1024,
-      "y": 256,
-      "w": 32,
-      "h": 32,
-      "rotation": 0,
-      "channel": "A",
-      "links": [],
-      "tags": [
-        "key"
-      ],
-      "notes": ""
-    },
-    {
       "id": "key-2",
       "type": "key",
       "label": "钥匙",
-      "x": 64,
-      "y": 384,
+      "x": 608,
+      "y": 160,
       "w": 32,
       "h": 32,
       "rotation": 0,
-      "channel": "B",
+      "channel": "C",
       "links": [
         "door-1"
       ],
@@ -238,12 +255,12 @@
       "id": "door-1",
       "type": "door",
       "label": "门",
-      "x": 704,
-      "y": 448,
+      "x": 832,
+      "y": 96,
       "w": 32,
       "h": 64,
       "rotation": 0,
-      "channel": "B",
+      "channel": "C",
       "links": [],
       "tags": [
         "door"
@@ -260,24 +277,40 @@
       "id": "note-1",
       "type": "note",
       "label": "设计备注",
-      "x": 160,
-      "y": 352,
-      "w": 190,
-      "h": 62,
+      "x": 32,
+      "y": 384,
+      "w": 288,
+      "h": 64,
       "rotation": 0,
       "channel": "",
       "links": [],
       "tags": [
         "note"
       ],
-      "notes": "这里放教程，介绍死亡回归机制"
+      "notes": "死亡并不可怕~\n按下E键设置锚点后，尝试跳过尖刺？"
+    },
+    {
+      "id": "note-3",
+      "type": "note",
+      "label": "设计备注",
+      "x": 416,
+      "y": 192,
+      "w": 160,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "note"
+      ],
+      "notes": "携带钥匙可以解锁门，死亡时钥匙会归位"
     },
     {
       "id": "note-2",
       "type": "note",
       "label": "设计备注",
       "x": 512,
-      "y": 32,
+      "y": 384,
       "w": 190,
       "h": 62,
       "rotation": 0,
@@ -286,7 +319,7 @@
       "tags": [
         "note"
       ],
-      "notes": "隐藏关卡入口，需要理解超级跳后再过来"
+      "notes": "按下Q键，可以关闭锚点"
     }
   ]
 }

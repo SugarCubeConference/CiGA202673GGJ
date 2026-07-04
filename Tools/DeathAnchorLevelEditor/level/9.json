@@ -1,6 +1,6 @@
 {
   "schema": "death-anchor-level-v1",
-  "title": "第九关",
+  "title": "第九关（0705重置）",
   "ruleNotes": "死亡锚点：倒计时内死亡会生成一个固定的实体循环分身。玩家贴墙时会慢速下滑。机关：钥匙开门；按钮按下时让桥变实，也让移动平台向按钮方向平移；松开时桥变虚，移动平台回原位。激光会被地形、实体桥、移动平台阻挡。",
   "experience": "",
   "rules": {
@@ -66,7 +66,7 @@
       "type": "goal",
       "label": "出口",
       "x": 928,
-      "y": 320,
+      "y": 384,
       "w": 64,
       "h": 64,
       "rotation": 0,
@@ -144,22 +144,6 @@
       "notes": ""
     },
     {
-      "id": "platform-5",
-      "type": "platform",
-      "label": "地形",
-      "x": 832,
-      "y": 384,
-      "w": 192,
-      "h": 64,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "platform"
-      ],
-      "notes": ""
-    },
-    {
       "id": "platform-6",
       "type": "platform",
       "label": "地形",
@@ -180,9 +164,9 @@
       "type": "platform",
       "label": "地形",
       "x": 992,
-      "y": 128,
+      "y": 96,
       "w": 32,
-      "h": 256,
+      "h": 352,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -196,9 +180,9 @@
       "type": "platform",
       "label": "地形",
       "x": 832,
-      "y": 128,
+      "y": 96,
       "w": 160,
-      "h": 192,
+      "h": 288,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -337,7 +321,7 @@
       "label": "激光发射器",
       "x": 64,
       "y": 288,
-      "w": 800,
+      "w": 768,
       "h": 32,
       "rotation": 0,
       "channel": "",
@@ -355,7 +339,7 @@
       "label": "激光发射器",
       "x": 64,
       "y": 384,
-      "w": 800,
+      "w": 768,
       "h": 32,
       "rotation": 0,
       "channel": "",
@@ -373,7 +357,7 @@
       "label": "激光发射器",
       "x": 64,
       "y": 320,
-      "w": 800,
+      "w": 768,
       "h": 32,
       "rotation": 0,
       "channel": "",
@@ -433,7 +417,9 @@
       "h": 32,
       "rotation": 0,
       "channel": "C",
-      "links": [],
+      "links": [
+        "door-1"
+      ],
       "tags": [
         "key"
       ],
@@ -446,17 +432,17 @@
       "type": "door",
       "label": "门",
       "x": 832,
-      "y": 320,
+      "y": 384,
       "w": 32,
       "h": 64,
       "rotation": 0,
-      "channel": "A",
+      "channel": "C",
       "links": [],
       "tags": [
         "door"
       ],
       "notes": "",
-      "requiredKey": ""
+      "requiredKey": "key-1"
     }
   ],
   "buttons": [

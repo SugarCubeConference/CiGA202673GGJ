@@ -13,7 +13,7 @@ using UnityEngine.UI;
 public static class DeathAnchorLevelBaker
 {
     private const float PixelsPerUnit = 100f;
-    private const string PrototypeLevelsDirectory = "D:/Users/LanluZ/Desktop/death-anchor-editor-gdd-handoff-20260704/levels";
+    private const string PrototypeLevelsDirectory = "Tools/DeathAnchorLevelEditor/level";
     private const string OutputSceneDirectory = "Assets/Scenes/DeathAnchor";
     private const string ArtDirectory = "Assets/Art/DeathAnchor";
     private const string BackgroundSpritePath = "Assets/Art/Background.png";
@@ -60,17 +60,20 @@ private static readonly Color PlatformColor = new Color(0.39f, 0.45f, 0.52f, 1f)
     }
 
         /// <summary>菜单：批量烘焙原型目录中所有关卡</summary>
-[MenuItem("Tools/Death Anchor/Bake All Prototype Levels")]
+    [MenuItem("Tools/Death Anchor/Bake All Prototype Levels")]
     public static void BakeAllPrototypeLevels()
     {
-        BakeDirectory(PrototypeLevelsDirectory, OutputSceneDirectory);
+        DeleteExistingBakedScenes(OutputSceneDirectory);
+        BakeDirectory(ToProjectAbsolutePath(PrototypeLevelsDirectory), OutputSceneDirectory);
     }
 
         /// <summary>批量烘焙指定目录中的所有 .level.json 文件</summary>
 public static void BakeDirectory(string sourceDirectory, string outputSceneDirectory)
     {
         EnsureFolder(outputSceneDirectory);
-        string[] files = Directory.GetFiles(sourceDirectory, "*.level.json", SearchOption.TopDirectoryOnly);
+        string[] files = Directory.GetFiles(sourceDirectory, "*.json", SearchOption.TopDirectoryOnly);
+        files = System.Array.FindAll(files, IsSupportedLevelJsonPath);
+        System.Array.Sort(files, CompareLevelJsonPaths);
         List<string> scenePaths = new List<string>();
 
         for (int i = 0; i < files.Length; i++)
@@ -81,7 +84,7 @@ public static void BakeDirectory(string sourceDirectory, string outputSceneDirec
             scenePaths.Add(scenePath);
         }
 
-        AddScenesToBuildSettings(scenePaths);
+        ReplaceScenesInBuildSettings(outputSceneDirectory, scenePaths);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log($"Baked {files.Length} Death Anchor level scene(s).");
@@ -1113,21 +1116,141 @@ private static void EnsureFolder(string assetFolder)
         AssetDatabase.CreateFolder(parent, name);
     }
 
-        /// <summary>将场景路径添加到 Build Settings（避免重复）</summary>
-    private static void AddScenesToBuildSettings(List<string> scenePaths)
+        /// <summary>清除指定目录下现有关卡场景，准备全量重烘焙</summary>
+    private static void DeleteExistingBakedScenes(string outputSceneDirectory)
     {
-        List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-        for (int i = 0; i < scenePaths.Count; i++)
+        if (!AssetDatabase.IsValidFolder(outputSceneDirectory))
         {
-            if (scenes.Exists(scene => scene.path == scenePaths[i]))
+            return;
+        }
+
+        string[] guids = AssetDatabase.FindAssets("t:Scene", new[] { outputSceneDirectory });
+        for (int i = 0; i < guids.Length; i++)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+            if (!string.IsNullOrEmpty(path))
+            {
+                AssetDatabase.DeleteAsset(path);
+            }
+        }
+    }
+
+        /// <summary>将输出目录对应的场景列表与 Build Settings 同步</summary>
+    private static void ReplaceScenesInBuildSettings(string outputSceneDirectory, List<string> scenePaths)
+    {
+        List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>();
+        for (int i = 0; i < EditorBuildSettings.scenes.Length; i++)
+        {
+            EditorBuildSettingsScene scene = EditorBuildSettings.scenes[i];
+            if (scene.path.StartsWith(outputSceneDirectory + "/"))
             {
                 continue;
             }
 
+            scenes.Add(scene);
+        }
+
+        for (int i = 0; i < scenePaths.Count; i++)
+        {
             scenes.Add(new EditorBuildSettingsScene(scenePaths[i], true));
         }
 
         EditorBuildSettings.scenes = scenes.ToArray();
+    }
+
+    private static int CompareLevelJsonPaths(string leftPath, string rightPath)
+    {
+        string leftName = GetLevelFileStem(leftPath);
+        string rightName = GetLevelFileStem(rightPath);
+        int leftNumeric = ExtractNumericLevelOrder(leftName);
+        int rightNumeric = ExtractNumericLevelOrder(rightName);
+        if (leftNumeric >= 0 && rightNumeric >= 0 && leftNumeric != rightNumeric)
+        {
+            return leftNumeric.CompareTo(rightNumeric);
+        }
+
+        return CompareChineseLevelName(leftName, rightName);
+    }
+
+    private static bool IsSupportedLevelJsonPath(string path)
+    {
+        string fileName = Path.GetFileName(path);
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return false;
+        }
+
+        if (fileName.EndsWith(".level.json", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        string stem = Path.GetFileNameWithoutExtension(path);
+        return ExtractNumericLevelOrder(stem) >= 0;
+    }
+
+    private static string GetLevelFileStem(string path)
+    {
+        string fileName = Path.GetFileName(path);
+        if (fileName.EndsWith(".level.json", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(path));
+        }
+
+        return Path.GetFileNameWithoutExtension(path);
+    }
+
+    private static int CompareChineseLevelName(string left, string right)
+    {
+        int leftOrder = ExtractChineseLevelOrder(left);
+        int rightOrder = ExtractChineseLevelOrder(right);
+        if (leftOrder >= 0 && rightOrder >= 0 && leftOrder != rightOrder)
+        {
+            return leftOrder.CompareTo(rightOrder);
+        }
+
+        return string.CompareOrdinal(left, right);
+    }
+
+    private static int ExtractChineseLevelOrder(string value)
+    {
+        if (string.IsNullOrEmpty(value) || !value.StartsWith("第") || !value.EndsWith("关"))
+        {
+            return -1;
+        }
+
+        string numberPart = value.Substring(1, value.Length - 2);
+        switch (numberPart)
+        {
+            case "一": return 1;
+            case "二": return 2;
+            case "三": return 3;
+            case "四": return 4;
+            case "五": return 5;
+            case "六": return 6;
+            case "七": return 7;
+            case "八": return 8;
+            case "九": return 9;
+            case "十": return 10;
+            default: return -1;
+        }
+    }
+
+    private static int ExtractNumericLevelOrder(string value)
+    {
+        int order;
+        return int.TryParse(value, out order) ? order : -1;
+    }
+
+    private static string ToProjectAbsolutePath(string path)
+    {
+        if (Path.IsPathRooted(path))
+        {
+            return path;
+        }
+
+        string projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+        return Path.GetFullPath(Path.Combine(projectRoot, path));
     }
 
     [System.Serializable]

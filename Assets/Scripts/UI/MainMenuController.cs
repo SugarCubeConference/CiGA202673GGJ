@@ -14,7 +14,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private Button quitButton;
 
     [Header("场景")]
-    [SerializeField] private string firstLevelSceneName = "教学关";
+    [SerializeField] private string firstLevelSceneName = "第零关（0705重置）";
 
     private void Awake()
     {
