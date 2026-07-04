@@ -26,6 +26,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
     private Vector2 activeAnchorFootPosition;
     private Vector2 respawnFootPosition;
     private bool hasRespawnFootPosition;
+    private bool hasFixedAnchor;
 
     public Vector2 ActiveAnchorFootPosition => activeAnchorFootPosition;
     public bool IsRecording => isRecording;
@@ -75,6 +76,11 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             BeginRecording();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            ClearFixedAnchor();
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -251,7 +257,9 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         }
 
         isRecording = false;
-        ghost.gameObject.SetActive(true);
+        hasFixedAnchor = true;
+        respawnFootPosition = activeAnchorFootPosition;
+        hasRespawnFootPosition = true;
         ghost.Play(activeAnchorFootPosition, recordingFrames);
         recordingFrames.Clear();
 
@@ -261,6 +269,30 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         }
 
         SetCountdownVisible(false);
+    }
+
+    private void ClearFixedAnchor()
+    {
+        if (!hasFixedAnchor && (ghost == null || !ghost.gameObject.activeSelf))
+        {
+            return;
+        }
+
+        hasFixedAnchor = false;
+        if (spawnPoint != null)
+        {
+            respawnFootPosition = spawnPoint.position;
+            hasRespawnFootPosition = true;
+        }
+        else
+        {
+            hasRespawnFootPosition = false;
+        }
+
+        if (ghost != null)
+        {
+            ghost.StopReplay();
+        }
     }
 
     private void ResetCarriedKeys()

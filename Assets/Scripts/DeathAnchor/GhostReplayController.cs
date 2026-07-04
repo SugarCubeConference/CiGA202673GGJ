@@ -81,6 +81,15 @@ public sealed class GhostReplayController : MonoBehaviour
         rb.position = anchorFootPosition + first.footOffset + Vector2.up * playerHeight * 0.5f;
     }
 
+    public void StopReplay()
+    {
+        hasRecord = false;
+        frames.Clear();
+        LastDelta = Vector2.zero;
+        LoopedThisFrame = false;
+        gameObject.SetActive(false);
+    }
+
     private DeathAnchorReplayFrame Sample(float time)
     {
         if (frames.Count == 1 || time <= frames[0].time)

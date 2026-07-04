@@ -142,6 +142,7 @@ public static class DeathAnchorLevelBaker
         BakeDoors(level.doors, interactableRoot, squareSprite, groundLayer);
         BakeButtons(level.buttons, interactableRoot, squareSprite, interactableLayer, bridgesById);
         BakeGoals(level.goals, interactableRoot, squareSprite, interactableLayer);
+        BakeNotes(level.notes, interactableRoot);
 
         CreateCamera(root.transform, player.transform, level);
         CreateLight(root.transform);
@@ -331,6 +332,63 @@ public static class DeathAnchorLevelBaker
         {
             GameObject go = CreateBlock(objects[i].id, parent, Center(objects[i]), Size(objects[i]), sprite, GoalColor, layer);
             go.AddComponent<DeathAnchorGoalTrigger>();
+        }
+    }
+
+    private static void BakeNotes(DeathAnchorLevelObject[] objects, Transform parent)
+    {
+        if (objects == null)
+        {
+            return;
+        }
+
+        Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        for (int i = 0; i < objects.Length; i++)
+        {
+            DeathAnchorLevelObject item = objects[i];
+            string textValue = !string.IsNullOrWhiteSpace(item.notes) ? item.notes : item.label;
+            if (string.IsNullOrWhiteSpace(textValue))
+            {
+                continue;
+            }
+
+            GameObject noteObject = new GameObject(string.IsNullOrEmpty(item.id) ? "Runtime Note" : item.id);
+            noteObject.transform.SetParent(parent);
+            noteObject.transform.position = Center(item);
+            noteObject.transform.rotation = Quaternion.Euler(0f, 0f, -item.rotation);
+            noteObject.transform.localScale = new Vector3(1f / PixelsPerUnit, 1f / PixelsPerUnit, 1f);
+
+            Canvas canvas = noteObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.sortingOrder = 30;
+
+            RectTransform panelRect = noteObject.GetComponent<RectTransform>();
+            panelRect.sizeDelta = new Vector2(Mathf.Max(32f, item.w), Mathf.Max(32f, item.h));
+
+            Image background = noteObject.AddComponent<Image>();
+            background.color = new Color(0.04f, 0.05f, 0.07f, 0.78f);
+            background.raycastTarget = false;
+
+            GameObject textObject = new GameObject("Text");
+            textObject.transform.SetParent(noteObject.transform, false);
+            Text text = textObject.AddComponent<Text>();
+            text.text = textValue;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.font = font;
+            text.fontSize = 20;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = 10;
+            text.resizeTextMaxSize = 24;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+            text.color = new Color(0.96f, 0.93f, 0.86f, 1f);
+            text.raycastTarget = false;
+
+            RectTransform textRect = text.GetComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = new Vector2(8f, 6f);
+            textRect.offsetMax = new Vector2(-8f, -6f);
         }
     }
 
