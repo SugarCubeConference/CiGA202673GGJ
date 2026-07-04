@@ -44,6 +44,22 @@ public sealed class GhostReplayController : MonoBehaviour
     public bool LoopedThisFrame { get; private set; }
     public float GravityDirection => gravityDirection;
 
+    private void Start()
+    {
+        // Fallback: existing baked scenes may have solidMask = 0 (old Configure didn't pass it).
+        // Auto-detect Ground layer and rebuild filter so ghost collides with the world.
+        if (solidMask == 0)
+        {
+            solidMask = LayerMask.GetMask("Ground");
+            solidFilter = new ContactFilter2D
+            {
+                useLayerMask = true,
+                useTriggers = false,
+                layerMask = solidMask
+            };
+        }
+    }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -77,8 +93,14 @@ public sealed class GhostReplayController : MonoBehaviour
 
         if (LoopedThisFrame)
         {
-            // Reset physics state on loop
+            // Reset to anchor position on loop so ghost starts fresh each cycle
+            Vector2 footPos = gravityDirection > 0f
+                ? anchorFootPosition
+                : anchorFootPosition + Vector2.up * playerHeight;
+            rb.position = footPos + Vector2.up * playerHeight * 0.5f;
             verticalSpeed = 0f;
+            grounded = false;
+            groundCollider = null;
         }
 
         DeathAnchorReplayFrame frame = Sample(localTime);
@@ -111,14 +133,13 @@ public sealed class GhostReplayController : MonoBehaviour
         // Horizontal movement
         Move(Vector2.right, input * moveSpeed * dt);
 
-        // Vertical movement
-        Vector2 verticalDir = gravityDirection > 0f ? Vector2.up : Vector2.down;
-        Move(verticalDir, verticalSpeed * dt);
+        // Vertical movement — verticalSpeed already encodes direction via gravityDirection
+        Move(Vector2.up, verticalSpeed * dt);
 
         PlaceOnPlayerIfNeeded();
     }
 
-    public void Configure(float width, float height, LayerMask playerMask)
+    public void Configure(float width, float height, LayerMask solidMask, LayerMask playerMask)
     {
         if (box == null)
         {
@@ -128,7 +149,14 @@ public sealed class GhostReplayController : MonoBehaviour
         box.size = new Vector2(width, height);
         box.offset = Vector2.zero;
         playerHeight = height;
+        this.solidMask = solidMask;
         this.playerMask = playerMask;
+        solidFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            useTriggers = false,
+            layerMask = solidMask
+        };
     }
 
     public void Play(Vector2 anchorFootPosition, IReadOnlyList<DeathAnchorReplayFrame> sourceFrames)
@@ -148,7 +176,7 @@ public sealed class GhostReplayController : MonoBehaviour
         // Place ghost at anchor position
         Vector2 footPos = gravityDirection > 0f
             ? anchorFootPosition
-            : anchorFootPosition + Vector2.down * playerHeight;
+            : anchorFootPosition + Vector2.up * playerHeight;
         rb.position = footPos + Vector2.up * playerHeight * 0.5f;
         previousPosition = rb.position;
         LastDelta = Vector2.zero;
