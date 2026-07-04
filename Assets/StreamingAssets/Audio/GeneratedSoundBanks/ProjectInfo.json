@@ -1,0 +1,36 @@
+{
+ "ProjectInfo": {
+  "Project": {
+   "Name": "CiGA202673GGJ_WwiseProject",
+   "GUID": "{EF982F46-4D5B-471C-92CD-EEA574B61B69}",
+   "Generator": "2025.1.8.9170"
+  },
+  "CacheRoot": "../../../../CiGA202673GGJ_WwiseProject/.cache",
+  "Platforms": [
+   {
+    "Name": "Mac",
+    "GUID": "{0F656CB3-0ECA-48F0-848B-F0DD66A50193}",
+    "BasePlatform": "Mac",
+    "BasePlatformGUID": "{9C6217D5-DD11-4795-87C1-6CE02853C540}",
+    "Path": "../../../../CiGA202673GGJ_WwiseProject"
+   },
+   {
+    "Name": "Windows",
+    "GUID": "{D0E370A5-9634-4516-84CD-42F968B384ED}",
+    "BasePlatform": "Windows",
+    "BasePlatformGUID": "{6E0CB257-C6C8-4C5C-8366-2740DFC441EB}",
+    "Path": "../../../../CiGA202673GGJ_WwiseProject"
+   }
+  ],
+  "Languages": [
+   {
+    "Name": "English(US)",
+    "Id": "684519430",
+    "GUID": "{A9051711-2344-4F07-A13D-86B2646F9564}",
+    "Default": "true",
+    "UseAsStandIn": "true"
+   }
+  ],
+  "FileHash": "{E1018F9A-A180-4DE3-D13B-8ECB99EC8CFC}"
+ }
+}
