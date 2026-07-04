@@ -92,6 +92,12 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             return;
         }
 
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            CancelRecording();
+            return;
+        }
+
         if (Time.time - recordingStartedAt > recordWindowSec)
         {
             CancelRecording();
