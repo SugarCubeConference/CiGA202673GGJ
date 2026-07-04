@@ -1,6 +1,6 @@
 {
   "schema": "death-anchor-level-v1",
-  "title": "第十关",
+  "title": "第八关",
   "ruleNotes": "死亡锚点：倒计时内死亡会生成一个固定的实体循环分身。玩家贴墙时会慢速下滑。机关：钥匙开门；按钮按下时让桥变实，也让移动平台向按钮方向平移；松开时桥变虚，移动平台回原位。激光会被地形、实体桥、移动平台阻挡。",
   "experience": "",
   "rules": {
@@ -48,8 +48,8 @@
     "id": "spawn",
     "type": "spawn",
     "label": "出生点",
-    "x": 320,
-    "y": 256,
+    "x": 64,
+    "y": 512,
     "w": 32,
     "h": 32,
     "rotation": 0,
@@ -66,7 +66,7 @@
       "type": "goal",
       "label": "出口",
       "x": 928,
-      "y": 224,
+      "y": 192,
       "w": 64,
       "h": 64,
       "rotation": 0,
@@ -83,10 +83,10 @@
       "id": "floor",
       "type": "platform",
       "label": "地面",
-      "x": 0,
-      "y": 512,
-      "w": 1024,
-      "h": 64,
+      "x": 160,
+      "y": 256,
+      "w": 128,
+      "h": 320,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -99,10 +99,10 @@
       "id": "platform-1",
       "type": "platform",
       "label": "地形",
-      "x": 0,
-      "y": 288,
-      "w": 416,
-      "h": 224,
+      "x": 640,
+      "y": 256,
+      "w": 384,
+      "h": 320,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -115,10 +115,10 @@
       "id": "platform-2",
       "type": "platform",
       "label": "地形",
-      "x": 736,
-      "y": 288,
-      "w": 288,
-      "h": 224,
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 576,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -131,10 +131,10 @@
       "id": "platform-3",
       "type": "platform",
       "label": "地形",
-      "x": 0,
+      "x": 32,
       "y": 0,
-      "w": 160,
-      "h": 288,
+      "w": 992,
+      "h": 64,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -148,9 +148,9 @@
       "type": "platform",
       "label": "地形",
       "x": 992,
-      "y": 0,
+      "y": 64,
       "w": 32,
-      "h": 288,
+      "h": 192,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -163,9 +163,9 @@
       "id": "platform-5",
       "type": "platform",
       "label": "地形",
-      "x": 160,
-      "y": 0,
-      "w": 832,
+      "x": 416,
+      "y": 160,
+      "w": 96,
       "h": 32,
       "rotation": 0,
       "channel": "",
@@ -179,10 +179,26 @@
       "id": "platform-6",
       "type": "platform",
       "label": "地形",
-      "x": 736,
-      "y": 32,
-      "w": 256,
-      "h": 192,
+      "x": 672,
+      "y": 64,
+      "w": 320,
+      "h": 128,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-7",
+      "type": "platform",
+      "label": "地形",
+      "x": 32,
+      "y": 544,
+      "w": 128,
+      "h": 32,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -196,24 +212,23 @@
     {
       "id": "movingPlatform-1",
       "type": "movingPlatform",
-      "label": "自动平台",
-      "x": 384,
-      "y": 32,
+      "label": "按钮平台",
+      "x": 544,
+      "y": 256,
       "w": 96,
       "h": 32,
       "rotation": 0,
-      "channel": "",
+      "channel": "A",
       "links": [],
       "tags": [
-        "movingPlatform",
-        "auto"
+        "movingPlatform"
       ],
       "notes": "",
-      "requiredButton": "",
-      "motionMode": "auto",
-      "moveTargetX": 640,
-      "moveTargetY": 32,
-      "periodSec": 3
+      "requiredButton": "button-1",
+      "motionMode": "button",
+      "moveTargetX": 288,
+      "moveTargetY": 256,
+      "periodSec": 2
     }
   ],
   "spikes": [
@@ -221,11 +236,11 @@
       "id": "spike-1",
       "type": "spike",
       "label": "尖刺",
-      "x": 416,
+      "x": 128,
       "y": 480,
-      "w": 320,
-      "h": 32,
-      "rotation": 0,
+      "w": 32,
+      "h": 64,
+      "rotation": 270,
       "channel": "",
       "links": [],
       "tags": [
@@ -238,10 +253,10 @@
       "id": "spike-2",
       "type": "spike",
       "label": "尖刺",
-      "x": 160,
-      "y": 32,
+      "x": 32,
+      "y": 64,
       "w": 32,
-      "h": 256,
+      "h": 352,
       "rotation": 90,
       "channel": "",
       "links": [],
@@ -254,24 +269,202 @@
   ],
   "lasers": [
     {
-      "id": "laser-1",
+      "id": "laser-3",
       "type": "laser",
       "label": "激光发射器",
-      "x": 416,
-      "y": 64,
+      "x": 288,
+      "y": 0,
       "w": 32,
-      "h": 544,
-      "rotation": 90,
+      "h": 576,
+      "rotation": 270,
       "channel": "",
-      "links": [
-        "movingPlatform-1"
-      ],
+      "links": [],
       "tags": [
         "laser"
       ],
-      "notes": "吸附在 movingPlatform-1 上，试玩时会跟随平台移动。",
+      "notes": "",
       "affects": "player",
-      "attachedTo": "movingPlatform-1"
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-4",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 320,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-5",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 352,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-6",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 384,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-7",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 416,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-8",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 608,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-9",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 544,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-10",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 480,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-11",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 512,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-1",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 576,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-2",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 448,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
     }
   ],
   "keys": [
@@ -279,12 +472,12 @@
       "id": "key-1",
       "type": "key",
       "label": "钥匙",
-      "x": 672,
-      "y": 256,
+      "x": 448,
+      "y": 128,
       "w": 32,
       "h": 32,
       "rotation": 0,
-      "channel": "C",
+      "channel": "B",
       "links": [
         "door-1"
       ],
@@ -299,12 +492,12 @@
       "id": "door-1",
       "type": "door",
       "label": "门",
-      "x": 768,
-      "y": 224,
+      "x": 672,
+      "y": 192,
       "w": 32,
       "h": 64,
       "rotation": 0,
-      "channel": "C",
+      "channel": "B",
       "links": [],
       "tags": [
         "door"
@@ -319,33 +512,13 @@
       "type": "button",
       "label": "按钮",
       "x": 224,
-      "y": 256,
+      "y": 224,
       "w": 32,
       "h": 32,
       "rotation": 0,
       "channel": "A",
       "links": [
-        "bridge-2"
-      ],
-      "tags": [
-        "button"
-      ],
-      "notes": "",
-      "mode": "hold",
-      "pressedBy": "both"
-    },
-    {
-      "id": "button-2",
-      "type": "button",
-      "label": "按钮",
-      "x": 384,
-      "y": 256,
-      "w": 32,
-      "h": 32,
-      "rotation": 0,
-      "channel": "B",
-      "links": [
-        "bridge-2"
+        "movingPlatform-1"
       ],
       "tags": [
         "button"
@@ -355,27 +528,7 @@
       "pressedBy": "both"
     }
   ],
-  "bridges": [
-    {
-      "id": "bridge-2",
-      "type": "bridge",
-      "label": "按钮桥",
-      "x": 416,
-      "y": 288,
-      "w": 320,
-      "h": 32,
-      "rotation": 0,
-      "channel": "B",
-      "links": [],
-      "tags": [
-        "bridge"
-      ],
-      "notes": "",
-      "requiredButton": "button-1,button-2",
-      "defaultState": "phantom",
-      "activeState": "solid"
-    }
-  ],
+  "bridges": [],
   "anchorZones": [],
   "notes": []
 }
