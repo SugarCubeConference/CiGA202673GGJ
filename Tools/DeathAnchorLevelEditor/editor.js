@@ -2105,7 +2105,7 @@ function startPlaytest() {
   if (ui.stopPlayBtn) ui.stopPlayBtn.hidden = false;
   document.body.classList.add("play-mode");
   canvas.focus();
-  setStatus("试玩中：A/D 移动，Space 跳，E 开锚点，R 重开，Esc 退出试玩。");
+  setStatus("试玩中：A/D 移动，Space 跳，E 开锚点，Q 关旧锚点，R 重开，Esc 退出试玩。");
   cancelAnimationFrame(playFrame);
   playFrame = requestAnimationFrame(playLoop);
 }
@@ -2172,6 +2172,7 @@ function makePlaytest(source) {
     bridges: data.objects.filter((object) => object.type === "bridge").map(runtimeObject),
     goals: data.objects.filter((object) => object.type === "goal").map(runtimeObject),
     anchorZones: data.objects.filter((object) => object.type === "anchorZone").map(runtimeObject),
+    notes: data.objects.filter((object) => object.type === "note").map(runtimeObject),
     camera: { x: 0, y: 0 },
     startTime: performance.now(),
     anchor: null,
@@ -2454,6 +2455,20 @@ function expirePlayRecording() {
   playtest.anchor = null;
   playtest.recording = null;
   playSay("锚点超时消失。按 E 可以重新开启。", 2200);
+}
+
+function clearFixedPlayAnchor() {
+  if (!playtest || playtest.completed) return;
+  const hadFixedAnchor = !!(playtest.respawnAnchor || playtest.ghostRecord || playtest.ghost);
+  if (!hadFixedAnchor) {
+    playSay(playtest.recording ? "正在录制的锚点不会被关闭。" : "没有已固定的锚点。", 1600);
+    return;
+  }
+
+  playtest.respawnAnchor = null;
+  playtest.ghostRecord = null;
+  playtest.ghost = null;
+  playSay(playtest.recording ? "已关闭旧锚点，当前录制继续。" : "已关闭已固定的时空锚点。", 1800);
 }
 
 function playDie() {
@@ -2774,6 +2789,7 @@ function drawPlaytest(now) {
   for (const button of playtest.buttons) drawPlayButton(button);
   for (const key of playtest.keys) if (!key.used) drawPlayKey(key);
   for (const goal of playtest.goals) drawPlayGoal(goal);
+  for (const note of playtest.notes) drawPlayNote(note);
   drawPlayAnchor(now);
   drawPlayGhost(now);
   drawPlayPlayer();
@@ -2928,6 +2944,19 @@ function drawPlayGoal(goal) {
   ctx.strokeRect(p.x + 3, p.y + 3, goal.w - 6, goal.h - 6);
 }
 
+function drawPlayNote(note) {
+  const p = playWorldToScreen(note.x, note.y);
+  ctx.save();
+  ctx.fillStyle = "rgba(10,12,16,0.78)";
+  roundRect(p.x, p.y, note.w, note.h, 6, true);
+  ctx.strokeStyle = "rgba(246,237,221,0.34)";
+  ctx.lineWidth = 2;
+  roundRect(p.x, p.y, note.w, note.h, 6, false);
+  ctx.fillStyle = "#f6eddd";
+  wrapText(note.notes || note.label || note.id, p.x + 8, p.y + 18, note.w - 16, 17);
+  ctx.restore();
+}
+
 function drawPlayAnchorZone(zone) {
   const p = playWorldToScreen(zone.x, zone.y);
   ctx.save();
@@ -2996,7 +3025,7 @@ function drawPlayHud(now) {
   ctx.fillText("试玩模式", 36, 49);
   ctx.font = "14px Microsoft YaHei, Segoe UI, sans-serif";
   ctx.fillStyle = "#aeb6bd";
-  ctx.fillText("A/D 移动    Space 跳    E 开锚点    R 重开    Esc 退出", 36, 76);
+  ctx.fillText("A/D 移动    Space 跳    E 开锚点    Q 关旧锚点    R 重开    Esc 退出", 36, 76);
   const carriedKey = carriedPlayKey();
   const state = carriedKey
     ? `携带 ${carriedKey.label || carriedKey.id}：碰到匹配的门会开锁`
@@ -3067,12 +3096,13 @@ function playSay(text, duration = 2200) {
 
 function handlePlayKeyDown(event) {
   const key = event.key.toLowerCase();
-  if (["a", "d", "w", " ", "space", "spacebar", "arrowleft", "arrowright", "arrowup", "e", "r", "escape"].includes(key)) {
+  if (["a", "d", "w", " ", "space", "spacebar", "arrowleft", "arrowright", "arrowup", "e", "q", "r", "escape"].includes(key)) {
     event.preventDefault();
   }
   playKeys.add(key);
   if (key === " " || key === "space" || key === "spacebar" || key === "w" || key === "arrowup") playJump();
   if (key === "e") placePlayAnchor();
+  if (key === "q") clearFixedPlayAnchor();
   if (key === "r") restartPlaytest();
   if (key === "escape") stopPlaytest();
 }

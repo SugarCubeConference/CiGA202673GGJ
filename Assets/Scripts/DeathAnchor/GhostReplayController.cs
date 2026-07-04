@@ -213,6 +213,15 @@ public sealed class GhostReplayController : MonoBehaviour
         SyncVisual(first);
     }
 
+    public void StopReplay()
+    {
+        hasRecord = false;
+        frames.Clear();
+        LastDelta = Vector2.zero;
+        LoopedThisFrame = false;
+        gameObject.SetActive(false);
+    }
+
     private DeathAnchorReplayFrame Sample(float time)
     {
         if (frames.Count == 1 || time <= frames[0].time)
