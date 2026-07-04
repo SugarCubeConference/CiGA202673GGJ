@@ -16,6 +16,7 @@ public static class DeathAnchorWwiseEvents
     public const string DoorUnlock = "Play_sfx_door_unlock";
     public const string Goal = "Play_sfx_goal";
     public const string UiSelect = "Play_sfx_ui_select";
+    public const string TitleBgm = "Play_title_bgm";
 }
 
 public static class DeathAnchorWwiseAudio

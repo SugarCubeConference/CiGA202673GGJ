@@ -657,16 +657,23 @@ private static void CreateCamera(Transform root, Transform target, DeathAnchorLe
         cameraObject.tag = "MainCamera";
         Camera camera = cameraObject.AddComponent<Camera>();
         camera.orthographic = true;
-        camera.orthographicSize = 3.6f;
         camera.backgroundColor = new Color(0.22f, 0.23f, 0.23f, 1f);
-        cameraObject.transform.position = new Vector3(target.position.x, target.position.y, -10f);
+
+        // 根据关卡尺寸自动计算摄像机参数
+        float worldWidthUnits = level.world.w / PixelsPerUnit;
+        float worldHeightUnits = level.world.h / PixelsPerUnit;
+        float halfWidth = worldWidthUnits / 2f;
+        float halfHeight = worldHeightUnits / 2f;
+
+        // orthographicSize 需要同时覆盖高度和宽度
+        // viewWidth = orthoSize * 2 * aspect，所以 fit 宽度需要 orthoSize >= halfWidth / aspect
+        float aspect = 16f / 9f;
+        camera.orthographicSize = Mathf.Max(halfHeight, halfWidth / aspect);
+
+        // 摄像机关卡中心：X 正向右，Y 像素坐标向下所以取负
+        cameraObject.transform.position = new Vector3(halfWidth, -halfHeight, -10f);
+
         CreateBackground(camera);
-        CameraFollow2D follow = cameraObject.AddComponent<CameraFollow2D>();
-        float halfHeight = camera.orthographicSize;
-        float halfWidth = halfHeight * 16f / 9f;
-        Vector2 min = new Vector2(halfWidth, -level.world.h / PixelsPerUnit + halfHeight);
-        Vector2 max = new Vector2(level.world.w / PixelsPerUnit - halfWidth, -halfHeight);
-        follow.Configure(target, min, max);
     }
 
         /// <summary>创建方向光</summary>

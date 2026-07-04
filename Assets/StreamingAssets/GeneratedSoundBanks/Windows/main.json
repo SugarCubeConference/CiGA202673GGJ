@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{F704C104-801C-4C79-A745-1E87834C0D59}",
     "Language": "SFX",
-    "Hash": "{42A4A51B-9962-6019-B7C4-F7AF8E7570B8}",
+    "Hash": "{ADA7D189-AE06-207B-E692-E1F0E02F905B}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\main",
     "ShortName": "main",
     "Path": "main.bnk",
@@ -46,6 +46,14 @@
       "Location": "Memory",
       "ShortName": "MACHAppl_Tilt Head Stand Mixer Adjust Lock Moderate 01_B00M_ONE.wav",
       "CachePath": "3D/{3DFB2842-73F3-C43D-190B-DFF614F63FE5}.wem"
+     },
+     {
+      "Id": "295088483",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "title_bgm_v2.wav",
+      "CachePath": "6B/{6B4B2EAC-249D-9B22-EFDC-B645447BD10F}.wem"
      },
      {
       "Id": "397741422",
@@ -331,10 +339,22 @@
         "Id": "751371734"
        }
       ]
+     },
+     {
+      "Id": "3507020163",
+      "Name": "Play_title_bgm",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_title_bgm",
+      "GUID": "{435456C1-38EF-488E-A7B4-88CE3AD426A7}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "295088483"
+       }
+      ]
      }
     ]
    }
   ],
-  "FileHash": "{F3876CC6-6670-485E-7802-0BA5A943A003}"
+  "FileHash": "{0ABBB63F-2C9F-3BE1-5E09-C4454AB23227}"
  }
 }
