@@ -1,0 +1,340 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "3161908922",
+    "Type": "User",
+    "GUID": "{F704C104-801C-4C79-A745-1E87834C0D59}",
+    "Language": "SFX",
+    "Hash": "{42A4A51B-9962-6019-B7C4-F7AF8E7570B8}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\main",
+    "ShortName": "main",
+    "Path": "main.bnk",
+    "Media": [
+     {
+      "Id": "1482813",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "ghost2.wav",
+      "CachePath": "5E/{5E07279F-CC2C-A274-E691-68E0BA095910}.wem"
+     },
+     {
+      "Id": "20342893",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "OBJKey_Key Ring Large Fly Tinkle 02_B00M_ONE.wav",
+      "CachePath": "0A/{0A7E05D0-F4C8-2D66-85D8-D46CC9554D39}.wem"
+     },
+     {
+      "Id": "163436911",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "KSHMR House Kick 03 (E).wav",
+      "CachePath": "35/{35AB76F4-B8E7-030B-F9DD-A96377A7DD39}.wem"
+     },
+     {
+      "Id": "268539815",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "MACHAppl_Tilt Head Stand Mixer Adjust Lock Moderate 01_B00M_ONE.wav",
+      "CachePath": "3D/{3DFB2842-73F3-C43D-190B-DFF614F63FE5}.wem"
+     },
+     {
+      "Id": "397741422",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "UIClick_Sci Fi Alien Keyboard Tap 02_B00M_ONE.wav",
+      "CachePath": "36/{3619D2F3-FCE2-E404-272F-15F59B5EA335}.wem"
+     },
+     {
+      "Id": "468860864",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "UIClick_Sci Fi Alien Keyboard Tap 01_B00M_ONE.wav",
+      "CachePath": "70/{700D9387-D0EE-6F16-0946-3040AC94D94D}.wem"
+     },
+     {
+      "Id": "548814894",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "start2.wav",
+      "CachePath": "6E/{6E143A1F-D528-9882-D7BF-E5038F76E083}.wem"
+     },
+     {
+      "Id": "656022254",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "LIQMvmt_Slime Movements Squishy 01_B00M_ONE.wav",
+      "CachePath": "53/{53A6D420-1588-6658-AE0B-7E4CC4FFDDA7}.wem"
+     },
+     {
+      "Id": "691402733",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "CLOCKTick_Alarm Ticking 01_B00M_ONE.wav",
+      "CachePath": "7C/{7CDE690E-5E2B-87B2-816A-DA529072E1C9}.wem"
+     },
+     {
+      "Id": "751371734",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "ICEFric_Person Slides By Brakes 01_B00M_ONE.wav",
+      "CachePath": "DB/{DBEEC503-7660-2492-C38F-23CAAE9291A3}.wem"
+     },
+     {
+      "Id": "766751949",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "goal.wav",
+      "CachePath": "56/{56007019-258F-21FB-4DEA-3FADE875C459}.wem"
+     },
+     {
+      "Id": "820596875",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "LIQMvmt_Slime Movements Squishy 01_B00M_ONE.wav",
+      "CachePath": "AF/{AF1E0B66-8937-59FA-631B-6D5DBF33D06D}.wem"
+     },
+     {
+      "Id": "886056808",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "LIQMvmt_Slime Movements Squishy 01_B00M_ONE.wav",
+      "CachePath": "55/{550C4DAB-DD3E-7D3C-D936-6B702D75EC60}.wem"
+     },
+     {
+      "Id": "927881525",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "die.wav",
+      "CachePath": "5B/{5BCBCBF2-B385-8198-149D-37D20394C19D}.wem"
+     },
+     {
+      "Id": "946573920",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "start2.wav",
+      "CachePath": "35/{356FDF77-9C0D-5702-BDCD-4C464517BF9F}.wem"
+     },
+     {
+      "Id": "995502478",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "jump.wav",
+      "CachePath": "B4/{B453B18C-2B67-E1A1-7F04-4C682F7E67A6}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "1900105048",
+      "Name": "Play_sfx_anchor_start",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_anchor_start",
+      "GUID": "{8A61B197-58E3-492A-84F5-1AEE64FC30C4}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.49249",
+      "DurationMax": "0.50179",
+      "MediaRefs": [
+       {
+        "Id": "548814894"
+       },
+       {
+        "Id": "946573920"
+       }
+      ]
+     },
+     {
+      "Id": "567486307",
+      "Name": "Play_sfx_anchor_tick",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_anchor_tick",
+      "GUID": "{E00ACA7A-2711-4330-83EC-8C2464BB96C8}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "691402733"
+       }
+      ]
+     },
+     {
+      "Id": "3448000873",
+      "Name": "Play_sfx_door_unlock",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_door_unlock",
+      "GUID": "{9C428211-D1D2-44C9-9F46-6FC0EBEF15BB}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.385",
+      "DurationMax": "0.385",
+      "MediaRefs": [
+       {
+        "Id": "268539815"
+       }
+      ]
+     },
+     {
+      "Id": "3528108624",
+      "Name": "Play_sfx_ghost_loop",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_ghost_loop",
+      "GUID": "{639AE1CF-F07F-4EFF-BAD8-88172F18C1AF}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.8908987",
+      "DurationMax": "1.122462",
+      "MediaRefs": [
+       {
+        "Id": "1482813"
+       }
+      ]
+     },
+     {
+      "Id": "2258799967",
+      "Name": "Play_sfx_goal",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_goal",
+      "GUID": "{C2CC6957-C287-4CDD-9DCB-0821CF974B98}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.75",
+      "DurationMax": "0.75",
+      "MediaRefs": [
+       {
+        "Id": "766751949"
+       }
+      ]
+     },
+     {
+      "Id": "1072816434",
+      "Name": "Play_sfx_key_pickup",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_key_pickup",
+      "GUID": "{A8B98612-5B34-4908-A664-28B8595F1CBF}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.63773",
+      "DurationMax": "0.63773",
+      "MediaRefs": [
+       {
+        "Id": "20342893"
+       }
+      ]
+     },
+     {
+      "Id": "1591758634",
+      "Name": "Play_sfx_player_death",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_player_death",
+      "GUID": "{FB6CBDA8-6928-4481-B9BA-B41BBF8A68C3}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.51611",
+      "DurationMax": "0.51611",
+      "MediaRefs": [
+       {
+        "Id": "927881525"
+       }
+      ]
+     },
+     {
+      "Id": "604897336",
+      "Name": "Play_sfx_player_jump",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_player_jump",
+      "GUID": "{C1551425-0072-41FF-814A-2B7ED4A9D8AB}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.5502024",
+      "DurationMax": "0.6543047",
+      "MediaRefs": [
+       {
+        "Id": "995502478"
+       }
+      ]
+     },
+     {
+      "Id": "2037741043",
+      "Name": "Play_sfx_player_land",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_player_land",
+      "GUID": "{E2755137-ABB8-45F2-A125-89C675974C50}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.15569426",
+      "DurationMax": "0.19616249",
+      "MediaRefs": [
+       {
+        "Id": "163436911"
+       }
+      ]
+     },
+     {
+      "Id": "3956317907",
+      "Name": "Play_sfx_player_move",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_player_move",
+      "GUID": "{42859AAD-3842-4740-B510-ACBF5D2EBC9A}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.06847",
+      "DurationMax": "2.16549",
+      "MediaRefs": [
+       {
+        "Id": "656022254"
+       },
+       {
+        "Id": "820596875"
+       },
+       {
+        "Id": "886056808"
+       }
+      ]
+     },
+     {
+      "Id": "150989061",
+      "Name": "Play_sfx_ui_focus",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_ui_focus",
+      "GUID": "{500B494F-9D14-47F3-8FC1-908039921F42}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.07572",
+      "DurationMax": "0.07572",
+      "MediaRefs": [
+       {
+        "Id": "397741422"
+       }
+      ]
+     },
+     {
+      "Id": "2484137795",
+      "Name": "Play_sfx_ui_select",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_ui_select",
+      "GUID": "{AD72B9C2-8FD3-42B6-9330-8B158EA87FF4}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.37815",
+      "DurationMax": "0.37815",
+      "MediaRefs": [
+       {
+        "Id": "468860864"
+       }
+      ]
+     },
+     {
+      "Id": "1716932240",
+      "Name": "Play_sfx_wall_slide",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_sfx_wall_slide",
+      "GUID": "{75F3B6F8-2D41-4D18-90B7-CFB2C1A7ABFC}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "751371734"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{F3876CC6-6670-485E-7802-0BA5A943A003}"
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "ProjectInfo": {
+  "Project": {
+   "Name": "2026CGJ_wwise",
+   "GUID": "{05FD4F20-37E5-4835-AD1F-BD9858493610}",
+   "Generator": "2025.1.8.9170"
+  },
+  "CacheRoot": "../.cache",
+  "Platforms": [
+   {
+    "Name": "Windows",
+    "GUID": "{BDE48014-2846-4DFE-93AA-35F46CF05BD3}",
+    "BasePlatform": "Windows",
+    "BasePlatformGUID": "{6E0CB257-C6C8-4C5C-8366-2740DFC441EB}",
+    "Path": "Windows"
+   }
+  ],
+  "Languages": [
+   {
+    "Name": "English(US)",
+    "Id": "684519430",
+    "GUID": "{2F2414DF-6C21-4FDA-B130-F82D240D9E50}",
+    "Default": "true",
+    "UseAsStandIn": "true"
+   }
+  ],
+  "FileHash": "{5DDD58D9-EC8C-6818-CF2D-EC42164834FB}"
+ }
+}

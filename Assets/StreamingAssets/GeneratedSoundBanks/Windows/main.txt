@@ -1,0 +1,33 @@
+Event	ID	Name			Wwise Object Path	Notes
+	150989061	Play_sfx_ui_focus			\Default Work Unit\Play_sfx_ui_focus	
+	567486307	Play_sfx_anchor_tick			\Default Work Unit\Play_sfx_anchor_tick	
+	604897336	Play_sfx_player_jump			\Default Work Unit\Play_sfx_player_jump	
+	1072816434	Play_sfx_key_pickup			\Default Work Unit\Play_sfx_key_pickup	
+	1591758634	Play_sfx_player_death			\Default Work Unit\Play_sfx_player_death	
+	1716932240	Play_sfx_wall_slide			\Default Work Unit\Play_sfx_wall_slide	
+	1900105048	Play_sfx_anchor_start			\Default Work Unit\Play_sfx_anchor_start	
+	2037741043	Play_sfx_player_land			\Default Work Unit\Play_sfx_player_land	
+	2258799967	Play_sfx_goal			\Default Work Unit\Play_sfx_goal	
+	2484137795	Play_sfx_ui_select			\Default Work Unit\Play_sfx_ui_select	
+	3448000873	Play_sfx_door_unlock			\Default Work Unit\Play_sfx_door_unlock	
+	3528108624	Play_sfx_ghost_loop			\Default Work Unit\Play_sfx_ghost_loop	
+	3956317907	Play_sfx_player_move			\Default Work Unit\Play_sfx_player_move	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	1482813	sfx_ghost_loop	.cache\5E\{5E07279F-CC2C-A274-E691-68E0BA095910}.wem		\Containers\Default Work Unit\interaction\sfx_ghost_loop		192096
+	20342893	sfx_key_pickup	.cache\0A\{0A7E05D0-F4C8-2D66-85D8-D46CC9554D39}.wem		\Containers\Default Work Unit\interaction\sfx_key_pickup		122540
+	163436911	sfx_player_land	.cache\35\{35AB76F4-B8E7-030B-F9DD-A96377A7DD39}.wem		\Containers\Default Work Unit\player\sfx_player_land		42452
+	268539815	sfx_door_unlock	.cache\3D\{3DFB2842-73F3-C43D-190B-DFF614F63FE5}.wem		\Containers\Default Work Unit\interaction\sfx_door_unlock		74016
+	397741422	sfx_ui_focus	.cache\36\{3619D2F3-FCE2-E404-272F-15F59B5EA335}.wem		\Containers\Default Work Unit\UI\sfx_ui_focus		14632
+	468860864	sfx_ui_select	.cache\70\{700D9387-D0EE-6F16-0946-3040AC94D94D}.wem		\Containers\Default Work Unit\UI\sfx_ui_select		72700
+	548814894	sfx_anchor_start2	.cache\6E\{6E143A1F-D528-9882-D7BF-E5038F76E083}.wem		\Containers\Default Work Unit\interaction\sfx_anchor_start\sfx_anchor_start2		94656
+	656022254	sfx_player_move1	.cache\53\{53A6D420-1588-6658-AE0B-7E4CC4FFDDA7}.wem		\Containers\Default Work Unit\player\sfx_player_move\sfx_player_move1		415868
+	691402733	sfx_anchor_tick	.cache\7C\{7CDE690E-5E2B-87B2-816A-DA529072E1C9}.wem		\Containers\Default Work Unit\interaction\sfx_anchor_tick		4108332
+	751371734	sfx_wall_slide	.cache\DB\{DBEEC503-7660-2492-C38F-23CAAE9291A3}.wem		\Containers\Default Work Unit\interaction\sfx_wall_slide		284720
+	766751949	sfx_goal	.cache\56\{56007019-258F-21FB-4DEA-3FADE875C459}.wem		\Containers\Default Work Unit\interaction\sfx_goal		144096
+	820596875	sfx_player_move1_01	.cache\AF\{AF1E0B66-8937-59FA-631B-6D5DBF33D06D}.wem		\Containers\Default Work Unit\player\sfx_player_move\sfx_player_move1_01		231008
+	886056808	sfx_player_move1_02	.cache\55\{550C4DAB-DD3E-7D3C-D936-6B702D75EC60}.wem		\Containers\Default Work Unit\player\sfx_player_move\sfx_player_move1_02		205240
+	927881525	sfx_player_death	.cache\5B\{5BCBCBF2-B385-8198-149D-37D20394C19D}.wem		\Containers\Default Work Unit\player\sfx_player_death		91136
+	946573920	sfx_anchor_start1	.cache\35\{356FDF77-9C0D-5702-BDCD-4C464517BF9F}.wem		\Containers\Default Work Unit\interaction\sfx_anchor_start\sfx_anchor_start1		96440
+	995502478	sfx_player_jump	.cache\B4\{B453B18C-2B67-E1A1-7F04-4C682F7E67A6}.wem		\Containers\Default Work Unit\player\sfx_player_jump\sfx_player_jump		105936
+
