@@ -57,7 +57,8 @@ public sealed class KeyPickup : MonoBehaviour
         ActorIdentity actor = other.GetComponent<ActorIdentity>();
         if (actor != null && actor.IsPlayer)
         {
-            carrier = other.transform;
+            carrier = other.transform;        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.KeyPickup);
+
         }
     }
 }

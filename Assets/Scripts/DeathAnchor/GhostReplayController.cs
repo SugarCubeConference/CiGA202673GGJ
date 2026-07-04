@@ -44,6 +44,8 @@ public sealed class GhostReplayController : MonoBehaviour
     private readonly List<GameObject> afterimagePool = new List<GameObject>();
     private float afterimageTimer;
     private int lastFacing;
+    private bool ghostLoopPlaying;
+
 
     public Vector2 LastDelta { get; private set; }
     public bool LoopedThisFrame { get; private set; }
@@ -164,6 +166,7 @@ public sealed class GhostReplayController : MonoBehaviour
 
     private void OnDisable()
     {
+        DeathAnchorWwiseAudio.StopLoop(gameObject, DeathAnchorWwiseEvents.GhostLoop, ref ghostLoopPlaying);
         ClearAfterimages();
     }
 
@@ -207,10 +210,11 @@ public sealed class GhostReplayController : MonoBehaviour
         DeathAnchorReplayFrame first = frames[0];
         rb.position = anchorFootPosition + first.footOffset + Vector2.up * playerHeight * 0.5f;
 
-        // Initialize afterimage state
         afterimageTimer = 0f;
         lastFacing = first.facing;
         SyncVisual(first);
+
+        DeathAnchorWwiseAudio.StartLoop(gameObject, DeathAnchorWwiseEvents.GhostLoop, ref ghostLoopPlaying);
     }
 
     public void StopReplay()
@@ -219,6 +223,7 @@ public sealed class GhostReplayController : MonoBehaviour
         frames.Clear();
         LastDelta = Vector2.zero;
         LoopedThisFrame = false;
+        DeathAnchorWwiseAudio.StopLoop(gameObject, DeathAnchorWwiseEvents.GhostLoop, ref ghostLoopPlaying);
         gameObject.SetActive(false);
     }
 

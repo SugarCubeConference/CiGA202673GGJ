@@ -16,6 +16,7 @@ public static class DeathAnchorWwiseEvents
     public const string DoorUnlock = "Play_sfx_door_unlock";
     public const string Goal = "Play_sfx_goal";
     public const string UiSelect = "Play_sfx_ui_select";
+    public const string UiHover = "Play_sfx_ui_hover";
     public const string TitleBgm = "Play_title_bgm";
 }
 
@@ -26,6 +27,7 @@ public static class DeathAnchorWwiseAudio
     private const string SoundBankRelativePath = "GeneratedSoundBanks/Windows";
 
     private static readonly HashSet<string> warnedPostFailures = new HashSet<string>();
+    private static readonly HashSet<int> warnedRegistrationFailures = new HashSet<int>();
     private static bool banksLoaded;
     private static bool warnedBankLoadFailure;
 
@@ -86,9 +88,15 @@ public static class DeathAnchorWwiseAudio
             return false;
         }
 
-        if (emitter.GetComponent<AkGameObj>() == null)
+        AkGameObj akGameObj = emitter.GetComponent<AkGameObj>();
+        if (akGameObj == null)
         {
-            emitter.AddComponent<AkGameObj>();
+            akGameObj = emitter.AddComponent<AkGameObj>();
+        }
+
+        if (!EnsureEmitterRegistered(emitter, akGameObj))
+        {
+            return false;
         }
 
         if (!banksLoaded)
@@ -97,6 +105,32 @@ public static class DeathAnchorWwiseAudio
         }
 
         return banksLoaded;
+    }
+
+    private static bool EnsureEmitterRegistered(GameObject emitter, AkGameObj akGameObj)
+    {
+        if (AkUnitySoundEngine.IsGameObjectRegistered(emitter))
+        {
+            return true;
+        }
+
+        AKRESULT registerResult = akGameObj.GameObjIsRegistered()
+            ? AkUnitySoundEngine.RegisterGameObj(emitter, emitter.name)
+            : akGameObj.Register();
+
+        if (registerResult == AKRESULT.AK_Success || AkUnitySoundEngine.IsGameObjectRegistered(emitter))
+        {
+            return true;
+        }
+
+        int emitterId = emitter.GetInstanceID();
+        if (!warnedRegistrationFailures.Contains(emitterId))
+        {
+            warnedRegistrationFailures.Add(emitterId);
+            Debug.LogWarning($"Wwise emitter '{emitter.name}' failed to register before posting audio. Result: {registerResult}.", emitter);
+        }
+
+        return false;
     }
 
     private static bool TryLoadBanks(GameObject emitter)

@@ -11,6 +11,7 @@ public sealed class ButtonSwitch : MonoBehaviour
 
     private readonly HashSet<ActorIdentity> pressingActors = new HashSet<ActorIdentity>();
     private SpriteRenderer spriteRenderer;
+    private bool _wasPressed;
 
     public string ButtonId => buttonId;
     public bool IsPressed => pressingActors.Count > 0;
@@ -29,30 +30,34 @@ public sealed class ButtonSwitch : MonoBehaviour
             spriteRenderer.color = pressed ? new Color(1f, 0.78f, 0.18f, 1f) : new Color(1f, 0.78f, 0.18f, 0.45f);
         }
 
-        if (linkedBridges == null)
+        if (pressed != _wasPressed)
         {
-            linkedBridges = System.Array.Empty<LinkedBridge>();
-        }
-
-        for (int i = 0; i < linkedBridges.Length; i++)
-        {
-            if (linkedBridges[i] != null)
+            if (linkedBridges != null)
             {
-                linkedBridges[i].SetActivated(pressed);
+                for (int i = 0; i < linkedBridges.Length; i++)
+                {
+                    if (linkedBridges[i] != null)
+                    {
+                        if (pressed)
+                            linkedBridges[i].NotifyPressed(this);
+                        else
+                            linkedBridges[i].NotifyReleased(this);
+                    }
+                }
             }
-        }
 
-        if (linkedPlatforms == null)
-        {
-            linkedPlatforms = System.Array.Empty<MovingPlatform2D>();
-        }
-
-        for (int i = 0; i < linkedPlatforms.Length; i++)
-        {
-            if (linkedPlatforms[i] != null)
+            if (linkedPlatforms != null)
             {
-                linkedPlatforms[i].SetActivated(pressed);
+                for (int i = 0; i < linkedPlatforms.Length; i++)
+                {
+                    if (linkedPlatforms[i] != null)
+                    {
+                        linkedPlatforms[i].SetActivated(pressed);
+                    }
+                }
             }
+
+            _wasPressed = pressed;
         }
     }
 

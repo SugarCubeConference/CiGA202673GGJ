@@ -165,8 +165,9 @@ public static void BakeLevel(string jsonPath, string scenePath)
         Object.DestroyImmediate(anchorMarker.GetComponent<Collider2D>());
         anchorMarker.SetActive(false);
 
-        Text countdownText = CreateCountdownUi(root.transform);
-        manager.Configure(level.rules != null ? level.rules.recordWindowSec : 5f, playerController, ghostReplay, spawnPoint, anchorMarker.transform, countdownText);
+        Camera camera = CreateCamera(root.transform, player.transform, level);
+        AnchorCountdownHud countdownHud = CreateCountdownUi(camera.transform, squareSprite);
+        manager.Configure(level.rules != null ? level.rules.recordWindowSec : 5f, playerController, ghostReplay, spawnPoint, anchorMarker.transform, countdownHud, null);
 
         BakeKeys(level.keys, interactableRoot, squareSprite, interactableLayer);
         BakeDoors(level.doors, interactableRoot, squareSprite, groundLayer);
@@ -174,7 +175,6 @@ public static void BakeLevel(string jsonPath, string scenePath)
         BakeGoals(level.goals, interactableRoot, squareSprite, interactableLayer);
         BakeNotes(level.notes, interactableRoot);
 
-        CreateCamera(root.transform, player.transform, level);
         CreateLight(root.transform);
 
         EditorSceneManager.MarkSceneDirty(scene);
@@ -650,7 +650,7 @@ private static void CreateBackground(Camera camera)
         // ===== 相机和灯光 =====
 
     /// <summary>创建正交相机和跟随脚本</summary>
-private static void CreateCamera(Transform root, Transform target, DeathAnchorLevelData level)
+private static Camera CreateCamera(Transform root, Transform target, DeathAnchorLevelData level)
     {
         GameObject cameraObject = new GameObject("Main Camera");
         cameraObject.transform.SetParent(root);
@@ -674,6 +674,7 @@ private static void CreateCamera(Transform root, Transform target, DeathAnchorLe
         cameraObject.transform.position = new Vector3(halfWidth, -halfHeight, -10f);
 
         CreateBackground(camera);
+        return camera;
     }
 
         /// <summary>创建方向光</summary>
@@ -689,40 +690,25 @@ private static void CreateLight(Transform root)
 
         // ===== UI =====
 
-    /// <summary>创建 HUD Canvas 和倒计时文字</summary>
-private static Text CreateCountdownUi(Transform root)
+    /// <summary>创建游戏内倒计时方块，让其参与场景 shader 效果</summary>
+private static AnchorCountdownHud CreateCountdownUi(Transform cameraTransform, Sprite squareSprite)
     {
-        GameObject canvasObject = new GameObject("HUD Canvas");
-        canvasObject.transform.SetParent(root);
-        Canvas canvas = canvasObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 50;
-        CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
-        canvasObject.AddComponent<GraphicRaycaster>();
+        GameObject hudObject = new GameObject("Anchor Countdown HUD");
+        hudObject.transform.SetParent(cameraTransform, false);
+        hudObject.transform.localPosition = Vector3.zero;
+        hudObject.transform.localRotation = Quaternion.identity;
+        hudObject.transform.localScale = Vector3.one;
 
-        GameObject textObject = new GameObject("Anchor Countdown Text");
-        textObject.transform.SetParent(canvasObject.transform);
-        Text text = textObject.AddComponent<Text>();
-        text.text = "ANCHOR REC 5.0s";
-        text.alignment = TextAnchor.UpperCenter;
-        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        text.fontSize = 44;
-        text.fontStyle = FontStyle.Bold;
-        text.color = new Color(0.78f, 0.58f, 1f, 1f);
-        text.raycastTarget = false;
-
-        RectTransform rect = text.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 1f);
-        rect.anchorMax = new Vector2(0.5f, 1f);
-        rect.pivot = new Vector2(0.5f, 1f);
-        rect.anchoredPosition = new Vector2(0f, -24f);
-        rect.sizeDelta = new Vector2(700f, 80f);
-
-        textObject.SetActive(false);
-        return text;
+        AnchorCountdownHud hud = hudObject.AddComponent<AnchorCountdownHud>();
+        SerializedObject serializedHud = new SerializedObject(hud);
+        serializedHud.FindProperty("blockSprite").objectReferenceValue = squareSprite;
+        serializedHud.FindProperty("blockSize").vector2Value = new Vector2(0.88f, 0.56f);
+        serializedHud.FindProperty("blockSpacing").floatValue = 0.26f;
+        serializedHud.FindProperty("topMargin").floatValue = 0.95f;
+        serializedHud.FindProperty("sidePadding").floatValue = 0.7f;
+        serializedHud.FindProperty("sortingOrder").intValue = 260;
+        serializedHud.ApplyModifiedPropertiesWithoutUndo();
+        return hud;
     }
 
         // ===== 工具方法 =====

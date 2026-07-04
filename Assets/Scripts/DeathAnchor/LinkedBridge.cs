@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -9,6 +10,7 @@ public sealed class LinkedBridge : MonoBehaviour
 
     private Collider2D bridgeCollider;
     private SpriteRenderer spriteRenderer;
+    private readonly HashSet<ButtonSwitch> _pressingButtons = new HashSet<ButtonSwitch>();
 
     public string BridgeId => bridgeId;
 
@@ -30,6 +32,21 @@ public sealed class LinkedBridge : MonoBehaviour
         }
     }
 
+    /// <summary>通知桥：某个按钮开始按压</summary>
+    public void NotifyPressed(ButtonSwitch button)
+    {
+        _pressingButtons.Add(button);
+        ApplyState(activeState);
+    }
+
+    /// <summary>通知桥：某个按钮释放</summary>
+    public void NotifyReleased(ButtonSwitch button)
+    {
+        _pressingButtons.Remove(button);
+        ApplyState(_pressingButtons.Count > 0 ? activeState : defaultState);
+    }
+
+    /// <summary>直接设置激活状态（兼容旧调用）</summary>
     public void SetActivated(bool activated)
     {
         ApplyState(activated ? activeState : defaultState);

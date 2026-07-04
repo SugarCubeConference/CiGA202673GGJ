@@ -39,7 +39,8 @@ public sealed class KeyDoor : MonoBehaviour
 
     private void Open()
     {
-        opened = true;
+        opened = true;        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.DoorUnlock);
+
         for (int i = 0; i < colliders.Length; i++)
         {
             colliders[i].enabled = false;

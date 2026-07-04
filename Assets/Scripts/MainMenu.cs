@@ -69,6 +69,7 @@ public class MainMenu : MonoBehaviour
     {
         if (_isGridOpen) return;
         _isGridOpen = true;
+        DeathAnchorWwiseAudio.Post(startButton.gameObject, DeathAnchorWwiseEvents.UiSelect);
         StartCoroutine(FadeTransition(false, true));
     }
 
@@ -81,6 +82,7 @@ public class MainMenu : MonoBehaviour
 
     public void OnLevelClick(int levelIndex)
     {
+        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.UiSelect);
         if (levelIndex >= 0 && levelIndex < LevelScenes.Length)
             CRTTransition.Ensure().TransitionToScene(LevelScenes[levelIndex]);
     }

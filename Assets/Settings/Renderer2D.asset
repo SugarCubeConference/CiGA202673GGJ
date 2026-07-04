@@ -23,9 +23,9 @@ MonoBehaviour:
     chromaticAberration: 1.5
     vignetteIntensity: 0.92
     vignetteSmoothness: 2.74
-    brightness: 1.48
+    brightness: 0.84
     contrast: 1.2
-    rgbPixelSize: 2.39
+    rgbPixelSize: 2.5
     renderPassEvent: 600
 --- !u!114 &11400000
 MonoBehaviour:
@@ -115,7 +115,7 @@ MonoBehaviour:
     sweepBlur: 0.35
     sweepColorShift: 0.077
     sweepNoise: 0.02
-    sweepBrightness: 0.03
+    sweepBrightness: 0.163
     sweepSpeed: 0.35
     borderIntensity: 0.22
     renderPassEvent: 600

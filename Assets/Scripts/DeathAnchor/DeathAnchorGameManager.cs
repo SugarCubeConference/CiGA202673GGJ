@@ -165,6 +165,8 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
 
         ResetCarriedKeys();
 
+        DeathAnchorWwiseAudio.Post(player != null ? player.gameObject : gameObject, DeathAnchorWwiseEvents.PlayerDeath);
+
         Vector2 targetFoot = hasRespawnFootPosition
             ? respawnFootPosition
             : (spawnPoint != null ? (Vector2)spawnPoint.position : player.FootPosition);
@@ -203,7 +205,8 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             return;
         }
 
-        levelComplete = true;
+        levelComplete = true;        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.Goal);
+
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         int nextIndex = currentIndex + 1;
         if (nextIndex >= 0 && nextIndex < SceneManager.sceneCountInBuildSettings)
@@ -223,7 +226,8 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             return;
         }
 
-        isRecording = true;
+        isRecording = true;        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.AnchorStart);
+
         recordingStartedAt = Time.time;
         lastSampleAt = -999f;
         activeAnchorFootPosition = player.FootPosition;
@@ -372,7 +376,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             return;
         }
 
-        countdownText.text = $"ANCHOR REC {remaining:0.0}s";
+        countdownText.text = "ANCHOR REC";
     }
 
     private void SetCountdownVisible(bool visible)
