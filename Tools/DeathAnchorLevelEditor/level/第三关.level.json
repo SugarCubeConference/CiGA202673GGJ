@@ -1,0 +1,310 @@
+{
+  "schema": "death-anchor-level-v1",
+  "title": "第三关",
+  "ruleNotes": "死亡锚点：倒计时内死亡会生成一个固定的实体循环分身。玩家贴墙时会慢速下滑。机关：钥匙开门；按钮按下时让桥变实，也让移动平台向按钮方向平移；松开时桥变虚，移动平台回原位。激光会被地形、实体桥、移动平台阻挡。",
+  "experience": "",
+  "rules": {
+    "recordWindowSec": 5,
+    "maxGhosts": 1,
+    "ghostSolid": true,
+    "ghostCanStandOnPlayer": true,
+    "ghostCanPressButtons": true,
+    "ghostIgnoresHazards": true,
+    "playerWallSlide": true,
+    "wallSlideMaxSpeed": 125
+  },
+  "world": {
+    "w": 1024,
+    "h": 576,
+    "grid": 32
+  },
+  "player": {
+    "w": 32,
+    "h": 32,
+    "physics": {
+      "editorUnits": "px",
+      "playerWidth": 32,
+      "playerHeight": 32,
+      "gravity": 1500,
+      "fallGravityMultiplier": 1.22,
+      "moveSpeed": 285,
+      "groundAcceleration": 99999,
+      "airAcceleration": 99999,
+      "groundFriction": 99999,
+      "jumpSpeed": 670,
+      "maxFallSpeed": 700,
+      "coyoteTimeMs": 95,
+      "jumpBufferMs": 130,
+      "jumpCutMultiplier": 0.52,
+      "instantHorizontalMovement": true,
+      "wallSlideMaxSpeed": 125
+    },
+    "abilities": {
+      "wallSlide": true,
+      "wallSlideMaxSpeed": 125
+    }
+  },
+  "spawn": {
+    "id": "spawn",
+    "type": "spawn",
+    "label": "出生点",
+    "x": 128,
+    "y": 480,
+    "w": 32,
+    "h": 32,
+    "rotation": 0,
+    "channel": "",
+    "links": [],
+    "tags": [
+      "start"
+    ],
+    "notes": ""
+  },
+  "goals": [
+    {
+      "id": "goal",
+      "type": "goal",
+      "label": "出口",
+      "x": 928,
+      "y": 256,
+      "w": 64,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "goal"
+      ],
+      "notes": ""
+    }
+  ],
+  "platforms": [
+    {
+      "id": "floor",
+      "type": "platform",
+      "label": "地面",
+      "x": 224,
+      "y": 320,
+      "w": 160,
+      "h": 256,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "ground"
+      ],
+      "notes": "按 32x32 地形块拼接。"
+    },
+    {
+      "id": "platform-1",
+      "type": "platform",
+      "label": "地形",
+      "x": 0,
+      "y": 0,
+      "w": 672,
+      "h": 192,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-2",
+      "type": "platform",
+      "label": "地形",
+      "x": 544,
+      "y": 320,
+      "w": 480,
+      "h": 256,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-3",
+      "type": "platform",
+      "label": "地形",
+      "x": 672,
+      "y": 0,
+      "w": 352,
+      "h": 256,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-4",
+      "type": "platform",
+      "label": "地形",
+      "x": 0,
+      "y": 192,
+      "w": 64,
+      "h": 384,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-5",
+      "type": "platform",
+      "label": "地形",
+      "x": 992,
+      "y": 256,
+      "w": 32,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-6",
+      "type": "platform",
+      "label": "地形",
+      "x": 64,
+      "y": 512,
+      "w": 160,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    }
+  ],
+  "movingPlatforms": [],
+  "spikes": [
+    {
+      "id": "spike-1",
+      "type": "spike",
+      "label": "尖刺",
+      "x": 384,
+      "y": 544,
+      "w": 160,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "spike"
+      ],
+      "notes": "",
+      "affects": "player"
+    },
+    {
+      "id": "spike-2",
+      "type": "spike",
+      "label": "尖刺",
+      "x": 64,
+      "y": 192,
+      "w": 32,
+      "h": 320,
+      "rotation": 90,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "spike"
+      ],
+      "notes": "",
+      "affects": "player"
+    },
+    {
+      "id": "spike-3",
+      "type": "spike",
+      "label": "尖刺",
+      "x": 192,
+      "y": 320,
+      "w": 32,
+      "h": 192,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "spike"
+      ],
+      "notes": "",
+      "affects": "player"
+    },
+    {
+      "id": "spike-4",
+      "type": "spike",
+      "label": "尖刺",
+      "x": 96,
+      "y": 192,
+      "w": 576,
+      "h": 32,
+      "rotation": 180,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "spike"
+      ],
+      "notes": "",
+      "affects": "player"
+    }
+  ],
+  "lasers": [],
+  "keys": [
+    {
+      "id": "key-1",
+      "type": "key",
+      "label": "钥匙",
+      "x": 448,
+      "y": 320,
+      "w": 32,
+      "h": 32,
+      "rotation": 0,
+      "channel": "B",
+      "links": [
+        "door-1"
+      ],
+      "tags": [
+        "key"
+      ],
+      "notes": ""
+    }
+  ],
+  "doors": [
+    {
+      "id": "door-1",
+      "type": "door",
+      "label": "门",
+      "x": 672,
+      "y": 256,
+      "w": 32,
+      "h": 64,
+      "rotation": 0,
+      "channel": "B",
+      "links": [],
+      "tags": [
+        "door"
+      ],
+      "notes": "",
+      "requiredKey": "key-1"
+    }
+  ],
+  "buttons": [],
+  "bridges": [],
+  "anchorZones": [],
+  "notes": []
+}

@@ -14,6 +14,7 @@ public sealed class DeathAnchorLevelData
     public DeathAnchorLevelObject[] platforms;
     public DeathAnchorLevelObject[] movingPlatforms;
     public DeathAnchorLevelObject[] spikes;
+    public DeathAnchorLevelObject[] lasers;
     public DeathAnchorLevelObject[] keys;
     public DeathAnchorLevelObject[] doors;
     public DeathAnchorLevelObject[] buttons;
@@ -80,9 +81,11 @@ public sealed class DeathAnchorLevelObject
     public string affects;
     public string defaultState;
     public string activeState;
+    public string motionMode;
     public float moveTargetX;
     public float moveTargetY;
     public float periodSec;
+    public string attachedTo;
 }
 
 [Serializable]
