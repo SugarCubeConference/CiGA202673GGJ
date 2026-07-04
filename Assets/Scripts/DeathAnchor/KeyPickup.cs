@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// 钥匙拾取物——玩家触碰后自动吸附在身上。
+/// GameManager 在玩家死亡时通过 ResetToHome 将钥匙放回原位。
+/// </summary>
 [RequireComponent(typeof(Collider2D))]
 public sealed class KeyPickup : MonoBehaviour
 {
@@ -11,7 +15,9 @@ public sealed class KeyPickup : MonoBehaviour
     private Vector3 homePosition;
     private Collider2D keyCollider;
 
+    /// <summary>钥匙 ID</summary>
     public string Id => keyId;
+    /// <summary>是否正被玩家携带</summary>
     public bool IsCarried => carrier != null;
 
     private void Awake()
@@ -26,6 +32,7 @@ public sealed class KeyPickup : MonoBehaviour
         }
     }
 
+    /// <summary>LateUpdate：如果被携带，跟随载体位置</summary>
     private void LateUpdate()
     {
         if (carrier != null)
@@ -34,11 +41,13 @@ public sealed class KeyPickup : MonoBehaviour
         }
     }
 
+    /// <summary>由 Baker 调用，设置钥匙 ID</summary>
     public void Configure(string id)
     {
         keyId = id;
     }
 
+    /// <summary>玩家死亡时 GameManager 调用，钥匙回到初始位置</summary>
     public void ResetToHome()
     {
         carrier = null;
@@ -46,12 +55,14 @@ public sealed class KeyPickup : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    /// <summary>消耗钥匙（暂未使用）</summary>
     public void Consume()
     {
         carrier = null;
         gameObject.SetActive(false);
     }
 
+    /// <summary>玩家触碰时吸附</summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
         ActorIdentity actor = other.GetComponent<ActorIdentity>();

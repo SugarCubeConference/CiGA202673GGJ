@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 终点触发器——玩家触碰时通知 GameManager 过关。
+/// </summary>
 [RequireComponent(typeof(Collider2D))]
 public sealed class DeathAnchorGoalTrigger : MonoBehaviour
 {
