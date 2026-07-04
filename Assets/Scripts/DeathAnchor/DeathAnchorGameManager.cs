@@ -202,6 +202,8 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         SampleRecording();
         SetCountdownVisible(true);
         UpdateCountdownText();
+        hasRespawnFootPosition = true;
+        respawnFootPosition = activeAnchorFootPosition;
     }
 
     private void CancelRecording()
