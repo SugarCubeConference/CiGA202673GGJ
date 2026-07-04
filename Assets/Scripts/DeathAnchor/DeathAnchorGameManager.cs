@@ -82,6 +82,11 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
+        if (ghost != null && ghost.gameObject.activeSelf && player != null)
+        {
+            MovePlayerAboveGhostIfMostlyOverlapping(player, ghost, 0.8f);
+        }
+
         if (!isRecording)
         {
             return;
@@ -141,6 +146,16 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         player.SpawnAtFootPosition(targetFoot);
     }
 
+    public void KillPlayer(Vector3 hazardPosition)
+    {
+        KillPlayer();
+    }
+
+    public void ReachGoal()
+    {
+        OnGoalReached();
+    }
+
     public bool PlayerHasKey(string keyId)
     {
         for (int i = 0; i < keys.Count; i++)
@@ -197,6 +212,8 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         SampleRecording();
         SetCountdownVisible(true);
         UpdateCountdownText();
+        hasRespawnFootPosition = true;
+        respawnFootPosition = activeAnchorFootPosition;
     }
 
     private void CancelRecording()
@@ -261,6 +278,42 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         }
 
         SetCountdownVisible(false);
+    }
+
+    private bool MovePlayerAboveGhostIfMostlyOverlapping(DeathAnchorPlayerController player, GhostReplayController ghost, float threshold)
+    {
+        Collider2D playerCollider = player.GetComponent<Collider2D>();
+        Collider2D ghostCollider = ghost.GetComponent<Collider2D>();
+        if (playerCollider == null || ghostCollider == null)
+        {
+            return false;
+        }
+
+        Bounds playerBounds = playerCollider.bounds;
+        Bounds ghostBounds = ghostCollider.bounds;
+
+        float intersectMinX = Mathf.Max(playerBounds.min.x, ghostBounds.min.x);
+        float intersectMaxX = Mathf.Min(playerBounds.max.x, ghostBounds.max.x);
+        float intersectMinY = Mathf.Max(playerBounds.min.y, ghostBounds.min.y);
+        float intersectMaxY = Mathf.Min(playerBounds.max.y, ghostBounds.max.y);
+        if (intersectMinX >= intersectMaxX || intersectMinY >= intersectMaxY)
+        {
+            return false;
+        }
+
+        float intersectArea = (intersectMaxX - intersectMinX) * (intersectMaxY - intersectMinY);
+        float playerArea = playerBounds.size.x * playerBounds.size.y;
+        float ghostArea = ghostBounds.size.x * ghostBounds.size.y;
+        float minArea = Mathf.Min(playerArea, ghostArea);
+        if (minArea <= 0f || intersectArea / minArea < threshold)
+        {
+            return false;
+        }
+
+        Vector2 footPosition = player.FootPosition;
+        footPosition.y = ghostBounds.max.y + 0.01f;
+        player.SpawnAtFootPosition(footPosition);
+        return true;
     }
 
     private void ResetCarriedKeys()
