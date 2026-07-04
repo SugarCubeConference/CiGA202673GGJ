@@ -25,6 +25,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
     private float lastSampleAt;
     private Vector2 activeAnchorFootPosition;
     private Vector2 respawnFootPosition;
+    private bool hasRespawnFootPosition;
 
     public Vector2 ActiveAnchorFootPosition => activeAnchorFootPosition;
     public bool IsRecording => isRecording;
@@ -49,6 +50,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         if (spawnPoint != null)
         {
             respawnFootPosition = spawnPoint.position;
+            hasRespawnFootPosition = true;
             if (player != null)
             {
                 player.SpawnAtFootPosition(respawnFootPosition);
@@ -124,7 +126,6 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         {
             SampleRecording();
             SpawnGhostFromRecording();
-            respawnFootPosition = activeAnchorFootPosition;
         }
         else if (isRecording)
         {
@@ -133,7 +134,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
 
         ResetCarriedKeys();
 
-        Vector2 targetFoot = savedGhost || respawnFootPosition != Vector2.zero
+        Vector2 targetFoot = hasRespawnFootPosition
             ? respawnFootPosition
             : (spawnPoint != null ? (Vector2)spawnPoint.position : player.FootPosition);
 
@@ -233,7 +234,6 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             SpawnGhostFromRecording();
             if (respawnPlayer)
             {
-                respawnFootPosition = activeAnchorFootPosition;
                 player.SpawnAtFootPosition(respawnFootPosition);
             }
         }

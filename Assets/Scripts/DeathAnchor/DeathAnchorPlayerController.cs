@@ -185,11 +185,6 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
                 continue;
             }
 
-            if (IsGhostCollider(castHits[i].collider))
-            {
-                continue;
-            }
-
             if (castHits[i].normal.y > 0.45f)
             {
                 grounded = true;
@@ -218,7 +213,11 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
             return;
         }
 
-        // Ghosts are intentionally not carriers for the player.
+        GhostReplayController ghost = groundCollider.GetComponent<GhostReplayController>();
+        if (ghost != null)
+        {
+            rb.position += ghost.LastDelta;
+        }
     }
 
     private bool IsTouchingWall(float direction)
@@ -258,7 +257,7 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
                 continue;
             }
 
-            if (IsGhostCollider(castHits[i].collider))
+            if (IsGhostCollider(castHits[i].collider) && !ShouldCollideWithGhost(castDirection, castHits[i]))
             {
                 continue;
             }
@@ -282,5 +281,10 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
 
         return candidate.GetComponent<GhostReplayController>() != null
             || candidate.GetComponentInParent<GhostReplayController>() != null;
+    }
+
+    private bool ShouldCollideWithGhost(Vector2 direction, RaycastHit2D hit)
+    {
+        return direction.y < 0f && hit.normal.y > 0.45f;
     }
 }
