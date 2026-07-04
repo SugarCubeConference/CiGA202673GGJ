@@ -231,9 +231,9 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         if (recordingFrames.Count >= 2)
         {
             SpawnGhostFromRecording();
+            respawnFootPosition = activeAnchorFootPosition;
             if (respawnPlayer)
             {
-                respawnFootPosition = activeAnchorFootPosition;
                 player.SpawnAtFootPosition(respawnFootPosition);
             }
         }

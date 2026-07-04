@@ -569,7 +569,8 @@ PlayerSettings:
   webGLMemoryGeometricGrowthStep: 0.2
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Standalone: GLADE_UGUI
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -675,7 +676,7 @@ PlayerSettings:
   hmiLogStartupTiming: 0
   hmiCpuConfiguration: 
   apiCompatibilityLevel: 6
-  activeInputHandler: 0
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: 972cc1a4-29c4-462f-9487-b122670b2707
   framebufferDepthMemorylessMode: 0
