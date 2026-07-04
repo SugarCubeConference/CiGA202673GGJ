@@ -216,8 +216,9 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
     {
         lastSampleAt = Time.time;
         float elapsed = Time.time - recordingStartedAt;
-        Vector2 offset = player.FootPosition - activeAnchorFootPosition;
-        recordingFrames.Add(new DeathAnchorReplayFrame(elapsed, offset, player.Facing));
+        float input = Input.GetAxisRaw("Horizontal");
+        bool jump = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow);
+        recordingFrames.Add(new DeathAnchorReplayFrame(elapsed, input, jump, player.Facing));
     }
 
     private void FinishRecording(bool respawnPlayer)
@@ -232,6 +233,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         if (recordingFrames.Count >= 2)
         {
             SpawnGhostFromRecording();
+            respawnFootPosition = activeAnchorFootPosition;
             if (respawnPlayer)
             {
                 player.SpawnAtFootPosition(respawnFootPosition);

@@ -128,7 +128,7 @@ public static class DeathAnchorLevelBaker
 
         GameObject ghost = CreateActor("Ghost", actorRoot, squareSprite, GhostColor, ghostLayer, level, true);
         GhostReplayController ghostReplay = ghost.AddComponent<GhostReplayController>();
-        ghostReplay.Configure(PlayerWidth(level), PlayerHeight(level), Mask("Player"));
+        ghostReplay.Configure(PlayerWidth(level), PlayerHeight(level), Mask("Ground"), Mask("Player"));
         ghost.SetActive(false);
 
         GameObject anchorMarker = CreateBlock("AnchorMarker", root.transform, spawnPoint.position, new Vector2(0.35f, 0.08f), squareSprite, new Color(0.75f, 0.55f, 1f, 0.9f), interactableLayer);
