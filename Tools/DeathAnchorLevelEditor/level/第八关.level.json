@@ -48,8 +48,8 @@
     "id": "spawn",
     "type": "spawn",
     "label": "出生点",
-    "x": 480,
-    "y": 480,
+    "x": 64,
+    "y": 512,
     "w": 32,
     "h": 32,
     "rotation": 0,
@@ -62,11 +62,11 @@
   },
   "goals": [
     {
-      "id": "goal-1",
+      "id": "goal",
       "type": "goal",
       "label": "出口",
       "x": 928,
-      "y": 320,
+      "y": 192,
       "w": 64,
       "h": 64,
       "rotation": 0,
@@ -83,10 +83,10 @@
       "id": "floor",
       "type": "platform",
       "label": "地面",
-      "x": 0,
-      "y": 512,
-      "w": 1024,
-      "h": 64,
+      "x": 160,
+      "y": 256,
+      "w": 128,
+      "h": 320,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -99,10 +99,10 @@
       "id": "platform-1",
       "type": "platform",
       "label": "地形",
-      "x": 0,
-      "y": 96,
-      "w": 64,
-      "h": 416,
+      "x": 640,
+      "y": 256,
+      "w": 384,
+      "h": 320,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -117,56 +117,8 @@
       "label": "地形",
       "x": 0,
       "y": 0,
-      "w": 1024,
-      "h": 96,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "platform"
-      ],
-      "notes": ""
-    },
-    {
-      "id": "platform-4",
-      "type": "platform",
-      "label": "地形",
-      "x": 576,
-      "y": 448,
-      "w": 448,
-      "h": 64,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "platform"
-      ],
-      "notes": ""
-    },
-    {
-      "id": "platform-5",
-      "type": "platform",
-      "label": "地形",
-      "x": 832,
-      "y": 384,
-      "w": 192,
-      "h": 64,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "platform"
-      ],
-      "notes": ""
-    },
-    {
-      "id": "platform-6",
-      "type": "platform",
-      "label": "地形",
-      "x": 288,
-      "y": 448,
       "w": 32,
-      "h": 64,
+      "h": 576,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -179,10 +131,58 @@
       "id": "platform-3",
       "type": "platform",
       "label": "地形",
+      "x": 32,
+      "y": 0,
+      "w": 992,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-4",
+      "type": "platform",
+      "label": "地形",
       "x": 992,
-      "y": 128,
+      "y": 64,
       "w": 32,
-      "h": 256,
+      "h": 192,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-5",
+      "type": "platform",
+      "label": "地形",
+      "x": 416,
+      "y": 160,
+      "w": 96,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-6",
+      "type": "platform",
+      "label": "地形",
+      "x": 672,
+      "y": 64,
+      "w": 320,
+      "h": 128,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -195,10 +195,10 @@
       "id": "platform-7",
       "type": "platform",
       "label": "地形",
-      "x": 832,
-      "y": 128,
-      "w": 160,
-      "h": 192,
+      "x": 32,
+      "y": 544,
+      "w": 128,
+      "h": 32,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -211,74 +211,10 @@
       "id": "platform-8",
       "type": "platform",
       "label": "地形",
-      "x": 64,
-      "y": 416,
-      "w": 192,
-      "h": 96,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "platform"
-      ],
-      "notes": ""
-    },
-    {
-      "id": "platform-9",
-      "type": "platform",
-      "label": "地形",
-      "x": 448,
-      "y": 352,
-      "w": 128,
-      "h": 32,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "platform"
-      ],
-      "notes": ""
-    },
-    {
-      "id": "platform-10",
-      "type": "platform",
-      "label": "地形",
-      "x": 320,
-      "y": 256,
-      "w": 128,
-      "h": 32,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "platform"
-      ],
-      "notes": ""
-    },
-    {
-      "id": "platform-11",
-      "type": "platform",
-      "label": "地形",
-      "x": 64,
-      "y": 192,
-      "w": 224,
-      "h": 64,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "platform"
-      ],
-      "notes": ""
-    },
-    {
-      "id": "platform-12",
-      "type": "platform",
-      "label": "地形",
-      "x": 64,
-      "y": 96,
+      "x": 32,
+      "y": 384,
       "w": 64,
-      "h": 96,
+      "h": 32,
       "rotation": 0,
       "channel": "",
       "links": [],
@@ -292,13 +228,13 @@
     {
       "id": "movingPlatform-1",
       "type": "movingPlatform",
-      "label": "移动平台",
-      "x": 256,
-      "y": 416,
-      "w": 32,
-      "h": 96,
-      "rotation": 90,
-      "channel": "D",
+      "label": "按钮平台",
+      "x": 544,
+      "y": 256,
+      "w": 96,
+      "h": 32,
+      "rotation": 0,
+      "channel": "A",
       "links": [],
       "tags": [
         "movingPlatform"
@@ -306,9 +242,9 @@
       "notes": "",
       "requiredButton": "button-1",
       "motionMode": "button",
-      "moveTargetX": 256,
+      "moveTargetX": 288,
       "moveTargetY": 256,
-      "periodSec": 1.8
+      "periodSec": 2
     }
   ],
   "spikes": [
@@ -317,10 +253,10 @@
       "type": "spike",
       "label": "尖刺",
       "x": 128,
-      "y": 96,
+      "y": 512,
       "w": 32,
-      "h": 96,
-      "rotation": 90,
+      "h": 32,
+      "rotation": 0,
       "channel": "",
       "links": [],
       "tags": [
@@ -332,32 +268,14 @@
   ],
   "lasers": [
     {
-      "id": "laser-2",
-      "type": "laser",
-      "label": "激光发射器",
-      "x": 64,
-      "y": 288,
-      "w": 800,
-      "h": 32,
-      "rotation": 0,
-      "channel": "",
-      "links": [],
-      "tags": [
-        "laser"
-      ],
-      "notes": "",
-      "affects": "player",
-      "attachedTo": ""
-    },
-    {
       "id": "laser-3",
       "type": "laser",
       "label": "激光发射器",
-      "x": 64,
-      "y": 384,
-      "w": 800,
-      "h": 32,
-      "rotation": 0,
+      "x": 288,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
       "channel": "",
       "links": [],
       "tags": [
@@ -371,11 +289,11 @@
       "id": "laser-4",
       "type": "laser",
       "label": "激光发射器",
-      "x": 64,
-      "y": 320,
-      "w": 800,
-      "h": 32,
-      "rotation": 0,
+      "x": 320,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
       "channel": "",
       "links": [],
       "tags": [
@@ -389,11 +307,11 @@
       "id": "laser-5",
       "type": "laser",
       "label": "激光发射器",
-      "x": 64,
-      "y": 352,
-      "w": 768,
-      "h": 32,
-      "rotation": 0,
+      "x": 352,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
       "channel": "",
       "links": [],
       "tags": [
@@ -407,11 +325,137 @@
       "id": "laser-6",
       "type": "laser",
       "label": "激光发射器",
-      "x": 64,
-      "y": 256,
-      "w": 768,
-      "h": 32,
-      "rotation": 0,
+      "x": 384,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-7",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 416,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-8",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 608,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-9",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 544,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-10",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 480,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-11",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 512,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-1",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 576,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player",
+      "attachedTo": ""
+    },
+    {
+      "id": "laser-2",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 448,
+      "y": 0,
+      "w": 32,
+      "h": 576,
+      "rotation": 270,
       "channel": "",
       "links": [],
       "tags": [
@@ -427,13 +471,15 @@
       "id": "key-1",
       "type": "key",
       "label": "钥匙",
-      "x": 224,
-      "y": 160,
+      "x": 448,
+      "y": 128,
       "w": 32,
       "h": 32,
       "rotation": 0,
-      "channel": "C",
-      "links": [],
+      "channel": "B",
+      "links": [
+        "door-1"
+      ],
       "tags": [
         "key"
       ],
@@ -445,51 +491,31 @@
       "id": "door-1",
       "type": "door",
       "label": "门",
-      "x": 832,
-      "y": 320,
+      "x": 672,
+      "y": 192,
       "w": 32,
       "h": 64,
       "rotation": 0,
-      "channel": "A",
+      "channel": "B",
       "links": [],
       "tags": [
         "door"
       ],
       "notes": "",
-      "requiredKey": ""
+      "requiredKey": "key-1"
     }
   ],
   "buttons": [
     {
-      "id": "button-2",
-      "type": "button",
-      "label": "按钮",
-      "x": 320,
-      "y": 480,
-      "w": 32,
-      "h": 32,
-      "rotation": 0,
-      "channel": "B",
-      "links": [
-        "movingPlatform-1"
-      ],
-      "tags": [
-        "button"
-      ],
-      "notes": "",
-      "mode": "hold",
-      "pressedBy": "both"
-    },
-    {
       "id": "button-1",
       "type": "button",
       "label": "按钮",
-      "x": 256,
-      "y": 160,
+      "x": 224,
+      "y": 224,
       "w": 32,
       "h": 32,
       "rotation": 0,
-      "channel": "D",
+      "channel": "A",
       "links": [
         "movingPlatform-1"
       ],
