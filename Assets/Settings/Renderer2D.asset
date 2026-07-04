@@ -15,15 +15,15 @@ MonoBehaviour:
   m_Active: 1
   settings:
     cameraTag: MainCamera
-    scanlineIntensity: 0.15
+    scanlineIntensity: 0.06
     scanlineCount: 480
-    curvature: 0.03
+    curvature: -0.79
     chromaticAberration: 1.5
-    vignetteIntensity: 0.8
-    vignetteSmoothness: 2
-    brightness: 1.1
+    vignetteIntensity: 0.92
+    vignetteSmoothness: 2.74
+    brightness: 1.96
     contrast: 1.2
-    rgbPixelSize: 3
+    rgbPixelSize: 2.39
     renderPassEvent: 600
 --- !u!114 &11400000
 MonoBehaviour:
