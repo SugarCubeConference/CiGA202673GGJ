@@ -1,6 +1,6 @@
 {
   "schema": "death-anchor-level-v1",
-  "title": "第二关（伪二段跳教学）",
+  "title": "第二关",
   "ruleNotes": "死亡锚点：倒计时内死亡会生成一个固定的实体循环分身。玩家贴墙时会慢速下滑。机关：钥匙开门；按钮按下时让桥变实，也让移动平台向按钮方向平移；松开时桥变虚，移动平台回原位。激光会被地形、实体桥、移动平台阻挡。",
   "experience": "",
   "rules": {
@@ -200,7 +200,7 @@
       "label": "尖刺",
       "x": 192,
       "y": 480,
-      "w": 32,
+      "w": 64,
       "h": 32,
       "rotation": 0,
       "channel": "",
@@ -220,6 +220,23 @@
       "w": 32,
       "h": 32,
       "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "spike"
+      ],
+      "notes": "",
+      "affects": "player"
+    },
+    {
+      "id": "spike-3",
+      "type": "spike",
+      "label": "尖刺",
+      "x": 864,
+      "y": 320,
+      "w": 32,
+      "h": 128,
+      "rotation": 90,
       "channel": "",
       "links": [],
       "tags": [
