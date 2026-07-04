@@ -34,7 +34,6 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     private int facing = 1;
     private bool grounded;
     private Collider2D groundCollider;
-    private float nextDebugTime;
 
     public Vector2 FootPosition
     {
@@ -46,22 +45,6 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     }
     public int Facing => facing;
     public bool Grounded => grounded;
-
-    private void Start()
-    {
-        // Fallback: existing baked scenes may have solidMask = 0 (pre-merge scenes).
-        // Auto-detect Ground layer and rebuild filter so the player collides with the world.
-        if (solidMask == 0)
-        {
-            solidMask = LayerMask.GetMask("Ground");
-            solidFilter = new ContactFilter2D
-            {
-                useLayerMask = true,
-                useTriggers = false,
-                layerMask = solidMask
-            };
-        }
-    }
 
     private void Awake()
     {
@@ -77,10 +60,8 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
         {
             useLayerMask = true,
             useTriggers = false,
-            layerMask = LayerMask.GetMask("Ground", "Ghost")
+            layerMask = solidMask
         };
-
-        Debug.Log($"[PlayerController] solidFilter.layerMask={solidFilter.layerMask.value}, box.size={box.size}, rb.position={rb.position}");
     }
 
     private void Update()
@@ -135,12 +116,6 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
 
         Move(Vector2.right, horizontalInput * moveSpeed * dt);
         Move(Vector2.up, verticalSpeed * dt);
-
-        if (Time.time >= nextDebugTime)
-        {
-            nextDebugTime = Time.time + 1f;
-            Debug.Log($"[PlayerController] input={horizontalInput:F2} vSpeed={verticalSpeed:F2} grounded={grounded} pos=({rb.position.x:F3},{rb.position.y:F3}) box.size=({box.size.x},{box.size.y})");
-        }
     }
 
     public void Configure(float playerWidthUnits, float playerHeightUnits, LayerMask solidMask, bool wallSlideEnabled, float wallSlideMaxSpeedUnits)
@@ -274,7 +249,6 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
         Vector2 castDirection = direction * sign;
         int count = box.Cast(castDirection, solidFilter, castHits, magnitude + skinWidth);
         float allowedDistance = magnitude;
-        bool isHorizontal = Mathf.Abs(direction.x) > 0.5f;
 
         for (int i = 0; i < count; i++)
         {
@@ -287,16 +261,6 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
             {
                 continue;
             }
-
-            if (IsInitialOverlap(castHits[i]))
-            {
-                continue;
-            }
-
-            // Skip ground (vertical normals) when moving horizontally,
-            // and skip walls (horizontal normals) when moving vertically
-            if (isHorizontal && Mathf.Abs(castHits[i].normal.y) > 0.7f) continue;
-            if (!isHorizontal && Mathf.Abs(castHits[i].normal.x) > 0.7f) continue;
 
             allowedDistance = Mathf.Min(allowedDistance, Mathf.Max(0f, castHits[i].distance - skinWidth));
         }
@@ -319,10 +283,8 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
             || candidate.GetComponentInParent<GhostReplayController>() != null;
     }
 
-    private bool IsInitialOverlap(RaycastHit2D hit)
+    private bool ShouldCollideWithGhost(Vector2 direction, RaycastHit2D hit)
     {
-        if (hit.collider == null) return false;
-        ColliderDistance2D d = Physics2D.Distance(box, hit.collider);
-        return d.isOverlapped;
+        return direction.y < 0f && hit.normal.y > 0.45f;
     }
 }

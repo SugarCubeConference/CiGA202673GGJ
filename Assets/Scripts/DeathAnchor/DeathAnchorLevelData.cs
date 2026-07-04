@@ -89,15 +89,13 @@ public sealed class DeathAnchorLevelObject
 public struct DeathAnchorReplayFrame
 {
     public float time;
-    public float horizontalInput;
-    public bool jumpPressed;
+    public Vector2 footOffset;
     public int facing;
 
-    public DeathAnchorReplayFrame(float time, float horizontalInput, bool jumpPressed, int facing)
+    public DeathAnchorReplayFrame(float time, Vector2 footOffset, int facing)
     {
         this.time = time;
-        this.horizontalInput = horizontalInput;
-        this.jumpPressed = jumpPressed;
+        this.footOffset = footOffset;
         this.facing = facing;
     }
 }
