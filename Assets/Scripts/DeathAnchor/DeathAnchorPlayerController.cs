@@ -46,6 +46,22 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     public int Facing => facing;
     public bool Grounded => grounded;
 
+    private void Start()
+    {
+        // Fallback: existing baked scenes may have solidMask = 0 (pre-merge scenes).
+        // Auto-detect Ground layer and rebuild filter so the player collides with the world.
+        if (solidMask == 0)
+        {
+            solidMask = LayerMask.GetMask("Ground");
+            solidFilter = new ContactFilter2D
+            {
+                useLayerMask = true,
+                useTriggers = false,
+                layerMask = solidMask
+            };
+        }
+    }
+
     private void Awake()
     {
         EnsureCachedComponents();
