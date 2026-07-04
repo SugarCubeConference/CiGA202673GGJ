@@ -13,7 +13,11 @@ public sealed class GhostReplayController : MonoBehaviour
     [SerializeField] private float fallGravityMultiplier = 1.22f;
     [SerializeField] private float maxFallSpeed = 9.2f;
 
+<<<<<<< Updated upstream
     [Header("Reverse Gravity（1 = 正常方向，-1 = 反转）")]
+=======
+    [Header("Reverse Gravity (1 = normal, -1 = reverse)")]
+>>>>>>> Stashed changes
     [SerializeField] private float gravityDirection = 1f;
 
     [Header("Collision")]
@@ -43,6 +47,7 @@ public sealed class GhostReplayController : MonoBehaviour
     public Vector2 LastDelta { get; private set; }
     public bool LoopedThisFrame { get; private set; }
     public float GravityDirection => gravityDirection;
+<<<<<<< Updated upstream
 
     private void Start()
     {
@@ -59,6 +64,8 @@ public sealed class GhostReplayController : MonoBehaviour
             };
         }
     }
+=======
+>>>>>>> Stashed changes
 
     private void Awake()
     {
@@ -73,7 +80,11 @@ public sealed class GhostReplayController : MonoBehaviour
         {
             useLayerMask = true,
             useTriggers = false,
+<<<<<<< Updated upstream
             layerMask = solidMask
+=======
+            layerMask = LayerMask.GetMask("Ground")
+>>>>>>> Stashed changes
         };
     }
 
@@ -93,7 +104,10 @@ public sealed class GhostReplayController : MonoBehaviour
 
         if (LoopedThisFrame)
         {
+<<<<<<< Updated upstream
             // Reset to anchor position on loop so ghost starts fresh each cycle
+=======
+>>>>>>> Stashed changes
             Vector2 footPos = gravityDirection > 0f
                 ? anchorFootPosition
                 : anchorFootPosition + Vector2.up * playerHeight;
@@ -108,7 +122,10 @@ public sealed class GhostReplayController : MonoBehaviour
 
         ProbeGround();
 
+<<<<<<< Updated upstream
         // Jump
+=======
+>>>>>>> Stashed changes
         if (frame.jumpPressed && grounded)
         {
             verticalSpeed = jumpSpeed * gravityDirection;
@@ -116,6 +133,7 @@ public sealed class GhostReplayController : MonoBehaviour
             groundCollider = null;
         }
 
+<<<<<<< Updated upstream
         // Gravity
         if (!grounded)
         {
@@ -123,6 +141,14 @@ public sealed class GhostReplayController : MonoBehaviour
                 ? gravity * fallGravityMultiplier
                 : gravity;
             verticalSpeed -= gravityDirection * gravityThisFrame * dt;
+=======
+        if (!grounded)
+        {
+            float gf = verticalSpeed * gravityDirection < 0f
+                ? gravity * fallGravityMultiplier
+                : gravity;
+            verticalSpeed -= gravityDirection * gf * dt;
+>>>>>>> Stashed changes
             verticalSpeed = Mathf.Clamp(verticalSpeed, -maxFallSpeed, maxFallSpeed);
         }
         else if (verticalSpeed * gravityDirection < 0f)
@@ -130,10 +156,14 @@ public sealed class GhostReplayController : MonoBehaviour
             verticalSpeed = 0f;
         }
 
+<<<<<<< Updated upstream
         // Horizontal movement
         Move(Vector2.right, input * moveSpeed * dt);
 
         // Vertical movement — verticalSpeed already encodes direction via gravityDirection
+=======
+        Move(Vector2.right, input * moveSpeed * dt);
+>>>>>>> Stashed changes
         Move(Vector2.up, verticalSpeed * dt);
 
         PlaceOnPlayerIfNeeded();
@@ -141,11 +171,7 @@ public sealed class GhostReplayController : MonoBehaviour
 
     public void Configure(float width, float height, LayerMask solidMask, LayerMask playerMask)
     {
-        if (box == null)
-        {
-            box = GetComponent<BoxCollider2D>();
-        }
-
+        if (box == null) box = GetComponent<BoxCollider2D>();
         box.size = new Vector2(width, height);
         box.offset = Vector2.zero;
         playerHeight = height;
@@ -173,7 +199,10 @@ public sealed class GhostReplayController : MonoBehaviour
         groundCollider = null;
         gameObject.SetActive(true);
 
+<<<<<<< Updated upstream
         // Place ghost at anchor position
+=======
+>>>>>>> Stashed changes
         Vector2 footPos = gravityDirection > 0f
             ? anchorFootPosition
             : anchorFootPosition + Vector2.up * playerHeight;
@@ -182,9 +211,12 @@ public sealed class GhostReplayController : MonoBehaviour
         LastDelta = Vector2.zero;
     }
 
+<<<<<<< Updated upstream
     /// <summary>
     /// Set gravity direction. +1 = normal (down), -1 = reverse (up).
     /// </summary>
+=======
+>>>>>>> Stashed changes
     public void SetGravityDirection(float direction)
     {
         gravityDirection = Mathf.Sign(direction);
@@ -194,12 +226,11 @@ public sealed class GhostReplayController : MonoBehaviour
     private DeathAnchorReplayFrame Sample(float time)
     {
         if (frames.Count == 1 || time <= frames[0].time)
-        {
             return frames[0];
-        }
 
         for (int i = 1; i < frames.Count; i++)
         {
+<<<<<<< Updated upstream
             if (time > frames[i].time)
             {
                 continue;
@@ -211,6 +242,11 @@ public sealed class GhostReplayController : MonoBehaviour
             DeathAnchorReplayFrame next = frames[i];
             float t = Mathf.InverseLerp(previous.time, next.time, time);
             return t < 0.5f ? previous : next;
+=======
+            if (time > frames[i].time) continue;
+            float t = Mathf.InverseLerp(frames[i - 1].time, frames[i].time, time);
+            return t < 0.5f ? frames[i - 1] : frames[i];
+>>>>>>> Stashed changes
         }
 
         return frames[frames.Count - 1];
@@ -218,14 +254,20 @@ public sealed class GhostReplayController : MonoBehaviour
 
     private void ProbeGround()
     {
+<<<<<<< Updated upstream
         Vector2 castDirection = gravityDirection > 0f ? Vector2.down : Vector2.up;
         int count = box.Cast(castDirection, solidFilter, castHits, skinWidth + 0.04f);
+=======
+        Vector2 cd = gravityDirection > 0f ? Vector2.down : Vector2.up;
+        int count = box.Cast(cd, solidFilter, castHits, skinWidth + 0.04f);
+>>>>>>> Stashed changes
         grounded = false;
         groundCollider = null;
 
         for (int i = 0; i < count; i++)
         {
             if (castHits[i].collider == null || castHits[i].collider.isTrigger)
+<<<<<<< Updated upstream
             {
                 continue;
             }
@@ -239,6 +281,16 @@ public sealed class GhostReplayController : MonoBehaviour
                 {
                     verticalSpeed = 0f;
                 }
+=======
+                continue;
+
+            float en = gravityDirection > 0f ? 1f : -1f;
+            if (castHits[i].normal.y * en > 0.45f)
+            {
+                grounded = true;
+                groundCollider = castHits[i].collider;
+                if (verticalSpeed * gravityDirection < 0f) verticalSpeed = 0f;
+>>>>>>> Stashed changes
                 return;
             }
         }
@@ -246,6 +298,7 @@ public sealed class GhostReplayController : MonoBehaviour
 
     private void Move(Vector2 direction, float distance)
     {
+<<<<<<< Updated upstream
         if (Mathf.Abs(distance) <= 0.0001f)
         {
             return;
@@ -279,10 +332,34 @@ public sealed class GhostReplayController : MonoBehaviour
         {
             verticalSpeed = 0f;
         }
+=======
+        if (Mathf.Abs(distance) <= 0.0001f) return;
+
+        float sign = Mathf.Sign(distance);
+        float mag = Mathf.Abs(distance);
+        Vector2 cd = direction * sign;
+        int count = box.Cast(cd, solidFilter, castHits, mag + skinWidth);
+        float allowed = mag;
+        bool isHorizontal = Mathf.Abs(direction.x) > 0.5f;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (castHits[i].collider == null || castHits[i].collider.isTrigger) continue;
+            if (IsInitialOverlap(castHits[i])) continue;
+            // Skip ground when moving horizontally, skip walls when moving vertically
+            if (isHorizontal && Mathf.Abs(castHits[i].normal.y) > 0.7f) continue;
+            if (!isHorizontal && Mathf.Abs(castHits[i].normal.x) > 0.7f) continue;
+            allowed = Mathf.Min(allowed, Mathf.Max(0f, castHits[i].distance - skinWidth));
+        }
+
+        rb.position += cd * allowed;
+        if (allowed < mag && direction.y != 0f) verticalSpeed = 0f;
+>>>>>>> Stashed changes
     }
 
     private bool IsInitialOverlap(RaycastHit2D hit)
     {
+<<<<<<< Updated upstream
         if (hit.collider == null)
         {
             return false;
@@ -290,21 +367,23 @@ public sealed class GhostReplayController : MonoBehaviour
 
         ColliderDistance2D distance = Physics2D.Distance(box, hit.collider);
         return distance.isOverlapped;
+=======
+        if (hit.collider == null) return false;
+        ColliderDistance2D d = Physics2D.Distance(box, hit.collider);
+        return d.isOverlapped;
+>>>>>>> Stashed changes
     }
 
     private void PlaceOnPlayerIfNeeded()
     {
         Collider2D overlap = Physics2D.OverlapBox(rb.position, box.size, 0f, playerMask);
-        if (overlap == null)
-        {
-            return;
-        }
+        if (overlap == null) return;
 
-        Bounds playerBounds = overlap.bounds;
-        Bounds ghostBounds = box.bounds;
-        if (LastDelta.y <= 0f && ghostBounds.min.y >= playerBounds.center.y)
+        Bounds pb = overlap.bounds;
+        Bounds gb = box.bounds;
+        if (LastDelta.y <= 0f && gb.min.y >= pb.center.y)
         {
-            rb.position = new Vector2(rb.position.x, playerBounds.max.y + box.size.y * 0.5f);
+            rb.position = new Vector2(rb.position.x, pb.max.y + box.size.y * 0.5f);
             LastDelta = Vector2.zero;
         }
     }
