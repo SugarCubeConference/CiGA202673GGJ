@@ -1950,9 +1950,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2.85
   jumpSpeed: 6.7
-  gravity: 20.5
+  gravity: 15
   fallGravityMultiplier: 1.22
-  maxFallSpeed: 9.2
+  maxFallSpeed: 7
   coyoteTime: 0.095
   jumpBufferTime: 0.13
   jumpCutMultiplier: 0.52
