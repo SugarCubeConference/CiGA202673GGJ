@@ -126,7 +126,7 @@ public static void BakeLevel(string jsonPath, string scenePath)
         BakeMovingPlatforms(level.movingPlatforms, environmentRoot, squareSprite, groundLayer, movingPlatformsById);
         BakeBridges(level.bridges, environmentRoot, squareSprite, groundLayer, bridgesById);
         BakeSpikes(level.spikes, environmentRoot, squareSprite, hazardLayer);
-        BakeLasers(level.lasers, environmentRoot, interactableLayer, Mask("Ground"));
+        BakeLasers(level.lasers, environmentRoot, interactableLayer, Mask("Ground"), movingPlatformsById);
         BakeAnchorZones(level.anchorZones, environmentRoot, squareSprite, interactableLayer);
 
         Transform spawnPoint = new GameObject("SpawnPoint").transform;
@@ -146,6 +146,7 @@ public static void BakeLevel(string jsonPath, string scenePath)
             Mask("Ground", "Ghost"),
             level.rules == null || level.rules.playerWallSlide,
             WallSlideUnits(level));
+        ApplyPlayerPhysics(level, playerController);
         player.AddComponent<AkGameObj>();
         player.AddComponent<PlayerWwiseAudio>();
         player.AddComponent<PlayerDustParticles>();
@@ -166,7 +167,7 @@ public static void BakeLevel(string jsonPath, string scenePath)
 
         BakeKeys(level.keys, interactableRoot, squareSprite, interactableLayer);
         BakeDoors(level.doors, interactableRoot, squareSprite, groundLayer);
-        BakeButtons(level.buttons, interactableRoot, squareSprite, interactableLayer, bridgesById, movingPlatformsById);
+        BakeButtons(level.buttons, level.bridges, level.movingPlatforms, interactableRoot, squareSprite, interactableLayer, bridgesById, movingPlatformsById);
         BakeGoals(level.goals, interactableRoot, squareSprite, interactableLayer);
         BakeNotes(level.notes, interactableRoot);
 
@@ -284,7 +285,7 @@ private static void BakeSpikes(DeathAnchorLevelObject[] objects, Transform paren
     }
 
         /// <summary>烘焙激光</summary>
-private static void BakeLasers(DeathAnchorLevelObject[] objects, Transform parent, int layer, LayerMask blockMask)
+private static void BakeLasers(DeathAnchorLevelObject[] objects, Transform parent, int layer, LayerMask blockMask, Dictionary<string, MovingPlatform2D> movingPlatformsById)
     {
         if (objects == null)
         {
@@ -295,8 +296,16 @@ private static void BakeLasers(DeathAnchorLevelObject[] objects, Transform paren
         {
             DeathAnchorLevelObject item = objects[i];
             GameObject go = new GameObject(string.IsNullOrEmpty(item.id) ? "Laser" : item.id);
-            go.transform.SetParent(parent);
-            go.transform.position = Point(item.x, item.y);
+            Transform laserParent = parent;
+            Collider2D ignoredBlocker = null;
+            if (!string.IsNullOrEmpty(item.attachedTo) && movingPlatformsById != null && movingPlatformsById.TryGetValue(item.attachedTo, out MovingPlatform2D attachedPlatform))
+            {
+                laserParent = attachedPlatform.transform;
+                ignoredBlocker = attachedPlatform.GetComponent<Collider2D>();
+            }
+
+            go.transform.SetParent(laserParent);
+            go.transform.position = LaserOrigin(item);
             go.layer = layer;
 
             LineRenderer line = go.AddComponent<LineRenderer>();
@@ -306,14 +315,9 @@ private static void BakeLasers(DeathAnchorLevelObject[] objects, Transform paren
             line.material = new Material(Shader.Find("Sprites/Default"));
 
             LaserBeam laser = go.AddComponent<LaserBeam>();
-            Vector2 direction = new Vector2(item.dirX, item.dirY);
-            if (direction.sqrMagnitude <= 0.0001f)
-            {
-                direction = Vector2.right;
-            }
-
-            float distance = item.maxDistance > 0f ? item.maxDistance / PixelsPerUnit : 5f;
-            laser.Configure(direction, distance, blockMask, ColorFromRgb(item.beamColor, new Color(1f, 0.15f, 0.15f, 0.9f)));
+            Vector2 direction = LaserDirection(item);
+            float distance = item.maxDistance > 0f ? item.maxDistance / PixelsPerUnit : LaserDistance(item);
+            laser.Configure(direction, distance, blockMask, ColorFromRgb(item.beamColor, new Color(1f, 0.15f, 0.15f, 0.9f)), ignoredBlocker);
         }
     }
 
@@ -371,7 +375,7 @@ private static void BakeDoors(DeathAnchorLevelObject[] objects, Transform parent
     }
 
         /// <summary>烘焙按钮开关（关联桥梁）</summary>
-private static void BakeButtons(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, LinkedBridge> bridgesById, Dictionary<string, MovingPlatform2D> movingPlatformsById)
+private static void BakeButtons(DeathAnchorLevelObject[] objects, DeathAnchorLevelObject[] bridges, DeathAnchorLevelObject[] movingPlatforms, Transform parent, Sprite sprite, int layer, Dictionary<string, LinkedBridge> bridgesById, Dictionary<string, MovingPlatform2D> movingPlatformsById)
     {
         if (objects == null)
         {
@@ -399,6 +403,8 @@ private static void BakeButtons(DeathAnchorLevelObject[] objects, Transform pare
                     }
                 }
             }
+
+            AddRequiredButtonLinks(item, bridges, movingPlatforms, bridgesById, movingPlatformsById, linked, linkedPlatforms);
 
             ButtonSwitch button = go.AddComponent<ButtonSwitch>();
             button.Configure(item.id, item.pressedBy, linked.ToArray(), linkedPlatforms.ToArray());
@@ -797,11 +803,180 @@ private static Vector2 Size(DeathAnchorLevelObject item)
         return new Color(rgb[0], rgb[1], rgb[2], fallback.a);
     }
 
+    private static Vector2 LaserOrigin(DeathAnchorLevelObject item)
+    {
+        float rotation = NormalizeRotation(item.rotation);
+        if (Mathf.Approximately(rotation, 90f))
+        {
+            return Point(item.x + item.w * 0.5f, item.y);
+        }
+
+        if (Mathf.Approximately(rotation, 180f))
+        {
+            return Point(item.x + item.w, item.y + item.h * 0.5f);
+        }
+
+        if (Mathf.Approximately(rotation, 270f))
+        {
+            return Point(item.x + item.w * 0.5f, item.y + item.h);
+        }
+
+        return Point(item.x, item.y + item.h * 0.5f);
+    }
+
+    private static Vector2 LaserDirection(DeathAnchorLevelObject item)
+    {
+        Vector2 explicitDirection = new Vector2(item.dirX, item.dirY);
+        if (explicitDirection.sqrMagnitude > 0.0001f)
+        {
+            return explicitDirection.normalized;
+        }
+
+        float rotation = NormalizeRotation(item.rotation);
+        if (Mathf.Approximately(rotation, 90f))
+        {
+            return Vector2.down;
+        }
+
+        if (Mathf.Approximately(rotation, 180f))
+        {
+            return Vector2.left;
+        }
+
+        if (Mathf.Approximately(rotation, 270f))
+        {
+            return Vector2.up;
+        }
+
+        return Vector2.right;
+    }
+
+    private static float LaserDistance(DeathAnchorLevelObject item)
+    {
+        float rotation = NormalizeRotation(item.rotation);
+        float pixels = Mathf.Approximately(rotation, 90f) || Mathf.Approximately(rotation, 270f) ? item.h : item.w;
+        return Mathf.Max(0.05f, pixels / PixelsPerUnit);
+    }
+
+    private static float NormalizeRotation(float value)
+    {
+        float rounded = Mathf.Round(value / 90f) * 90f;
+        return Mathf.Repeat(rounded, 360f);
+    }
+
+    private static void AddRequiredButtonLinks(
+        DeathAnchorLevelObject button,
+        DeathAnchorLevelObject[] bridges,
+        DeathAnchorLevelObject[] movingPlatforms,
+        Dictionary<string, LinkedBridge> bridgesById,
+        Dictionary<string, MovingPlatform2D> movingPlatformsById,
+        List<LinkedBridge> linkedBridges,
+        List<MovingPlatform2D> linkedPlatforms)
+    {
+        if (bridges != null)
+        {
+            for (int i = 0; i < bridges.Length; i++)
+            {
+                DeathAnchorLevelObject bridge = bridges[i];
+                if (bridge == null || !ButtonControlsObject(button, bridge))
+                {
+                    continue;
+                }
+
+                if (bridgesById.TryGetValue(bridge.id, out LinkedBridge linkedBridge) && linkedBridge != null && !linkedBridges.Contains(linkedBridge))
+                {
+                    linkedBridges.Add(linkedBridge);
+                }
+            }
+        }
+
+        if (movingPlatforms == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < movingPlatforms.Length; i++)
+        {
+            DeathAnchorLevelObject platform = movingPlatforms[i];
+            if (platform == null || platform.motionMode == "auto" || !ButtonControlsObject(button, platform))
+            {
+                continue;
+            }
+
+            if (movingPlatformsById.TryGetValue(platform.id, out MovingPlatform2D linkedPlatform) && linkedPlatform != null && !linkedPlatforms.Contains(linkedPlatform))
+            {
+                linkedPlatforms.Add(linkedPlatform);
+            }
+        }
+    }
+
+    private static bool ButtonControlsObject(DeathAnchorLevelObject button, DeathAnchorLevelObject controlled)
+    {
+        if (button == null || controlled == null)
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(controlled.requiredButton) && controlled.requiredButton == button.id)
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrEmpty(button.channel) && !string.IsNullOrEmpty(controlled.channel) && button.channel == controlled.channel)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private static Vector2 PlayerColliderSize(DeathAnchorLevelData level)
     {
         Vector2 configured = PlayerConfiguredSize(level);
         float side = Mathf.Max(0.05f, Mathf.Min(configured.x, configured.y));
         return Vector2.one * side;
+    }
+
+    private static void ApplyPlayerPhysics(DeathAnchorLevelData level, DeathAnchorPlayerController controller)
+    {
+        PlayerPhysicsConfig physicsConfig = ReadPlayerPhysicsConfig();
+        PlayerPhysicsUnityConfig unity = physicsConfig != null ? physicsConfig.unity : null;
+        DeathAnchorPlayerPhysicsSpec exported = level.player != null ? level.player.physics : null;
+
+        float moveSpeed = FirstPositive(
+            unity != null ? unity.moveSpeedUnitsPerSec : 0f,
+            exported != null ? exported.moveSpeed / PixelsPerUnit : 0f);
+        float jumpSpeed = FirstPositive(
+            unity != null ? unity.jumpSpeedUnitsPerSec : 0f,
+            exported != null ? exported.jumpSpeed / PixelsPerUnit : 0f);
+        float gravity = FirstPositive(
+            unity != null ? unity.gravityUnitsPerSec2 : 0f,
+            exported != null ? exported.gravity / PixelsPerUnit : 0f);
+        float fallGravityMultiplier = FirstPositive(
+            unity != null ? unity.fallGravityMultiplier : 0f,
+            exported != null ? exported.fallGravityMultiplier : 0f);
+        float maxFallSpeed = FirstPositive(
+            unity != null ? unity.maxFallSpeedUnitsPerSec : 0f,
+            exported != null ? exported.maxFallSpeed / PixelsPerUnit : 0f);
+        float coyoteTime = FirstNonNegative(
+            unity != null ? unity.coyoteTimeSec : -1f,
+            exported != null ? exported.coyoteTimeMs / 1000f : -1f);
+        float jumpBufferTime = FirstNonNegative(
+            unity != null ? unity.jumpBufferSec : -1f,
+            exported != null ? exported.jumpBufferMs / 1000f : -1f);
+        float jumpCutMultiplier = FirstPositive(
+            unity != null ? unity.jumpCutMultiplier : 0f,
+            exported != null ? exported.jumpCutMultiplier : 0f);
+
+        controller.ConfigureMovement(
+            moveSpeed,
+            jumpSpeed,
+            gravity,
+            fallGravityMultiplier,
+            maxFallSpeed,
+            coyoteTime,
+            jumpBufferTime,
+            jumpCutMultiplier);
     }
 
     private static Vector2 PlayerConfiguredSize(DeathAnchorLevelData level)
@@ -843,8 +1018,46 @@ private static Vector2 Size(DeathAnchorLevelObject item)
 
     private static float WallSlideUnits(DeathAnchorLevelData level)
     {
+        PlayerPhysicsConfig physicsConfig = ReadPlayerPhysicsConfig();
+        if (physicsConfig != null && physicsConfig.unity != null && physicsConfig.unity.wallSlideMaxSpeedUnitsPerSec > 0f)
+        {
+            return physicsConfig.unity.wallSlideMaxSpeedUnitsPerSec;
+        }
+
+        DeathAnchorPlayerPhysicsSpec exported = level.player != null ? level.player.physics : null;
+        if (exported != null && exported.wallSlideMaxSpeed > 0f)
+        {
+            return exported.wallSlideMaxSpeed / PixelsPerUnit;
+        }
+
         float speed = level.rules != null ? level.rules.wallSlideMaxSpeed : 125f;
         return speed / PixelsPerUnit;
+    }
+
+    private static float FirstPositive(params float[] values)
+    {
+        for (int i = 0; i < values.Length; i++)
+        {
+            if (values[i] > 0f)
+            {
+                return values[i];
+            }
+        }
+
+        return 0f;
+    }
+
+    private static float FirstNonNegative(params float[] values)
+    {
+        for (int i = 0; i < values.Length; i++)
+        {
+            if (values[i] >= 0f)
+            {
+                return values[i];
+            }
+        }
+
+        return -1f;
     }
 
         // ===== Layer 工具 =====
@@ -928,5 +1141,15 @@ private static void EnsureFolder(string assetFolder)
     {
         public float playerWidthUnits;
         public float playerHeightUnits;
+        public float gravityUnitsPerSec2;
+        public float fallGravityMultiplier;
+        public float moveSpeedUnitsPerSec;
+        public bool instantHorizontalMovement;
+        public float jumpSpeedUnitsPerSec;
+        public float maxFallSpeedUnitsPerSec;
+        public float coyoteTimeSec;
+        public float jumpBufferSec;
+        public float jumpCutMultiplier;
+        public float wallSlideMaxSpeedUnitsPerSec;
     }
 }

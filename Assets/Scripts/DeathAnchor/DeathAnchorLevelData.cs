@@ -10,6 +10,8 @@ public sealed class DeathAnchorLevelData
 {
     public string schema;
     public string title;
+    public string ruleNotes;
+    public string experience;
     public DeathAnchorRules rules;
     public DeathAnchorWorld world;
     public DeathAnchorPlayerSpec player;
@@ -54,7 +56,29 @@ public sealed class DeathAnchorPlayerSpec
 {
     public float w = 30f;
     public float h = 42f;
+    public DeathAnchorPlayerPhysicsSpec physics;
     public DeathAnchorPlayerAbilities abilities;
+}
+
+[Serializable]
+public sealed class DeathAnchorPlayerPhysicsSpec
+{
+    public string editorUnits;
+    public float playerWidth;
+    public float playerHeight;
+    public float gravity;
+    public float fallGravityMultiplier;
+    public float moveSpeed;
+    public float groundAcceleration;
+    public float airAcceleration;
+    public float groundFriction;
+    public float jumpSpeed;
+    public float maxFallSpeed;
+    public float coyoteTimeMs;
+    public float jumpBufferMs;
+    public float jumpCutMultiplier;
+    public bool instantHorizontalMovement;
+    public float wallSlideMaxSpeed;
 }
 
 [Serializable]

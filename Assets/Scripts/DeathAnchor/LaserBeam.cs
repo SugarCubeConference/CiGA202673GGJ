@@ -11,6 +11,7 @@ public sealed class LaserBeam : MonoBehaviour
     [SerializeField] private Vector2 emissionDirection = Vector2.right;
     [SerializeField] private float maxDistance = 20f;
     [SerializeField] private LayerMask blockMask;
+    [SerializeField] private Collider2D ignoredBlocker;
 
     [Header("Damage")]
     [SerializeField] private float damageCooldown = 0.5f;
@@ -58,8 +59,7 @@ public sealed class LaserBeam : MonoBehaviour
         hitPoint = origin + emissionDirection * maxDistance;
         isBlocked = false;
 
-        // Raycast against solid objects (terrain, bridges, moving platforms)
-        RaycastHit2D hit = Physics2D.Raycast(origin, emissionDirection, maxDistance, blockMask);
+        RaycastHit2D hit = FindFirstBlocker(origin);
         if (hit.collider != null)
         {
             hitPoint = hit.point;
@@ -115,10 +115,16 @@ public sealed class LaserBeam : MonoBehaviour
 
     public void Configure(Vector2 direction, float maxDistance, LayerMask blockMask, Color beamColor)
     {
+        Configure(direction, maxDistance, blockMask, beamColor, null);
+    }
+
+    public void Configure(Vector2 direction, float maxDistance, LayerMask blockMask, Color beamColor, Collider2D ignoredBlocker)
+    {
         emissionDirection = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
         this.maxDistance = Mathf.Max(0.05f, maxDistance);
         this.blockMask = blockMask;
         this.beamColor = beamColor;
+        this.ignoredBlocker = ignoredBlocker;
 
         if (lineRenderer == null)
         {
@@ -134,6 +140,29 @@ public sealed class LaserBeam : MonoBehaviour
             lineRenderer.endColor = beamColor;
             lineRenderer.useWorldSpace = true;
         }
+    }
+
+    private RaycastHit2D FindFirstBlocker(Vector2 origin)
+    {
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, emissionDirection, maxDistance, blockMask);
+        RaycastHit2D best = default;
+        float bestDistance = float.MaxValue;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider2D candidate = hits[i].collider;
+            if (candidate == null || candidate.isTrigger || candidate == ignoredBlocker)
+            {
+                continue;
+            }
+
+            if (hits[i].distance < bestDistance)
+            {
+                best = hits[i];
+                bestDistance = hits[i].distance;
+            }
+        }
+
+        return best;
     }
 
     private void TryDamagePlayerOnBeam(Vector2 origin, float beamLength)

@@ -12,6 +12,8 @@ public sealed class MovingPlatform2D : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 startPosition;
     private Vector2 previousPosition;
+    private float progress;
+    private int direction = 1;
 
     public Vector2 LastDelta { get; private set; }
 
@@ -26,16 +28,33 @@ public sealed class MovingPlatform2D : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!activated)
+        bool automatic = IsAutomaticMotion();
+        if (!automatic && !activated && progress <= 0f)
         {
             LastDelta = Vector2.zero;
             previousPosition = rb.position;
             return;
         }
 
-        float period = Mathf.Max(0.1f, periodSec);
-        float t = Mathf.PingPong(Time.time / period, 1f);
-        Vector2 nextPosition = Vector2.Lerp(startPosition, startPosition + targetOffset, t);
+        float step = Time.fixedDeltaTime / Mathf.Max(0.1f, periodSec);
+        if (automatic)
+        {
+            progress = Mathf.Clamp01(progress + step * direction);
+            if (progress >= 1f)
+            {
+                direction = -1;
+            }
+            else if (progress <= 0f)
+            {
+                direction = 1;
+            }
+        }
+        else
+        {
+            progress = Mathf.Clamp01(progress + (activated ? step : -step));
+        }
+
+        Vector2 nextPosition = Vector2.Lerp(startPosition, startPosition + targetOffset, progress);
         LastDelta = nextPosition - previousPosition;
         previousPosition = nextPosition;
         rb.MovePosition(nextPosition);
@@ -52,6 +71,8 @@ public sealed class MovingPlatform2D : MonoBehaviour
         previousPosition = startPosition;
         targetOffset = targetWorldPosition - startPosition;
         this.periodSec = periodSec > 0f ? periodSec : 3f;
+        progress = 0f;
+        direction = 1;
     }
 
     public void Configure(Vector2 targetWorldPosition, float periodSec, float moveSpeed, string motionMode)
@@ -59,11 +80,16 @@ public sealed class MovingPlatform2D : MonoBehaviour
         Configure(targetWorldPosition, periodSec);
         this.moveSpeed = moveSpeed > 0f ? moveSpeed : 3f;
         this.motionMode = string.IsNullOrEmpty(motionMode) ? "pingpong" : motionMode;
-        activated = !this.motionMode.ToLowerInvariant().Contains("button");
+        activated = IsAutomaticMotion();
     }
 
     public void SetActivated(bool active)
     {
         activated = active;
+    }
+
+    private bool IsAutomaticMotion()
+    {
+        return !motionMode.ToLowerInvariant().Contains("button");
     }
 }

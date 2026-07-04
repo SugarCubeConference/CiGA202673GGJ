@@ -135,6 +135,57 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
         solidFilter.layerMask = solidMask;
     }
 
+    public void ConfigureMovement(
+        float moveSpeedUnits,
+        float jumpSpeedUnits,
+        float gravityUnits,
+        float fallGravityMultiplier,
+        float maxFallSpeedUnits,
+        float coyoteTimeSec,
+        float jumpBufferTimeSec,
+        float jumpCutMultiplier)
+    {
+        if (moveSpeedUnits > 0f)
+        {
+            moveSpeed = moveSpeedUnits;
+        }
+
+        if (jumpSpeedUnits > 0f)
+        {
+            jumpSpeed = jumpSpeedUnits;
+        }
+
+        if (gravityUnits > 0f)
+        {
+            gravity = gravityUnits;
+        }
+
+        if (fallGravityMultiplier > 0f)
+        {
+            this.fallGravityMultiplier = fallGravityMultiplier;
+        }
+
+        if (maxFallSpeedUnits > 0f)
+        {
+            maxFallSpeed = maxFallSpeedUnits;
+        }
+
+        if (coyoteTimeSec >= 0f)
+        {
+            coyoteTime = coyoteTimeSec;
+        }
+
+        if (jumpBufferTimeSec >= 0f)
+        {
+            jumpBufferTime = jumpBufferTimeSec;
+        }
+
+        if (jumpCutMultiplier > 0f)
+        {
+            this.jumpCutMultiplier = jumpCutMultiplier;
+        }
+    }
+
     public void SpawnAtFootPosition(Vector2 footPosition)
     {
         EnsureCachedComponents();
