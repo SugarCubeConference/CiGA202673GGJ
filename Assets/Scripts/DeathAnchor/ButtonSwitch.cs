@@ -7,6 +7,7 @@ public sealed class ButtonSwitch : MonoBehaviour
     [SerializeField] private string buttonId;
     [SerializeField] private string pressedBy = "both";
     [SerializeField] private LinkedBridge[] linkedBridges;
+    [SerializeField] private MovingPlatform2D[] linkedPlatforms;
 
     private readonly HashSet<ActorIdentity> pressingActors = new HashSet<ActorIdentity>();
     private SpriteRenderer spriteRenderer;
@@ -30,7 +31,7 @@ public sealed class ButtonSwitch : MonoBehaviour
 
         if (linkedBridges == null)
         {
-            return;
+            linkedBridges = System.Array.Empty<LinkedBridge>();
         }
 
         for (int i = 0; i < linkedBridges.Length; i++)
@@ -40,6 +41,19 @@ public sealed class ButtonSwitch : MonoBehaviour
                 linkedBridges[i].SetActivated(pressed);
             }
         }
+
+        if (linkedPlatforms == null)
+        {
+            linkedPlatforms = System.Array.Empty<MovingPlatform2D>();
+        }
+
+        for (int i = 0; i < linkedPlatforms.Length; i++)
+        {
+            if (linkedPlatforms[i] != null)
+            {
+                linkedPlatforms[i].SetActivated(pressed);
+            }
+        }
     }
 
     public void Configure(string id, string pressedBy, LinkedBridge[] linkedBridges)
@@ -47,6 +61,12 @@ public sealed class ButtonSwitch : MonoBehaviour
         buttonId = id;
         this.pressedBy = string.IsNullOrEmpty(pressedBy) ? "both" : pressedBy;
         this.linkedBridges = linkedBridges;
+    }
+
+    public void Configure(string id, string pressedBy, LinkedBridge[] linkedBridges, MovingPlatform2D[] linkedPlatforms)
+    {
+        Configure(id, pressedBy, linkedBridges);
+        this.linkedPlatforms = linkedPlatforms;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

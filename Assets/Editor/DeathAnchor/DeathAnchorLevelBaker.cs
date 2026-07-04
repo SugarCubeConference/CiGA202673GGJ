@@ -7,6 +7,9 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// Death Anchor 关卡烘焙器——将 .level.json 关卡描述文件程序化生成完整的 Unity 场景。
+/// </summary>
 public static class DeathAnchorLevelBaker
 {
     private const float PixelsPerUnit = 100f;
@@ -16,7 +19,8 @@ public static class DeathAnchorLevelBaker
     private const string BackgroundSpritePath = "Assets/Art/Background.png";
     private const string BakedRootName = "BakedLevelRoot";
 
-    private static readonly Color PlatformColor = new Color(0.39f, 0.45f, 0.52f, 1f);
+        // ===== 颜色常量 =====
+private static readonly Color PlatformColor = new Color(0.39f, 0.45f, 0.52f, 1f);
     private static readonly Color MovingPlatformColor = new Color(0.55f, 0.82f, 0.49f, 1f);
     private static readonly Color SpikeColor = new Color(1f, 0.27f, 0.34f, 1f);
     private static readonly Color PlayerColor = new Color(1f, 0.72f, 0.26f, 1f);
@@ -30,7 +34,10 @@ public static class DeathAnchorLevelBaker
     private static readonly Color DoorColor = new Color(1f, 0.45f, 0.25f, 1f);
     private static readonly Color AnchorZoneColor = new Color(0.68f, 0.55f, 1f, 0.2f);
 
-    [MenuItem("Tools/Death Anchor/Bake Selected Level Json")]
+        // ===== 菜单入口 =====
+
+    /// <summary>菜单：烘焙选中的 JSON 或手动选择 JSON 文件</summary>
+[MenuItem("Tools/Death Anchor/Bake Selected Level Json")]
     public static void BakeSelectedLevelJson()
     {
         Object selected = Selection.activeObject;
@@ -51,13 +58,15 @@ public static class DeathAnchorLevelBaker
         BakeLevel(assetPath, scenePath);
     }
 
-    [MenuItem("Tools/Death Anchor/Bake All Prototype Levels")]
+        /// <summary>菜单：批量烘焙原型目录中所有关卡</summary>
+[MenuItem("Tools/Death Anchor/Bake All Prototype Levels")]
     public static void BakeAllPrototypeLevels()
     {
         BakeDirectory(PrototypeLevelsDirectory, OutputSceneDirectory);
     }
 
-    public static void BakeDirectory(string sourceDirectory, string outputSceneDirectory)
+        /// <summary>批量烘焙指定目录中的所有 .level.json 文件</summary>
+public static void BakeDirectory(string sourceDirectory, string outputSceneDirectory)
     {
         EnsureFolder(outputSceneDirectory);
         string[] files = Directory.GetFiles(sourceDirectory, "*.level.json", SearchOption.TopDirectoryOnly);
@@ -77,7 +86,11 @@ public static class DeathAnchorLevelBaker
         Debug.Log($"Baked {files.Length} Death Anchor level scene(s).");
     }
 
-    public static void BakeLevel(string jsonPath, string scenePath)
+        /// <summary>
+    /// 核心：将一个 .level.json 文件烘焙为完整的 Unity 场景。
+    /// 包括环境、机关、角色、GameManager、相机、灯光和 UI。
+    /// </summary>
+public static void BakeLevel(string jsonPath, string scenePath)
     {
         EnsureFolder(Path.GetDirectoryName(scenePath).Replace("\\", "/"));
         EnsureFolder(ArtDirectory);
@@ -161,7 +174,10 @@ public static class DeathAnchorLevelBaker
         EditorSceneManager.SaveScene(scene, scenePath);
     }
 
-    private static DeathAnchorLevelData ReadLevel(string jsonPath)
+        // ===== JSON 读取 =====
+
+    /// <summary>从 JSON 文件读取并解析为关卡数据结构</summary>
+private static DeathAnchorLevelData ReadLevel(string jsonPath)
     {
         string json = File.ReadAllText(jsonPath);
         DeathAnchorLevelData level = JsonUtility.FromJson<DeathAnchorLevelData>(json);
@@ -183,7 +199,10 @@ public static class DeathAnchorLevelBaker
         return level;
     }
 
-    private static void BakeObjects(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, Color color, int layer, System.Action<GameObject> configure)
+        // ===== 各类物件烘焙方法 =====
+
+    /// <summary>烘焙普通物件（平台等），支持自定义后处理回调</summary>
+private static void BakeObjects(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, Color color, int layer, System.Action<GameObject> configure)
     {
         if (objects == null)
         {
@@ -198,7 +217,8 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeMovingPlatforms(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, MovingPlatform2D> movingPlatformsById)
+        /// <summary>烘焙移动平台</summary>
+private static void BakeMovingPlatforms(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, MovingPlatform2D> movingPlatformsById)
     {
         if (objects == null)
         {
@@ -224,7 +244,8 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeBridges(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, LinkedBridge> bridgesById)
+        /// <summary>烘焙虚实桥（按钮控制）</summary>
+private static void BakeBridges(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, LinkedBridge> bridgesById)
     {
         if (objects == null)
         {
@@ -242,7 +263,8 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeSpikes(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
+        /// <summary>烘焙陷阱（HazardTrigger）</summary>
+private static void BakeSpikes(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
     {
         if (objects == null)
         {
@@ -258,7 +280,8 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeLasers(DeathAnchorLevelObject[] objects, Transform parent, int layer, LayerMask blockMask)
+        /// <summary>烘焙激光</summary>
+private static void BakeLasers(DeathAnchorLevelObject[] objects, Transform parent, int layer, LayerMask blockMask)
     {
         if (objects == null)
         {
@@ -291,7 +314,8 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeAnchorZones(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
+        /// <summary>烘焙锚点区域（纯触发器，无碰撞）</summary>
+private static void BakeAnchorZones(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
     {
         if (objects == null)
         {
@@ -305,7 +329,8 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeKeys(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
+        /// <summary>烘焙钥匙</summary>
+private static void BakeKeys(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
     {
         if (objects == null)
         {
@@ -321,7 +346,8 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeDoors(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
+        /// <summary>烘焙钥匙门</summary>
+private static void BakeDoors(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
     {
         if (objects == null)
         {
@@ -341,7 +367,8 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeButtons(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, LinkedBridge> bridgesById, Dictionary<string, MovingPlatform2D> movingPlatformsById)
+        /// <summary>烘焙按钮开关（关联桥梁）</summary>
+private static void BakeButtons(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, LinkedBridge> bridgesById, Dictionary<string, MovingPlatform2D> movingPlatformsById)
     {
         if (objects == null)
         {
@@ -375,7 +402,8 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeGoals(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
+        /// <summary>烘焙终点触发器</summary>
+private static void BakeGoals(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
     {
         if (objects == null)
         {
@@ -391,7 +419,10 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static GameObject CreateActor(string name, Transform parent, Sprite sprite, Color color, int layer, DeathAnchorLevelData level, bool ghost)
+        // ===== 角色和物块创建 =====
+
+    /// <summary>创建一个角色（玩家或分身）：包含 Rigidbody2D、BoxCollider2D、ActorIdentity 和视觉子物体</summary>
+private static GameObject CreateActor(string name, Transform parent, Sprite sprite, Color color, int layer, DeathAnchorLevelData level, bool ghost)
     {
         Vector2 size = new Vector2(PlayerWidth(level), PlayerHeight(level));
         GameObject go = new GameObject(name);
@@ -428,7 +459,8 @@ public static class DeathAnchorLevelBaker
         return go;
     }
 
-    private static GameObject CreateBlock(string name, Transform parent, Vector2 center, Vector2 size, Sprite sprite, Color color, int layer)
+        /// <summary>创建一个矩形物块（平台、陷阱等）：包含 SpriteRenderer 和 BoxCollider2D</summary>
+private static GameObject CreateBlock(string name, Transform parent, Vector2 center, Vector2 size, Sprite sprite, Color color, int layer)
     {
         GameObject go = new GameObject(string.IsNullOrEmpty(name) ? "BakedObject" : name);
         go.transform.SetParent(parent);
@@ -445,7 +477,10 @@ public static class DeathAnchorLevelBaker
         return go;
     }
 
-    private static void ApplyLitShader(GameObject go, string shaderName)
+        // ===== 着色器和灯光 =====
+
+    /// <summary>应用 Lit 着色器</summary>
+private static void ApplyLitShader(GameObject go, string shaderName)
     {
         SpriteRenderer renderer = go.GetComponent<SpriteRenderer>();
         if (renderer == null)
@@ -456,7 +491,8 @@ public static class DeathAnchorLevelBaker
         renderer.sharedMaterial = CreateLitMaterial(shaderName);
     }
 
-    private static Material CreateLitMaterial(string shaderName)
+        /// <summary>创建 Lit 材质</summary>
+private static Material CreateLitMaterial(string shaderName)
     {
         Shader shader = Shader.Find(shaderName);
         if (shader == null)
@@ -468,7 +504,8 @@ public static class DeathAnchorLevelBaker
         return new Material(shader);
     }
 
-    private static Light2D AddPointLight2D(GameObject go, string lightName, Color color, float intensity, float innerRadius, float outerRadius, float falloffIntensity)
+        /// <summary>添加点光源</summary>
+private static Light2D AddPointLight2D(GameObject go, string lightName, Color color, float intensity, float innerRadius, float outerRadius, float falloffIntensity)
     {
         Light2D light = go.AddComponent<Light2D>();
         light.name = lightName;
@@ -481,21 +518,26 @@ public static class DeathAnchorLevelBaker
         return light;
     }
 
-    private static Transform CreateChild(Transform parent, string name)
+        /// <summary>创建空子节点</summary>
+private static Transform CreateChild(Transform parent, string name)
     {
         GameObject child = new GameObject(name);
         child.transform.SetParent(parent);
         return child.transform;
     }
 
-    private static void AddStaticSolid(GameObject go)
+        /// <summary>将物块设为 Static（用于地面优化）</summary>
+private static void AddStaticSolid(GameObject go)
     {
         go.isStatic = true;
     }
 
-    private static void CreateBackground(Camera camera)
+        // ===== 背景 =====
+
+    /// <summary>创建背景精灵</summary>
+private static void CreateBackground(Camera camera)
     {
-        Sprite backgroundSprite = AssetDatabase.LoadAssetAtPath<Sprite>(BackgroundSpritePath);
+        Sprite backgroundSprite = EnsureBackgroundSprite();
         if (backgroundSprite == null)
         {
             Debug.LogWarning($"[DeathAnchorLevelBaker] Background sprite not found at '{BackgroundSpritePath}'.");
@@ -514,7 +556,32 @@ public static class DeathAnchorLevelBaker
         fitter.Configure(camera, 10f);
     }
 
-    private static void CreateCamera(Transform root, Transform target, DeathAnchorLevelData level)
+    private static Sprite EnsureBackgroundSprite()
+    {
+        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(BackgroundSpritePath);
+        if (sprite != null)
+        {
+            return sprite;
+        }
+
+        TextureImporter importer = AssetImporter.GetAtPath(BackgroundSpritePath) as TextureImporter;
+        if (importer == null)
+        {
+            return null;
+        }
+
+        importer.textureType = TextureImporterType.Sprite;
+        importer.spriteImportMode = SpriteImportMode.Single;
+        importer.mipmapEnabled = false;
+        importer.alphaIsTransparency = true;
+        importer.SaveAndReimport();
+        return AssetDatabase.LoadAssetAtPath<Sprite>(BackgroundSpritePath);
+    }
+
+        // ===== 相机和灯光 =====
+
+    /// <summary>创建正交相机和跟随脚本</summary>
+private static void CreateCamera(Transform root, Transform target, DeathAnchorLevelData level)
     {
         GameObject cameraObject = new GameObject("Main Camera");
         cameraObject.transform.SetParent(root);
@@ -533,7 +600,8 @@ public static class DeathAnchorLevelBaker
         follow.Configure(target, min, max);
     }
 
-    private static void CreateLight(Transform root)
+        /// <summary>创建方向光</summary>
+private static void CreateLight(Transform root)
     {
         GameObject lightObject = new GameObject("GlobalLight2D");
         lightObject.transform.SetParent(root);
@@ -543,7 +611,10 @@ public static class DeathAnchorLevelBaker
         light.intensity = 5.84f;
     }
 
-    private static Text CreateCountdownUi(Transform root)
+        // ===== UI =====
+
+    /// <summary>创建 HUD Canvas 和倒计时文字</summary>
+private static Text CreateCountdownUi(Transform root)
     {
         GameObject canvasObject = new GameObject("HUD Canvas");
         canvasObject.transform.SetParent(root);
@@ -578,7 +649,10 @@ public static class DeathAnchorLevelBaker
         return text;
     }
 
-    private static Sprite EnsureSquareSprite()
+        // ===== 工具方法 =====
+
+    /// <summary>确保烘焙用的白色方块精灵存在</summary>
+private static Sprite EnsureSquareSprite()
     {
         EnsureFolder(ArtDirectory);
         string path = $"{ArtDirectory}/BakedSquareSprite.asset";
@@ -614,7 +688,8 @@ public static class DeathAnchorLevelBaker
         throw new MissingReferenceException("Could not create baked square sprite.");
     }
 
-    private static void ClearBakedRoot(Scene scene)
+        /// <summary>清除场景中已有的 BakedLevelRoot（重新烘焙时覆盖）</summary>
+private static void ClearBakedRoot(Scene scene)
     {
         GameObject[] roots = scene.GetRootGameObjects();
         for (int i = 0; i < roots.Length; i++)
@@ -626,22 +701,28 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static Vector2 Center(DeathAnchorLevelObject item)
+        // ===== 坐标转换 =====
+
+    /// <summary>计算物体中心（Unity 世界坐标）</summary>
+private static Vector2 Center(DeathAnchorLevelObject item)
     {
         return Point(item.x + item.w * 0.5f, item.y + item.h * 0.5f);
     }
 
-    private static Vector2 FootPosition(DeathAnchorLevelObject item)
+        /// <summary>计算物体脚底位置（用于出生点）</summary>
+private static Vector2 FootPosition(DeathAnchorLevelObject item)
     {
         return Point(item.x + item.w * 0.5f, item.y + item.h);
     }
 
-    private static Vector2 Point(float x, float y)
+        /// <summary>将像素坐标转换为 Unity 世界坐标（Y 轴翻转）</summary>
+private static Vector2 Point(float x, float y)
     {
         return new Vector2(x / PixelsPerUnit, -y / PixelsPerUnit);
     }
 
-    private static Vector2 Size(DeathAnchorLevelObject item)
+        /// <summary>将像素尺寸转换为 Unity 单位尺寸</summary>
+private static Vector2 Size(DeathAnchorLevelObject item)
     {
         return new Vector2(Mathf.Max(0.05f, item.w / PixelsPerUnit), Mathf.Max(0.05f, item.h / PixelsPerUnit));
     }
@@ -656,9 +737,9 @@ public static class DeathAnchorLevelBaker
         return new Color(rgb[0], rgb[1], rgb[2], fallback.a);
     }
 
-    private static float PlayerWidth(DeathAnchorLevelData level)
+        private static float PlayerWidth(DeathAnchorLevelData level)
     {
-        return PlayerHeight(level);
+        return (level.player != null && level.player.w > 0f ? level.player.w : 30f) / PixelsPerUnit;
     }
 
     private static float PlayerHeight(DeathAnchorLevelData level)
@@ -672,7 +753,10 @@ public static class DeathAnchorLevelBaker
         return speed / PixelsPerUnit;
     }
 
-    private static LayerMask Mask(params string[] layers)
+        // ===== Layer 工具 =====
+
+    /// <summary>将层名字符串数组组合为一个 LayerMask</summary>
+private static LayerMask Mask(params string[] layers)
     {
         int mask = 0;
         for (int i = 0; i < layers.Length; i++)
@@ -687,13 +771,17 @@ public static class DeathAnchorLevelBaker
         return mask == 0 ? 1 << 0 : mask;
     }
 
-    private static int LayerOrDefault(string layerName)
+        /// <summary>根据名称获取层索引，不存在则返回 0</summary>
+private static int LayerOrDefault(string layerName)
     {
         int layer = LayerMask.NameToLayer(layerName);
         return layer >= 0 ? layer : 0;
     }
 
-    private static string SafeFileName(string value)
+        // ===== 文件工具 =====
+
+    /// <summary>将标题转换为安全的文件名</summary>
+private static string SafeFileName(string value)
     {
         string safe = string.IsNullOrWhiteSpace(value) ? "DeathAnchorLevel" : value;
         foreach (char invalid in Path.GetInvalidFileNameChars())
@@ -704,7 +792,8 @@ public static class DeathAnchorLevelBaker
         return safe;
     }
 
-    private static void EnsureFolder(string assetFolder)
+        /// <summary>递归创建资源文件夹</summary>
+private static void EnsureFolder(string assetFolder)
     {
         if (string.IsNullOrEmpty(assetFolder) || AssetDatabase.IsValidFolder(assetFolder))
         {
@@ -717,7 +806,8 @@ public static class DeathAnchorLevelBaker
         AssetDatabase.CreateFolder(parent, name);
     }
 
-    private static void AddScenesToBuildSettings(List<string> scenePaths)
+        /// <summary>将场景路径添加到 Build Settings（避免重复）</summary>
+private static void AddScenesToBuildSettings(List<string> scenePaths)
     {
         List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         for (int i = 0; i < scenePaths.Count; i++)
