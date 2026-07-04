@@ -9,8 +9,14 @@ public class CRTDisplayRendererFeature : ScriptableRendererFeature
     {
         /// <summary>仅对 Tag 匹配的相机生效（默认 MainCamera）。空字符串 = 全部相机。</summary>
         public string cameraTag = "MainCamera";
-        public float scanlineIntensity = 0.15f;
-        public float scanlineCount = 480f;
+        [Range(1f, 100f)]
+        public float scanlineInterval = 6f;
+        [Range(0.01f, 1f)]
+        public float scanlineWidth = 0.15f;
+        [Range(0.5f, 8f)]
+        public float scanlineSharpness = 2f;
+        [Range(0f, 1f)]
+        public float scanlineIntensity = 0.6f;
         [Range(0f, 0.1f)]
         public float curvature = 0.03f;
         public float chromaticAberration = 1.5f;
@@ -85,8 +91,10 @@ public class CRTDisplayRendererFeature : ScriptableRendererFeature
 
             CommandBuffer cmd = CommandBufferPool.Get("CRTDisplay");
 
+            _material.SetFloat("_ScanlineInterval", _settings.scanlineInterval);
+            _material.SetFloat("_ScanlineWidth", _settings.scanlineWidth);
+            _material.SetFloat("_ScanlineSharpness", _settings.scanlineSharpness);
             _material.SetFloat("_ScanlineIntensity", _settings.scanlineIntensity);
-            _material.SetFloat("_ScanlineCount", _settings.scanlineCount);
             _material.SetFloat("_Curvature", Mathf.Clamp(_settings.curvature, 0f, 0.1f));
             _material.SetFloat("_ChromaticAberration", _settings.chromaticAberration);
             _material.SetFloat("_VignetteIntensity", _settings.vignetteIntensity);

@@ -15,13 +15,15 @@ MonoBehaviour:
   m_Active: 1
   settings:
     cameraTag: MainCamera
-    scanlineIntensity: 0.06
-    scanlineCount: 480
-    curvature: 0.03
+    scanlineInterval: 1.5
+    scanlineWidth: 0.15
+    scanlineSharpness: 2
+    scanlineIntensity: 0.24
+    curvature: 0
     chromaticAberration: 1.5
     vignetteIntensity: 0.92
     vignetteSmoothness: 2.74
-    brightness: 1.96
+    brightness: 1.48
     contrast: 1.2
     rgbPixelSize: 2.39
     renderPassEvent: 600
@@ -107,7 +109,7 @@ MonoBehaviour:
   settings:
     cameraTag: MainCamera
     pixelResolution: {x: 320, y: 180}
-    fisheyeStrength: 0.294
+    fisheyeStrength: 0.134
     sweepWidth: 0.131
     sweepIntensity: 0.412
     sweepBlur: 0.35
