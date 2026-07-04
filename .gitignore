@@ -104,3 +104,24 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Local agent/editor scratch
+/.hermes/
+/.idea/
+/PROJECT_SUMMARY.md
+/logRunSetup.txt
+
+# Local visual references
+/[Aa]ssets/[Ss]creenshots/
+/[Aa]ssets/[Ss]creenshots.meta
+
+# Unused local visual experiments
+/[Aa]ssets/[Ss]cripts/FisheyeEffect.cs
+/[Aa]ssets/[Ss]cripts/FisheyeEffect.cs.meta
+/[Aa]ssets/[Ss]cripts/GradientWipeController.cs
+/[Aa]ssets/[Ss]cripts/GradientWipeController.cs.meta
+/[Aa]ssets/[Ss]cripts/shader.meta
+/[Aa]ssets/[Ss]haders/Fisheye.shader
+/[Aa]ssets/[Ss]haders/Fisheye.shader.meta
+/[Aa]ssets/[Ss]haders/GradientWipe.shader
+/[Aa]ssets/[Ss]haders/GradientWipe.shader.meta
