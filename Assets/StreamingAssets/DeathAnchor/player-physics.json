@@ -1,0 +1,37 @@
+{
+  "schema": "death-anchor-player-physics-v1",
+  "notes": "Shared player physics for the HTML level editor and Unity implementation. Unity DeathAnchorLevelBaker uses 100 px = 1 unit.",
+  "tileSizePx": 32,
+  "pixelsPerUnit": 100,
+  "editor": {
+    "playerWidthPx": 30,
+    "playerHeightPx": 42,
+    "instantHorizontalMovement": true,
+    "gravityPxPerSec2": 1500,
+    "fallGravityMultiplier": 1.22,
+    "moveSpeedPxPerSec": 285,
+    "groundAccelerationPxPerSec2": 99999,
+    "airAccelerationPxPerSec2": 99999,
+    "groundFrictionPxPerSec2": 99999,
+    "jumpSpeedPxPerSec": 670,
+    "maxFallSpeedPxPerSec": 700,
+    "coyoteTimeMs": 95,
+    "jumpBufferMs": 130,
+    "jumpCutMultiplier": 0.52,
+    "wallSlideMaxSpeedPxPerSec": 125
+  },
+  "unity": {
+    "playerWidthUnits": 0.3,
+    "playerHeightUnits": 0.42,
+    "gravityUnitsPerSec2": 15,
+    "fallGravityMultiplier": 1.22,
+    "moveSpeedUnitsPerSec": 2.85,
+    "instantHorizontalMovement": true,
+    "jumpSpeedUnitsPerSec": 6.7,
+    "maxFallSpeedUnitsPerSec": 7,
+    "coyoteTimeSec": 0.095,
+    "jumpBufferSec": 0.13,
+    "jumpCutMultiplier": 0.52,
+    "wallSlideMaxSpeedUnitsPerSec": 1.25
+  }
+}
