@@ -8,9 +8,9 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2.85f;
     [SerializeField] private float jumpSpeed = 6.7f;
-    [SerializeField] private float gravity = 10.5f;
+    [SerializeField] private float gravity = 15f;
     [SerializeField] private float fallGravityMultiplier = 1.22f;
-    [SerializeField] private float maxFallSpeed = 6.2f;
+    [SerializeField] private float maxFallSpeed = 7f;
     [SerializeField] private float coyoteTime = 0.095f;
     [SerializeField] private float jumpBufferTime = 0.13f;
     [SerializeField] private float jumpCutMultiplier = 0.52f;
