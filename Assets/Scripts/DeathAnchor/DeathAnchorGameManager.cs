@@ -82,6 +82,11 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
+        if (ghost != null && ghost.gameObject.activeSelf && player != null)
+        { 
+            CheckAndMovePlayerIfOverlapExceeds(player, ghost, 0.8f);
+        }
+        
         if (!isRecording)
         {
             return;
@@ -253,6 +258,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         isRecording = false;
         ghost.gameObject.SetActive(true);
         ghost.Play(activeAnchorFootPosition, recordingFrames);
+        
         recordingFrames.Clear();
 
         if (anchorMarker != null)
@@ -261,6 +267,46 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         }
 
         SetCountdownVisible(false);
+    }
+    
+    /// <summary>
+    /// 检测两个collider重叠是否超过指定比例，如果超过则将player移到ghost上方
+    /// </summary>
+    /// <param name="player">玩家控制器</param>
+    /// <param name="ghost">ghost控制器</param>
+    /// <param name="threshold">重叠阈值，默认0.8（80%）</param>
+    /// <returns>是否检测到超过阈值的重叠</returns>
+    public bool CheckAndMovePlayerIfOverlapExceeds(
+        DeathAnchorPlayerController player, 
+        GhostReplayController ghost, 
+        float threshold = 0.8f)
+    {
+        // 一步到位：获取边界 -> 计算重叠 -> 判断阈值 -> 移动player
+        Bounds playerBounds = player.GetComponent<Collider2D>().bounds;
+        Bounds ghostBounds = ghost.GetComponent<Collider2D>().bounds;
+    
+        float intersectMinX = Mathf.Max(playerBounds.min.x, ghostBounds.min.x);
+        float intersectMaxX = Mathf.Min(playerBounds.max.x, ghostBounds.max.x);
+        float intersectMinY = Mathf.Max(playerBounds.min.y, ghostBounds.min.y);
+        float intersectMaxY = Mathf.Min(playerBounds.max.y, ghostBounds.max.y);
+    
+        if (intersectMinX >= intersectMaxX || intersectMinY >= intersectMaxY)
+            return false;
+    
+        float intersectArea = (intersectMaxX - intersectMinX) * (intersectMaxY - intersectMinY);
+        float minArea = Mathf.Min(
+            playerBounds.size.x * playerBounds.size.y, 
+            ghostBounds.size.x * ghostBounds.size.y
+        );
+    
+        if (intersectArea / minArea >= threshold)
+        {
+            float newY = ghostBounds.max.y + playerBounds.size.y * 0.5f + 0.01f;
+            player.SpawnAtFootPosition(new Vector2(player.FootPosition.x, newY));
+            return true;
+        }
+        
+        return false;
     }
 
     private void ResetCarriedKeys()
