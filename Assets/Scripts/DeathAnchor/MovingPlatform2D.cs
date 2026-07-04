@@ -15,7 +15,6 @@ public sealed class MovingPlatform2D : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Kinematic;
         rb.freezeRotation = true;
         startPosition = rb.position;
         previousPosition = startPosition;

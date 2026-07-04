@@ -50,7 +50,6 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     {
         EnsureCachedComponents();
 
-        rb.bodyType = RigidbodyType2D.Kinematic;
         rb.freezeRotation = true;
         rb.useFullKinematicContacts = true;
 

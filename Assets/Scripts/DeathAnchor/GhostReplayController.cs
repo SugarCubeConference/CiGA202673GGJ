@@ -25,7 +25,6 @@ public sealed class GhostReplayController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         box = GetComponent<BoxCollider2D>();
-        rb.bodyType = RigidbodyType2D.Kinematic;
         rb.freezeRotation = true;
         rb.useFullKinematicContacts = true;
         GetComponent<ActorIdentity>().SetKind(DeathAnchorActorKind.Ghost);
@@ -80,6 +79,7 @@ public sealed class GhostReplayController : MonoBehaviour
         DeathAnchorReplayFrame first = frames[0];
         rb.position = anchorFootPosition + first.footOffset + Vector2.up * playerHeight * 0.5f;
     }
+    
 
     private DeathAnchorReplayFrame Sample(float time)
     {
