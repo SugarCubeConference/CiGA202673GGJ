@@ -74,9 +74,7 @@ Shader "Custom/CRTDisplay"
                 float dist = dot(offset, offset);
                 float2 uv2 = uv + offset * dist * _Curvature;
 
-                // g. Discard if uv2 outside [0,1]
-                if (uv2.x < 0.0 || uv2.x > 1.0 || uv2.y < 0.0 || uv2.y > 1.0)
-                    discard;
+                uv2 = saturate(uv2);
 
                 // b. Chromatic aberration
                 float2 caOffsetR = -offset * _ChromaticAberration * texelSize;
@@ -98,7 +96,8 @@ Shader "Custom/CRTDisplay"
                 color = half4(pr, pg, pb, 1.0);
 
                 // e. Vignette
-                float vignette = 1.0 - _VignetteIntensity * pow(length(uv2 - 0.5) * 2.0, _VignetteSmoothness);
+                float edge = saturate(pow(length(uv2 - 0.5) * 1.35, _VignetteSmoothness));
+                float vignette = lerp(1.0, 0.72, saturate(edge * _VignetteIntensity));
 
                 // f. Final
                 color.rgb = clamp((color.rgb * scanline * vignette - 0.5) * _Contrast + 0.5, 0, 1) * _Brightness;

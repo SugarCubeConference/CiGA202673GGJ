@@ -11,6 +11,7 @@ public class CRTDisplayRendererFeature : ScriptableRendererFeature
         public string cameraTag = "MainCamera";
         public float scanlineIntensity = 0.15f;
         public float scanlineCount = 480f;
+        [Range(0f, 0.1f)]
         public float curvature = 0.03f;
         public float chromaticAberration = 1.5f;
         public float vignetteIntensity = 0.8f;
@@ -86,7 +87,7 @@ public class CRTDisplayRendererFeature : ScriptableRendererFeature
 
             _material.SetFloat("_ScanlineIntensity", _settings.scanlineIntensity);
             _material.SetFloat("_ScanlineCount", _settings.scanlineCount);
-            _material.SetFloat("_Curvature", _settings.curvature);
+            _material.SetFloat("_Curvature", Mathf.Clamp(_settings.curvature, 0f, 0.1f));
             _material.SetFloat("_ChromaticAberration", _settings.chromaticAberration);
             _material.SetFloat("_VignetteIntensity", _settings.vignetteIntensity);
             _material.SetFloat("_VignetteSmoothness", _settings.vignetteSmoothness);

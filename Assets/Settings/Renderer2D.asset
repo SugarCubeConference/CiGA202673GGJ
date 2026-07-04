@@ -17,7 +17,7 @@ MonoBehaviour:
     cameraTag: MainCamera
     scanlineIntensity: 0.06
     scanlineCount: 480
-    curvature: -0.79
+    curvature: 0.03
     chromaticAberration: 1.5
     vignetteIntensity: 0.92
     vignetteSmoothness: 2.74
@@ -41,10 +41,9 @@ MonoBehaviour:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
     hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
   m_RendererFeatures:
-  - {fileID: 0}
   - {fileID: 7150290628554642048}
   - {fileID: -2296455007021474739}
-  m_RendererFeatureMap: 32190c1c2cd161f880d2cd5b71ef3a634d5cd197565a21e0
+  m_RendererFeatureMap: 80d2cd5b71ef3a634d5cd197565a21e0
   m_UseNativeRenderPass: 0
   m_LayerMask:
     serializedVersion: 2
@@ -108,5 +107,13 @@ MonoBehaviour:
   settings:
     cameraTag: MainCamera
     pixelResolution: {x: 320, y: 180}
-    fisheyeStrength: 0.5
+    fisheyeStrength: 0.294
+    sweepWidth: 0.131
+    sweepIntensity: 0.412
+    sweepBlur: 0.35
+    sweepColorShift: 0.077
+    sweepNoise: 0.02
+    sweepBrightness: 0.03
+    sweepSpeed: 0.35
+    borderIntensity: 0.22
     renderPassEvent: 600

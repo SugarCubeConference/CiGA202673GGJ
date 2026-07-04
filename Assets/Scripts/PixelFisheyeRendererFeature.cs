@@ -12,6 +12,22 @@ public class PixelFisheyeRendererFeature : ScriptableRendererFeature
         public Vector2 pixelResolution = new Vector2(160, 90);
         [Range(0f, 2f)]
         public float fisheyeStrength = 0.5f;
+        [Range(0.01f, 0.5f)]
+        public float sweepWidth = 0.12f;
+        [Range(0f, 1f)]
+        public float sweepIntensity = 0.28f;
+        [Range(0f, 1f)]
+        public float sweepBlur = 0.35f;
+        [Range(0f, 1f)]
+        public float sweepColorShift = 0.04f;
+        [Range(0f, 1f)]
+        public float sweepNoise = 0.02f;
+        [Range(0f, 1f)]
+        public float sweepBrightness = 0.03f;
+        [Min(0f)]
+        public float sweepSpeed = 0.35f;
+        [Range(0f, 1f)]
+        public float borderIntensity = 0.22f;
         public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
     }
 
@@ -54,6 +70,14 @@ public class PixelFisheyeRendererFeature : ScriptableRendererFeature
 
         private static readonly int PixelResolutionID = Shader.PropertyToID("_PixelResolution");
         private static readonly int FisheyeStrengthID = Shader.PropertyToID("_FisheyeStrength");
+        private static readonly int SweepProgressID = Shader.PropertyToID("_SweepProgress");
+        private static readonly int SweepWidthID = Shader.PropertyToID("_SweepWidth");
+        private static readonly int SweepIntensityID = Shader.PropertyToID("_SweepIntensity");
+        private static readonly int SweepBlurID = Shader.PropertyToID("_SweepBlur");
+        private static readonly int SweepColorShiftID = Shader.PropertyToID("_SweepColorShift");
+        private static readonly int SweepNoiseID = Shader.PropertyToID("_SweepNoise");
+        private static readonly int SweepBrightnessID = Shader.PropertyToID("_SweepBrightness");
+        private static readonly int BorderIntensityID = Shader.PropertyToID("_BorderIntensity");
 
         public PixelFisheyeRenderPass(Settings settings)
         {
@@ -90,6 +114,14 @@ public class PixelFisheyeRendererFeature : ScriptableRendererFeature
                 settings.pixelResolution.x,
                 settings.pixelResolution.y, 0, 0));
             material.SetFloat(FisheyeStrengthID, settings.fisheyeStrength);
+            material.SetFloat(SweepProgressID, Mathf.Repeat(Time.time * settings.sweepSpeed, 1f));
+            material.SetFloat(SweepWidthID, settings.sweepWidth);
+            material.SetFloat(SweepIntensityID, settings.sweepIntensity);
+            material.SetFloat(SweepBlurID, settings.sweepBlur);
+            material.SetFloat(SweepColorShiftID, settings.sweepColorShift);
+            material.SetFloat(SweepNoiseID, settings.sweepNoise);
+            material.SetFloat(SweepBrightnessID, settings.sweepBrightness);
+            material.SetFloat(BorderIntensityID, settings.borderIntensity);
 
             var source = inputRenderer.cameraColorTargetHandle;
             Blitter.BlitCameraTexture(cmd, source, tempRT, material, 0);
