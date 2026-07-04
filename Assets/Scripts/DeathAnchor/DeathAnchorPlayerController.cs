@@ -185,6 +185,11 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
                 continue;
             }
 
+            if (IsGhostCollider(castHits[i].collider))
+            {
+                continue;
+            }
+
             if (castHits[i].normal.y > 0.45f)
             {
                 grounded = true;
@@ -213,11 +218,7 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
             return;
         }
 
-        GhostReplayController replay = groundCollider.GetComponent<GhostReplayController>();
-        if (replay != null && !replay.LoopedThisFrame)
-        {
-            rb.position += replay.LastDelta;
-        }
+        // Ghosts are intentionally not carriers for the player.
     }
 
     private bool IsTouchingWall(float direction)
@@ -227,7 +228,7 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
         {
             if (castHits[i].collider != null
                 && !castHits[i].collider.isTrigger
-                && !IsInitialOverlap(castHits[i])
+                && !IsGhostCollider(castHits[i].collider)
                 && Mathf.Abs(castHits[i].normal.x) > 0.45f)
             {
                 return true;
@@ -257,7 +258,7 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
                 continue;
             }
 
-            if (IsInitialOverlap(castHits[i]))
+            if (IsGhostCollider(castHits[i].collider))
             {
                 continue;
             }
@@ -272,14 +273,14 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
         }
     }
 
-    private bool IsInitialOverlap(RaycastHit2D hit)
+    private bool IsGhostCollider(Collider2D candidate)
     {
-        if (hit.collider == null)
+        if (candidate == null)
         {
             return false;
         }
 
-        ColliderDistance2D distance = Physics2D.Distance(box, hit.collider);
-        return distance.isOverlapped;
+        return candidate.GetComponent<GhostReplayController>() != null
+            || candidate.GetComponentInParent<GhostReplayController>() != null;
     }
 }
