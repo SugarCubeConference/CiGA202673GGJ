@@ -7,6 +7,8 @@ public class CRTDisplayRendererFeature : ScriptableRendererFeature
     [System.Serializable]
     public class CRTDisplaySettings
     {
+        /// <summary>仅对 Tag 匹配的相机生效（默认 MainCamera）。空字符串 = 全部相机。</summary>
+        public string cameraTag = "MainCamera";
         public float scanlineIntensity = 0.15f;
         public float scanlineCount = 480f;
         public float curvature = 0.03f;
@@ -30,6 +32,11 @@ public class CRTDisplayRendererFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
+        if (!string.IsNullOrEmpty(settings.cameraTag))
+        {
+            var cam = renderingData.cameraData.camera;
+            if (!cam.CompareTag(settings.cameraTag)) return;
+        }
         _renderPass.Setup(renderer);
         renderer.EnqueuePass(_renderPass);
     }

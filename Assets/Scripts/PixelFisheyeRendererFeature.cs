@@ -7,6 +7,8 @@ public class PixelFisheyeRendererFeature : ScriptableRendererFeature
     [System.Serializable]
     public class Settings
     {
+        /// <summary>仅对 Tag 匹配的相机生效（默认 MainCamera）。空字符串 = 全部相机。</summary>
+        public string cameraTag = "MainCamera";
         public Vector2 pixelResolution = new Vector2(160, 90);
         [Range(0f, 2f)]
         public float fisheyeStrength = 0.5f;
@@ -26,15 +28,15 @@ public class PixelFisheyeRendererFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        Debug.Log("[PixelFisheye] AddRenderPasses called, resolution: " + settings.pixelResolution);
-        if (settings.pixelResolution.x <= 0 || settings.pixelResolution.y <= 0)
+        if (!string.IsNullOrEmpty(settings.cameraTag))
         {
-            Debug.Log("[PixelFisheye] Resolution too small, skipping");
-            return;
+            var cam = renderingData.cameraData.camera;
+            if (!cam.CompareTag(settings.cameraTag)) return;
         }
+        if (settings.pixelResolution.x <= 0 || settings.pixelResolution.y <= 0)
+            return;
         renderPass.Setup(renderer);
         renderer.EnqueuePass(renderPass);
-        Debug.Log("[PixelFisheye] Pass enqueued");
     }
 
     protected override void Dispose(bool disposing)
@@ -45,8 +47,8 @@ public class PixelFisheyeRendererFeature : ScriptableRendererFeature
     class PixelFisheyeRenderPass : ScriptableRenderPass
     {
         private Settings settings;
-                public Material Material => material;
-private Material material;
+        private Material material;
+        public Material Material => material;
         private RTHandle tempRT;
         private ScriptableRenderer inputRenderer;
 
