@@ -8,4 +8,22 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: "Assets/Scenes/DeathAnchor/\u6559\u5B66\u5173.unity"
+    guid: 13773656c91bea64b80701359c2ea322
+  - enabled: 1
+    path: "Assets/Scenes/DeathAnchor/\u6B65\u6B65\u6B65\u9AD8\u5347.unity"
+    guid: 211d8789730495843819037988cd563d
+  - enabled: 1
+    path: "Assets/Scenes/DeathAnchor/\u6B65\u6B65\u9AD8\u5347.unity"
+    guid: c6085eab6afa0a947bf0aa76b9707d2a
+  - enabled: 1
+    path: "Assets/Scenes/DeathAnchor/\u7F13\u964D+\u94A5\u5319\u95E8.unity"
+    guid: 6deea1e56b4374b44a039191dcd3ce82
+  - enabled: 1
+    path: "Assets/Scenes/DeathAnchor/\u865A\u5B9E\u6865.unity"
+    guid: b3d6230821fce4b4f83f298f94ecdef5
+  - enabled: 1
+    path: "Assets/Scenes/DeathAnchor/\u8FDE\u8DF3.unity"
+    guid: 8a50faecb6dd5ea4abe6692c65546bc2
   m_configObjects: {}
