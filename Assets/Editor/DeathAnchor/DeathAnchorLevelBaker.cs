@@ -17,6 +17,7 @@ public static class DeathAnchorLevelBaker
     private const string OutputSceneDirectory = "Assets/Scenes/DeathAnchor";
     private const string ArtDirectory = "Assets/Art/DeathAnchor";
     private const string BackgroundSpritePath = "Assets/Art/Background.png";
+    private const string PlayerPhysicsConfigPath = "Assets/StreamingAssets/DeathAnchor/player-physics.json";
     private const string BakedRootName = "BakedLevelRoot";
 
         // ===== 颜色常量 =====
@@ -138,21 +139,22 @@ public static void BakeLevel(string jsonPath, string scenePath)
 
         GameObject player = CreateActor("Player", actorRoot, squareSprite, PlayerColor, playerLayer, level, false);
         DeathAnchorPlayerController playerController = player.AddComponent<DeathAnchorPlayerController>();
+        Vector2 playerColliderSize = PlayerColliderSize(level);
         playerController.Configure(
-            PlayerWidth(level),
-            PlayerHeight(level),
+            playerColliderSize.x,
+            playerColliderSize.y,
             Mask("Ground", "Ghost"),
             level.rules == null || level.rules.playerWallSlide,
             WallSlideUnits(level));
         player.AddComponent<AkGameObj>();
         player.AddComponent<PlayerWwiseAudio>();
         player.AddComponent<PlayerDustParticles>();
-        player.transform.position = spawnPoint.position + Vector3.up * (PlayerHeight(level) * 0.5f);
+        player.transform.position = spawnPoint.position + Vector3.up * (playerColliderSize.y * 0.5f);
         playerController.SpawnAtFootPosition(spawnPoint.position);
 
         GameObject ghost = CreateActor("Ghost", actorRoot, squareSprite, GhostColor, ghostLayer, level, true);
         GhostReplayController ghostReplay = ghost.AddComponent<GhostReplayController>();
-        ghostReplay.Configure(PlayerWidth(level), PlayerHeight(level), Mask("Player"));
+        ghostReplay.Configure(playerColliderSize.x, playerColliderSize.y, Mask("Player"));
         ghost.SetActive(false);
 
         GameObject anchorMarker = CreateBlock("AnchorMarker", root.transform, spawnPoint.position, new Vector2(0.35f, 0.08f), squareSprite, new Color(0.75f, 0.55f, 1f, 0.9f), interactableLayer);
@@ -424,7 +426,7 @@ private static void BakeGoals(DeathAnchorLevelObject[] objects, Transform parent
     /// <summary>创建一个角色（玩家或分身）：包含 Rigidbody2D、BoxCollider2D、ActorIdentity 和视觉子物体</summary>
 private static GameObject CreateActor(string name, Transform parent, Sprite sprite, Color color, int layer, DeathAnchorLevelData level, bool ghost)
     {
-        Vector2 size = new Vector2(PlayerWidth(level), PlayerHeight(level));
+        Vector2 size = PlayerColliderSize(level);
         GameObject go = new GameObject(name);
         go.transform.SetParent(parent);
         go.layer = layer;
@@ -737,14 +739,48 @@ private static Vector2 Size(DeathAnchorLevelObject item)
         return new Color(rgb[0], rgb[1], rgb[2], fallback.a);
     }
 
+    private static Vector2 PlayerColliderSize(DeathAnchorLevelData level)
+    {
+        Vector2 configured = PlayerConfiguredSize(level);
+        float side = Mathf.Max(0.05f, Mathf.Min(configured.x, configured.y));
+        return Vector2.one * side;
+    }
+
+    private static Vector2 PlayerConfiguredSize(DeathAnchorLevelData level)
+    {
+        PlayerPhysicsConfig physicsConfig = ReadPlayerPhysicsConfig();
+        if (physicsConfig != null && physicsConfig.unity != null)
+        {
+            float configuredWidth = physicsConfig.unity.playerWidthUnits;
+            float configuredHeight = physicsConfig.unity.playerHeightUnits;
+            if (configuredWidth > 0f && configuredHeight > 0f)
+            {
+                return new Vector2(configuredWidth, configuredHeight);
+            }
+        }
+
+        return new Vector2(PlayerWidth(level), PlayerHeight(level));
+    }
+
         private static float PlayerWidth(DeathAnchorLevelData level)
     {
-        return (level.player != null && level.player.w > 0f ? level.player.w : 30f) / PixelsPerUnit;
+        return (level.player != null && level.player.w > 0f ? level.player.w : 32f) / PixelsPerUnit;
     }
 
     private static float PlayerHeight(DeathAnchorLevelData level)
     {
-        return (level.player != null && level.player.h > 0f ? level.player.h : 42f) / PixelsPerUnit;
+        return (level.player != null && level.player.h > 0f ? level.player.h : 32f) / PixelsPerUnit;
+    }
+
+    private static PlayerPhysicsConfig ReadPlayerPhysicsConfig()
+    {
+        TextAsset asset = AssetDatabase.LoadAssetAtPath<TextAsset>(PlayerPhysicsConfigPath);
+        if (asset == null)
+        {
+            return null;
+        }
+
+        return JsonUtility.FromJson<PlayerPhysicsConfig>(asset.text);
     }
 
     private static float WallSlideUnits(DeathAnchorLevelData level)
@@ -807,7 +843,7 @@ private static void EnsureFolder(string assetFolder)
     }
 
         /// <summary>将场景路径添加到 Build Settings（避免重复）</summary>
-private static void AddScenesToBuildSettings(List<string> scenePaths)
+    private static void AddScenesToBuildSettings(List<string> scenePaths)
     {
         List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         for (int i = 0; i < scenePaths.Count; i++)
@@ -821,5 +857,18 @@ private static void AddScenesToBuildSettings(List<string> scenePaths)
         }
 
         EditorBuildSettings.scenes = scenes.ToArray();
+    }
+
+    [System.Serializable]
+    private sealed class PlayerPhysicsConfig
+    {
+        public PlayerPhysicsUnityConfig unity;
+    }
+
+    [System.Serializable]
+    private sealed class PlayerPhysicsUnityConfig
+    {
+        public float playerWidthUnits;
+        public float playerHeightUnits;
     }
 }

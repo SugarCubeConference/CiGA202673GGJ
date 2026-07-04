@@ -124,7 +124,8 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     {
         EnsureCachedComponents();
 
-        box.size = new Vector2(playerWidthUnits, playerHeightUnits);
+        float colliderSide = Mathf.Max(0.05f, Mathf.Min(playerWidthUnits, playerHeightUnits));
+        box.size = Vector2.one * colliderSide;
         box.offset = Vector2.zero;
         this.solidMask = solidMask;
         this.wallSlideEnabled = wallSlideEnabled;
