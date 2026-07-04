@@ -39,8 +39,11 @@ const ui = {
 
 const VIEW_W = canvas.width;
 const VIEW_H = canvas.height;
-let PLAYER_W = 30;
-let PLAYER_H = 42;
+let PLAYER_W = 32;
+let PLAYER_H = 32;
+const DEFAULT_WORLD_W = 1024;
+const DEFAULT_WORLD_H = 576;
+const DEFAULT_GRID = 32;
 const STORAGE_KEY = "deathAnchorMapEditor.v1";
 const PLAYER_PHYSICS_URLS = [
   "../../Assets/StreamingAssets/DeathAnchor/player-physics.json",
@@ -63,24 +66,25 @@ const OLD_PLAY_WALL_SLIDE_SPEED = 185;
 let PLAY_WALL_SLIDE_SPEED = 125;
 
 const objectTypes = {
-  platform: { label: "地形", color: "#667383", w: 200, h: 28 },
-  movingPlatform: { label: "移动平台", color: "#8bd17c", w: 180, h: 24 },
-  spike: { label: "尖刺", color: "#ff636d", w: 120, h: 30 },
-  laser: { label: "激光", color: "#ff4f9a", w: 320, h: 10 },
-  key: { label: "钥匙", color: "#f4c95d", w: 34, h: 34 },
-  door: { label: "门", color: "#ff8d66", w: 54, h: 128 },
-  button: { label: "按钮", color: "#f4c95d", w: 84, h: 18 },
-  bridge: { label: "实虚桥", color: "#71d7e8", w: 180, h: 24 },
+  platform: { label: "地形", color: "#667383", w: 32, h: 32 },
+  movingPlatform: { label: "移动平台", color: "#8bd17c", w: 96, h: 32 },
+  spike: { label: "尖刺", color: "#ff636d", w: 32, h: 32 },
+  laser: { label: "激光发射器", color: "#ff4f9a", w: 32, h: 32 },
+  key: { label: "钥匙", color: "#f4c95d", w: 32, h: 32 },
+  door: { label: "门", color: "#ff8d66", w: 32, h: 64 },
+  button: { label: "按钮", color: "#f4c95d", w: 32, h: 32 },
+  bridge: { label: "实虚桥", color: "#71d7e8", w: 32, h: 32 },
   spawn: { label: "出生点", color: "#65d18a", w: PLAYER_W, h: PLAYER_H },
-  goal: { label: "出口", color: "#f4c95d", w: 66, h: 94 },
-  anchorZone: { label: "锚点区", color: "#b49cff", w: 160, h: 100 },
+  goal: { label: "出口", color: "#f4c95d", w: 64, h: 64 },
+  anchorZone: { label: "锚点区", color: "#b49cff", w: 64, h: 64 },
   note: { label: "备注", color: "#f6eddd", w: 190, h: 62 }
 };
 
 const tools = [
   { id: "select", label: "选择", icon: "↖", color: "#f6eddd" },
   { id: "platform", label: "地形", icon: "▰", color: objectTypes.platform.color, type: "platform" },
-  { id: "movingPlatform", label: "移动平台", icon: "⇄", color: objectTypes.movingPlatform.color, type: "movingPlatform" },
+  { id: "movingPlatform", label: "按钮平台", icon: "⇄", color: objectTypes.movingPlatform.color, type: "movingPlatform", defaultMotionMode: "button" },
+  { id: "autoMovingPlatform", label: "自动平台", icon: "↔", color: objectTypes.movingPlatform.color, type: "movingPlatform", defaultMotionMode: "auto" },
   { id: "spike", label: "尖刺", icon: "▲", color: objectTypes.spike.color, type: "spike" },
   { id: "laser", label: "激光", icon: "━", color: objectTypes.laser.color, type: "laser" },
   { id: "key", label: "钥匙", icon: "●", color: objectTypes.key.color, type: "key" },
@@ -96,7 +100,7 @@ const tools = [
 
 const sampleMap = {
   schema: "death-anchor-map-v1",
-  title: "死亡锚点机关草图 01",
+  title: "1024x576 单屏机关草图",
   ruleNotes: "玩家开启时空锚点后需要在倒计时内死亡；死亡路线会固定成一个有实体的循环分身。玩家贴墙时会慢速下滑。分身可被玩家踩，也可以踩玩家头；分身能压按钮；分身免疫尖刺、激光和陷阱。最多一个分身。钥匙开门；按钮按下时让桥变实，也让移动平台向按钮方向平移；松开时桥变虚，移动平台回原位。激光会被地形、实体桥、移动平台阻挡。",
   experience: "先用死亡制造台阶，再让玩家把同一条死亡路线和钥匙门、按钮桥组合起来：玩家可能要让分身越过陷阱去压按钮，或自己站成分身的垫脚石。",
   rules: {
@@ -109,20 +113,19 @@ const sampleMap = {
     playerWallSlide: true,
     wallSlideMaxSpeed: PLAY_WALL_SLIDE_SPEED
   },
-  world: { w: 2600, h: 720, grid: 20 },
+  world: { w: DEFAULT_WORLD_W, h: DEFAULT_WORLD_H, grid: DEFAULT_GRID },
   objects: [
-    { id: "spawn", type: "spawn", label: "出生点", x: 90, y: 430, w: PLAYER_W, h: PLAYER_H, channel: "", links: [], tags: ["start"], notes: "" },
-    { id: "floor-left", type: "platform", label: "左侧地面", x: 0, y: 472, w: 640, h: 68, channel: "", links: [], tags: ["ground"], notes: "" },
-    { id: "floor-mid", type: "platform", label: "中段地面", x: 760, y: 472, w: 620, h: 68, channel: "", links: [], tags: ["ground"], notes: "" },
-    { id: "floor-right", type: "platform", label: "右侧地面", x: 1640, y: 472, w: 760, h: 68, channel: "", links: [], tags: ["ground"], notes: "" },
-    { id: "high-step", type: "platform", label: "分身高台", x: 620, y: 336, w: 290, h: 24, channel: "", links: [], tags: ["platform"], notes: "地面跳不到，需要借分身站位。" },
-    { id: "death-spikes", type: "spike", label: "录制死亡刺", x: 515, y: 442, w: 150, h: 30, channel: "", affects: "player", links: [], tags: ["death", "record"], notes: "只杀玩家；分身经过不会消失。玩家需要在锚点倒计时内死在这里。" },
-    { id: "anchor-window", type: "anchorZone", label: "建议开锚区", x: 90, y: 388, w: 150, h: 86, channel: "", links: ["death-spikes"], tags: ["anchor"], notes: "不是实体，只是标注玩家大概在哪里开时空锚点。" },
-    { id: "key-a", type: "key", label: "钥匙 A", x: 710, y: 292, w: 34, h: 34, channel: "A", links: ["door-a"], tags: ["key"], notes: "" },
-    { id: "door-a", type: "door", label: "门 A", x: 1320, y: 344, w: 54, h: 128, channel: "A", requiredKey: "key-a", links: [], tags: ["door"], notes: "需要 key-a。" },
-    { id: "button-b", type: "button", label: "按钮 B", x: 1120, y: 454, w: 84, h: 18, channel: "B", mode: "hold", pressedBy: "both", links: ["bridge-b"], tags: ["button"], notes: "玩家或分身都能压；按住时让桥变实，松开桥变虚。" },
-    { id: "bridge-b", type: "bridge", label: "按钮桥 B", x: 1430, y: 360, w: 190, h: 24, channel: "B", requiredButton: "button-b", defaultState: "phantom", activeState: "solid", links: [], tags: ["bridge"], notes: "按钮被压住时是实桥，按钮松开时是虚桥。" },
-    { id: "goal", type: "goal", label: "出口", x: 2240, y: 378, w: 66, h: 94, channel: "", links: [], tags: ["goal"], notes: "" }
+    { id: "spawn", type: "spawn", label: "出生点", x: 64, y: 480, w: PLAYER_W, h: PLAYER_H, channel: "", links: [], tags: ["start"], notes: "" },
+    { id: "floor", type: "platform", label: "地面", x: 0, y: 512, w: 1024, h: 64, channel: "", links: [], tags: ["ground"], notes: "按 32x32 地形块拼接。" },
+    { id: "left-wall", type: "platform", label: "左墙", x: 0, y: 384, w: 32, h: 128, channel: "", links: [], tags: ["wall"], notes: "地形块侧边也算墙，可触发贴墙缓降。" },
+    { id: "high-step", type: "platform", label: "分身高台", x: 320, y: 352, w: 160, h: 32, channel: "", links: [], tags: ["platform"], notes: "地面跳不到，需要借分身站位。" },
+    { id: "death-spikes", type: "spike", label: "录制死亡刺", x: 224, y: 480, w: 96, h: 32, channel: "", affects: "player", links: [], tags: ["death", "record"], notes: "只杀玩家；分身经过不会消失。玩家需要在锚点倒计时内死在这里。" },
+    { id: "anchor-window", type: "anchorZone", label: "建议开锚区", x: 64, y: 416, w: 64, h: 64, channel: "", links: ["death-spikes"], tags: ["anchor"], notes: "不是实体，只是标注玩家大概在哪里开时空锚点。" },
+    { id: "key-a", type: "key", label: "钥匙 A", x: 384, y: 320, w: 32, h: 32, channel: "A", links: ["door-a"], tags: ["key"], notes: "" },
+    { id: "door-a", type: "door", label: "门 A", x: 640, y: 448, w: 32, h: 64, channel: "A", requiredKey: "key-a", links: [], tags: ["door"], notes: "需要 key-a。" },
+    { id: "button-b", type: "button", label: "按钮 B", x: 544, y: 480, w: 32, h: 32, channel: "B", mode: "hold", pressedBy: "both", links: ["bridge-b"], tags: ["button"], notes: "玩家或分身都能压；按住时让桥变实，松开桥变虚。" },
+    { id: "bridge-b", type: "bridge", label: "按钮桥 B", x: 704, y: 352, w: 96, h: 32, channel: "B", requiredButton: "button-b", defaultState: "phantom", activeState: "solid", links: [], tags: ["bridge"], notes: "按钮被压住时是实桥，按钮松开时是虚桥。" },
+    { id: "goal", type: "goal", label: "出口", x: 928, y: 448, w: 64, h: 64, channel: "", links: [], tags: ["goal"], notes: "" }
   ]
 };
 
@@ -141,11 +144,11 @@ const blankMap = {
     playerWallSlide: true,
     wallSlideMaxSpeed: PLAY_WALL_SLIDE_SPEED
   },
-  world: { w: 2400, h: 720, grid: 20 },
+  world: { w: DEFAULT_WORLD_W, h: DEFAULT_WORLD_H, grid: DEFAULT_GRID },
   objects: [
-    { id: "spawn", type: "spawn", label: "出生点", x: 90, y: 430, w: PLAYER_W, h: PLAYER_H, channel: "", links: [], tags: ["start"], notes: "" },
-    { id: "floor", type: "platform", label: "地面", x: 0, y: 472, w: 1200, h: 68, channel: "", links: [], tags: ["ground"], notes: "" },
-    { id: "goal", type: "goal", label: "出口", x: 1080, y: 378, w: 66, h: 94, channel: "", links: [], tags: ["goal"], notes: "" }
+    { id: "spawn", type: "spawn", label: "出生点", x: 64, y: 480, w: PLAYER_W, h: PLAYER_H, channel: "", links: [], tags: ["start"], notes: "" },
+    { id: "floor", type: "platform", label: "地面", x: 0, y: 512, w: 1024, h: 64, channel: "", links: [], tags: ["ground"], notes: "按 32x32 地形块拼接。" },
+    { id: "goal", type: "goal", label: "出口", x: 928, y: 448, w: 64, h: 64, channel: "", links: [], tags: ["goal"], notes: "" }
   ]
 };
 
@@ -282,9 +285,9 @@ function normalizeMap(source) {
     wallSlideMaxSpeed: Math.max(40, wallSlideMaxSpeed)
   };
   data.world = {
-    w: Math.max(800, number(data.world?.w, 2400)),
-    h: Math.max(360, number(data.world?.h, 720)),
-    grid: Math.max(5, number(data.world?.grid, 20))
+    w: Math.max(DEFAULT_WORLD_W, number(data.world?.w, DEFAULT_WORLD_W)),
+    h: Math.max(DEFAULT_WORLD_H, number(data.world?.h, DEFAULT_WORLD_H)),
+    grid: Math.max(16, number(data.world?.grid, DEFAULT_GRID))
   };
   data.objects = Array.isArray(data.objects) ? data.objects.map(normalizeObject) : [];
   hydrateRelations(data.objects);
@@ -312,9 +315,11 @@ function normalizeObject(item, index = 0) {
   if (type === "button") object.mode = "hold";
   if (type === "button") object.pressedBy = ["player", "ghost", "both"].includes(item?.pressedBy) ? item.pressedBy : "both";
   if (isHazardType(type)) object.affects = ["player", "ghost", "both"].includes(item?.affects) ? item.affects : "player";
+  if (type === "laser") object.attachedTo = String(item?.attachedTo || "");
   if (type === "movingPlatform") {
     object.requiredButton = String(item?.requiredButton || "");
-    object.moveTargetX = number(item?.moveTargetX, object.x + 240);
+    object.motionMode = item?.motionMode === "auto" ? "auto" : "button";
+    object.moveTargetX = number(item?.moveTargetX, object.x + DEFAULT_GRID * 4);
     object.moveTargetY = number(item?.moveTargetY, object.y);
     object.periodSec = Math.max(0.5, number(item?.periodSec, 3));
   }
@@ -328,6 +333,13 @@ function normalizeObject(item, index = 0) {
 
 function hydrateRelations(objects) {
   const byId = new Map(objects.map((object) => [object.id, object]));
+  for (const object of objects) {
+    if (object.type !== "button") continue;
+    object.links = object.links.filter((id) => {
+      const linked = byId.get(id);
+      return !(linked?.type === "movingPlatform" && linked.motionMode === "auto");
+    });
+  }
   for (const object of objects) {
     if (object.type !== "key") continue;
     for (const link of object.links) {
@@ -348,7 +360,7 @@ function hydrateRelations(objects) {
         if (!object.channel && bridge.channel) object.channel = bridge.channel;
       }
       const platform = byId.get(link);
-      if (platform?.type === "movingPlatform") {
+      if (platform?.type === "movingPlatform" && platform.motionMode !== "auto") {
         if (!platform.requiredButton) platform.requiredButton = object.id;
         if (!platform.channel && object.channel) platform.channel = object.channel;
         if (!object.channel && platform.channel) object.channel = platform.channel;
@@ -357,6 +369,10 @@ function hydrateRelations(objects) {
   }
   for (const controlled of objects) {
     if (!["bridge", "movingPlatform"].includes(controlled.type) || !controlled.requiredButton) continue;
+    if (controlled.type === "movingPlatform" && controlled.motionMode === "auto") {
+      controlled.requiredButton = "";
+      continue;
+    }
     const button = byId.get(controlled.requiredButton);
     if (button?.type !== "button") continue;
     addLink(button, controlled.id);
@@ -451,11 +467,19 @@ function addObject(toolId, x, y) {
   if (type === "button") object.mode = "hold";
   if (type === "button") object.pressedBy = "both";
   if (isHazardType(type)) object.affects = "player";
+  if (type === "laser") object.attachedTo = "";
   if (type === "movingPlatform") {
     object.requiredButton = "";
-    object.moveTargetX = snap(object.x + 240);
+    object.motionMode = toolInfo.defaultMotionMode || "button";
+    object.moveTargetX = snap(object.x + map.world.grid * 4);
     object.moveTargetY = object.y;
     object.periodSec = 3;
+    if (object.motionMode === "auto") {
+      object.label = "自动平台";
+      object.tags = ["movingPlatform", "auto"];
+    } else {
+      object.label = "按钮平台";
+    }
   }
   if (type === "door") object.requiredKey = "";
   if (type === "note") {
@@ -486,6 +510,22 @@ function objectRect(object) {
   return { x: object.x, y: object.y, w: object.w, h: object.h };
 }
 
+function movingPlatformTargetRect(object) {
+  const target = movingPlatformTarget(object);
+  return { x: target.x, y: target.y, w: object.w, h: object.h };
+}
+
+function movingPlatformTargetHandleRect(object) {
+  const target = movingPlatformTargetRect(object);
+  const size = Math.max(20, Math.min(28, map.world.grid));
+  return {
+    x: target.x + target.w / 2 - size / 2,
+    y: target.y + target.h / 2 - size / 2,
+    w: size,
+    h: size
+  };
+}
+
 function centerOf(object) {
   const rect = objectRect(object);
   return { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 };
@@ -503,12 +543,44 @@ function hitTest(x, y) {
   return null;
 }
 
+function hitMovingPlatformTarget(x, y) {
+  const selected = selectedObject();
+  const targetPadding = Math.max(8, map.world.grid / 4);
+  if (selected?.type === "movingPlatform") {
+    const target = movingPlatformTargetRect(selected);
+    if (pointInRect(x, y, expandedRect(target, targetPadding))) return selected;
+  }
+  const platforms = [...map.objects].reverse().filter((object) => object?.type === "movingPlatform");
+  for (const object of platforms) {
+    if (!object || object.type !== "movingPlatform") continue;
+    if (pointInRect(x, y, movingPlatformTargetHandleRect(object))) return object;
+  }
+  for (const object of platforms) {
+    const target = movingPlatformTargetRect(object);
+    if (pointInRect(x, y, expandedRect(target, targetPadding))) return object;
+  }
+  return null;
+}
+
 function pointerDown(event) {
   if (playtest) return;
   const pos = pointer(event);
   if (tool !== "select") {
     addObject(tool, pos.x, pos.y);
     setTool("select");
+    return;
+  }
+  const targetHit = hitMovingPlatformTarget(pos.x, pos.y);
+  if (targetHit) {
+    selectObject(targetHit.id);
+    setStatus(`拖动 ${targetHit.id} 的半透明目标框来设置目标位置。`);
+    drag = {
+      id: targetHit.id,
+      mode: "moveTarget",
+      startX: pos.x,
+      startY: pos.y,
+      base: clone(targetHit)
+    };
     return;
   }
   const hit = hitTest(pos.x, pos.y);
@@ -521,7 +593,8 @@ function pointerDown(event) {
     mode: resize ? "resize" : "move",
     startX: pos.x,
     startY: pos.y,
-    base: clone(hit)
+    base: clone(hit),
+    attachedLasers: hit.type === "movingPlatform" ? clone(map.objects.filter((object) => object.type === "laser" && object.attachedTo === hit.id)) : []
   };
 }
 
@@ -533,16 +606,16 @@ function pointerMove(event) {
   const pos = pointer(event);
   const dx = snap(pos.x - drag.startX);
   const dy = snap(pos.y - drag.startY);
-  if (drag.mode === "resize") {
+  if (drag.mode === "moveTarget") {
+    object.moveTargetX = snap(number(drag.base.moveTargetX, drag.base.x + DEFAULT_GRID * 4) + dx);
+    object.moveTargetY = snap(number(drag.base.moveTargetY, drag.base.y) + dy);
+  } else if (drag.mode === "resize") {
     object.w = Math.max(map.world.grid, snap(drag.base.w + dx));
     object.h = Math.max(map.world.grid, snap(drag.base.h + dy));
   } else {
     object.x = snap(drag.base.x + dx);
     object.y = snap(drag.base.y + dy);
-    if (object.type === "movingPlatform") {
-      object.moveTargetX = snap(number(drag.base.moveTargetX, drag.base.x + 240) + dx);
-      object.moveTargetY = snap(number(drag.base.moveTargetY, drag.base.y) + dy);
-    }
+    if (object.type === "movingPlatform") moveAttachedLasersFromDrag(object, drag, dx, dy);
   }
   updateInspector(false);
   draw();
@@ -596,8 +669,10 @@ function updateInspector(rebuild = true) {
     ["channel", "频道", "text"]
   ];
   if (isHazardType(object.type)) fields.push(["affects", "伤害对象", "select-actor"]);
+  if (object.type === "laser") fields.push(["attachedTo", "吸附平台ID", "text"]);
   if (object.type === "movingPlatform") {
-    fields.push(["requiredButton", "控制按钮ID", "text"]);
+    fields.push(["motionMode", "移动模式", "select-motion-mode"]);
+    if (object.motionMode !== "auto") fields.push(["requiredButton", "控制按钮ID", "text"]);
     fields.push(["moveTargetX", "目标X", "number"]);
     fields.push(["moveTargetY", "目标Y", "number"]);
     fields.push(["periodSec", "移动秒", "number"]);
@@ -635,6 +710,10 @@ function makeField(object, key, labelText, kind) {
     addOption(input, "player", "玩家");
     addOption(input, "ghost", "分身");
     addOption(input, "both", "玩家或分身");
+  } else if (kind === "select-motion-mode") {
+    input = document.createElement("select");
+    addOption(input, "button", "按钮控制");
+    addOption(input, "auto", "自动往返");
   } else if (kind === "select-state") {
     input = document.createElement("select");
     addOption(input, "solid", "实");
@@ -658,17 +737,27 @@ function makeField(object, key, labelText, kind) {
   else input.value = object[key] ?? "";
   input.addEventListener("input", () => {
     const field = input.dataset.field;
+    const beforeX = object.x;
+    const beforeY = object.y;
     if (field === "tags" || field === "links") object[field] = parseList(input.value);
     else if (["x", "y", "w", "h", "moveTargetX", "moveTargetY", "periodSec"].includes(field)) object[field] = number(input.value, object[field]);
-    else if (field === "rotation") object[field] = normalizeRotation(input.value);
+    else if (field === "rotation") {
+      if (object.type === "movingPlatform") rotateMovingPlatformTo(object, input.value);
+      else object[field] = normalizeRotation(input.value);
+    }
     else if (field === "type") changeObjectType(object, input.value);
     else object[field] = input.value;
     if (field === "requiredButton") syncBridgeRequiredButton(object);
     if (field === "requiredButton") syncMovingPlatformRequiredButton(object);
     if (object.type === "button" && field === "links") syncButtonBridgeLinks(object);
     if (object.type === "button" && field === "links") syncButtonMovingPlatformLinks(object);
+    if (object.type === "button" && field === "links") removeAutoMovingPlatformLinks(object);
     if (object.type === "button" && ["x", "y", "w", "h", "links"].includes(field)) syncButtonMovingPlatformTargets(object);
-    if (object.type === "movingPlatform" && ["x", "y", "w", "h", "requiredButton"].includes(field)) syncMovingPlatformTargetFromRequiredButton(object);
+    if (object.type === "movingPlatform" && field === "requiredButton") syncMovingPlatformTargetFromRequiredButton(object);
+    if (object.type === "movingPlatform" && field === "motionMode" && object.motionMode === "auto") detachAutoMovingPlatformFromButtons(object);
+    if (object.type === "laser" && field === "attachedTo") syncLaserAttachmentLink(object);
+    if (object.type === "movingPlatform" && (field === "x" || field === "y")) moveAttachedLasersBy(object.id, object.x - beforeX, object.y - beforeY);
+    if (field === "motionMode") updateInspector();
     updateValidation();
     draw();
     writeJson();
@@ -700,10 +789,12 @@ function changeObjectType(object, nextType) {
   if (isHazardType(nextType) && !object.affects) object.affects = "player";
   if (nextType === "movingPlatform") {
     object.requiredButton = object.requiredButton || "";
-    object.moveTargetX = number(object.moveTargetX, object.x + 240);
+    object.motionMode = object.motionMode === "auto" ? "auto" : "button";
+    object.moveTargetX = number(object.moveTargetX, object.x + DEFAULT_GRID * 4);
     object.moveTargetY = number(object.moveTargetY, object.y);
     object.periodSec = Math.max(0.5, number(object.periodSec, 3));
   }
+  if (nextType === "laser") object.attachedTo = object.attachedTo || "";
   if (nextType === "bridge") {
     object.requiredButton = object.requiredButton || "";
     object.defaultState = object.defaultState || "phantom";
@@ -735,7 +826,8 @@ function autoPairLabel(object) {
   if (object.type === "door") return "配最近钥匙";
   if (object.type === "button") return "配最近机关";
   if (object.type === "bridge") return "配最近按钮";
-  if (object.type === "movingPlatform") return "配最近按钮";
+  if (object.type === "movingPlatform" && object.motionMode !== "auto") return "配最近按钮";
+  if (object.type === "laser") return "吸附最近移动平台";
   return "";
 }
 
@@ -762,6 +854,8 @@ function autoPair(object) {
     bindButtonBridge(target, object);
   } else if (object.type === "movingPlatform") {
     bindButtonMovingPlatform(target, object, true);
+  } else if (object.type === "laser") {
+    bindLaserToPlatform(object, target);
   }
   updateInspector();
   updateValidation();
@@ -776,7 +870,8 @@ function autoPairTargetTypes(object) {
     door: ["key"],
     button: ["bridge", "movingPlatform"],
     bridge: ["button"],
-    movingPlatform: ["button"]
+    movingPlatform: ["button"],
+    laser: ["movingPlatform"]
   }[object.type] || [];
 }
 
@@ -793,10 +888,18 @@ function bindButtonBridge(button, bridge) {
 
 function bindButtonMovingPlatform(button, platform, updateTarget = false) {
   if (!button || !platform || button.type !== "button" || platform.type !== "movingPlatform") return;
+  if (platform.motionMode === "auto") return;
   addLink(button, platform.id);
   platform.requiredButton = button.id;
   syncChannel(button, platform);
   if (updateTarget) setMovingPlatformTargetTowardButton(platform, button);
+}
+
+function bindLaserToPlatform(laser, platform) {
+  if (!laser || laser.type !== "laser" || !platform || platform.type !== "movingPlatform") return;
+  laser.attachedTo = platform.id;
+  addLink(laser, platform.id);
+  if (!laser.notes) laser.notes = `吸附在 ${platform.id} 上，试玩时会跟随平台移动。`;
 }
 
 function syncBridgeRequiredButton(bridge) {
@@ -807,8 +910,39 @@ function syncBridgeRequiredButton(bridge) {
 
 function syncMovingPlatformRequiredButton(platform) {
   if (!platform || platform.type !== "movingPlatform" || !platform.requiredButton) return;
+  if (platform.motionMode === "auto") {
+    platform.requiredButton = "";
+    return;
+  }
   const button = map.objects.find((object) => object.id === platform.requiredButton && object.type === "button");
   if (button) bindButtonMovingPlatform(button, platform, true);
+}
+
+function syncLaserAttachmentLink(laser) {
+  if (!laser || laser.type !== "laser") return;
+  laser.links = laser.links.filter((id) => {
+    const linked = map.objects.find((object) => object.id === id);
+    return linked?.type !== "movingPlatform";
+  });
+  if (laser.attachedTo) addLink(laser, laser.attachedTo);
+}
+
+function moveAttachedLasersFromDrag(platform, dragState, dx, dy) {
+  for (const baseLaser of dragState.attachedLasers || []) {
+    const laser = map.objects.find((object) => object.id === baseLaser.id && object.type === "laser" && object.attachedTo === platform.id);
+    if (!laser) continue;
+    laser.x = snap(baseLaser.x + dx);
+    laser.y = snap(baseLaser.y + dy);
+  }
+}
+
+function moveAttachedLasersBy(platformId, dx, dy) {
+  if (!dx && !dy) return;
+  for (const laser of map.objects) {
+    if (laser.type !== "laser" || laser.attachedTo !== platformId) continue;
+    laser.x = snap(laser.x + dx);
+    laser.y = snap(laser.y + dy);
+  }
 }
 
 function syncButtonBridgeLinks(button) {
@@ -826,13 +960,31 @@ function syncButtonMovingPlatformLinks(button) {
   for (const id of button.links) {
     const platform = map.objects.find((object) => object.id === id && object.type === "movingPlatform");
     if (!platform) continue;
+    if (platform.motionMode === "auto") continue;
     bindButtonMovingPlatform(button, platform, true);
+  }
+}
+
+function removeAutoMovingPlatformLinks(button) {
+  if (!button || button.type !== "button") return;
+  button.links = button.links.filter((id) => {
+    const linked = map.objects.find((object) => object.id === id);
+    return !(linked?.type === "movingPlatform" && linked.motionMode === "auto");
+  });
+}
+
+function detachAutoMovingPlatformFromButtons(platform) {
+  if (!platform || platform.type !== "movingPlatform" || platform.motionMode !== "auto") return;
+  platform.requiredButton = "";
+  for (const object of map.objects) {
+    if (object.type !== "button") continue;
+    object.links = object.links.filter((id) => id !== platform.id);
   }
 }
 
 function syncButtonMovingPlatformTargets(button) {
   if (!button || button.type !== "button") return;
-  const targets = map.objects.filter((object) => object.type === "movingPlatform" && (object.requiredButton === button.id || button.links.includes(object.id)));
+  const targets = map.objects.filter((object) => object.type === "movingPlatform" && object.motionMode !== "auto" && (object.requiredButton === button.id || button.links.includes(object.id)));
   for (const platform of targets) setMovingPlatformTargetTowardButton(platform, button);
 }
 
@@ -859,6 +1011,7 @@ function nearestObjectOfTypes(source, types) {
   let bestDist = Infinity;
   for (const object of map.objects) {
     if (object.id === source.id || !allowed.has(object.type)) continue;
+    if (!canPairObjects(source, object)) continue;
     const c = centerOf(object);
     const dist = (c.x - s.x) ** 2 + (c.y - s.y) ** 2;
     if (dist < bestDist) {
@@ -867,6 +1020,12 @@ function nearestObjectOfTypes(source, types) {
     }
   }
   return best;
+}
+
+function canPairObjects(source, target) {
+  if (source.type === "button" && target.type === "movingPlatform" && target.motionMode === "auto") return false;
+  if (source.type === "movingPlatform" && source.motionMode === "auto" && target.type === "button") return false;
+  return true;
 }
 
 function setMovingPlatformTargetTowardButton(platform, button) {
@@ -895,9 +1054,9 @@ function syncMetaFromUi() {
   map.title = ui.title.value;
   map.ruleNotes = ui.ruleNotes.value;
   map.experience = ui.experience.value;
-  map.world.w = Math.max(800, number(ui.worldW.value, map.world.w));
-  map.world.h = Math.max(360, number(ui.worldH.value, map.world.h));
-  map.world.grid = Math.max(5, number(ui.grid.value, map.world.grid));
+  map.world.w = Math.max(DEFAULT_WORLD_W, number(ui.worldW.value, map.world.w));
+  map.world.h = Math.max(DEFAULT_WORLD_H, number(ui.worldH.value, map.world.h));
+  map.world.grid = Math.max(16, number(ui.grid.value, map.world.grid));
   snapEnabled = ui.snap.checked;
   clampCamera();
 }
@@ -924,6 +1083,8 @@ function updateValidation() {
   if (dupes.length) warnings.push(`重复 ID：${[...new Set(dupes)].join(", ")}`);
   const idSet = new Set(ids);
   const byId = new Map(map.objects.map((object) => [object.id, object]));
+  if (map.world.w !== DEFAULT_WORLD_W || map.world.h !== DEFAULT_WORLD_H) warnings.push(`当前项目规定单屏场景为 ${DEFAULT_WORLD_W}x${DEFAULT_WORLD_H}`);
+  if (map.world.grid !== DEFAULT_GRID) warnings.push(`当前项目规定基础网格为 ${DEFAULT_GRID}px`);
   for (const object of map.objects) {
     for (const link of object.links) {
       if (!idSet.has(link)) warnings.push(`${object.id} 链接了不存在的对象：${link}`);
@@ -942,9 +1103,10 @@ function updateValidation() {
     if (object.type === "button" && !buttonControlsMechanism(object, byId)) warnings.push(`${object.id} 还没有绑定桥或移动平台`);
     if (object.type === "bridge" && object.requiredButton && byId.get(object.requiredButton)?.type !== "button") warnings.push(`${object.id} 的控制按钮 ID 不存在`);
     if (object.type === "bridge" && object.defaultState === "phantom" && !bridgeHasButtonControl(object, byId)) warnings.push(`${object.id} 还没有按钮控制`);
-    if (object.type === "movingPlatform" && object.requiredButton && byId.get(object.requiredButton)?.type !== "button") warnings.push(`${object.id} 的控制按钮 ID 不存在`);
-    if (object.type === "movingPlatform" && !movingPlatformHasButtonControl(object, byId)) warnings.push(`${object.id} 还没有按钮控制`);
+    if (object.type === "movingPlatform" && object.motionMode !== "auto" && object.requiredButton && byId.get(object.requiredButton)?.type !== "button") warnings.push(`${object.id} 的控制按钮 ID 不存在`);
+    if (object.type === "movingPlatform" && object.motionMode !== "auto" && !movingPlatformHasButtonControl(object, byId)) warnings.push(`${object.id} 还没有按钮控制`);
     if (isHazardType(object.type) && map.rules.ghostIgnoresHazards && object.affects !== "player") warnings.push(`${object.id} 与规则冲突：当前设定分身免疫陷阱`);
+    if (object.type === "laser" && object.attachedTo && byId.get(object.attachedTo)?.type !== "movingPlatform") warnings.push(`${object.id} 吸附的平台 ID 不存在或不是移动平台`);
   }
   const spawnCount = map.objects.filter((object) => object.type === "spawn").length;
   if (spawnCount !== 1) warnings.push(`出生点数量应为 1，现在是 ${spawnCount}`);
@@ -960,8 +1122,8 @@ function hasIncoming(type, targetId) {
 
 function buttonControlsMechanism(button, byId) {
   if (button.links.some((id) => byId.get(id)?.type === "bridge")) return true;
-  if (button.links.some((id) => byId.get(id)?.type === "movingPlatform")) return true;
-  return [...byId.values()].some((object) => ["bridge", "movingPlatform"].includes(object.type) && object.requiredButton === button.id);
+  if (button.links.some((id) => byId.get(id)?.type === "movingPlatform" && byId.get(id)?.motionMode !== "auto")) return true;
+  return [...byId.values()].some((object) => (object.type === "bridge" || (object.type === "movingPlatform" && object.motionMode !== "auto")) && object.requiredButton === button.id);
 }
 
 function bridgeHasButtonControl(bridge, byId) {
@@ -1029,7 +1191,7 @@ function runtimeObject(object) {
     w: object.w,
     h: object.h
   };
-  for (const key of ["rotation", "channel", "links", "tags", "notes", "requiredKey", "requiredButton", "mode", "pressedBy", "affects", "defaultState", "activeState", "moveTargetX", "moveTargetY", "periodSec"]) {
+  for (const key of ["rotation", "channel", "links", "tags", "notes", "requiredKey", "requiredButton", "mode", "pressedBy", "affects", "defaultState", "activeState", "motionMode", "moveTargetX", "moveTargetY", "periodSec", "attachedTo"]) {
     if (object[key] === undefined) continue;
     if (Array.isArray(object[key])) result[key] = [...object[key]];
     else result[key] = object[key];
@@ -1139,7 +1301,7 @@ function mapFromLevelJson(level) {
     ruleNotes: level.ruleNotes || "",
     experience: level.experience || "",
     rules: level.rules || {},
-    world: level.world || { w: 2400, h: 720, grid: 20 },
+    world: level.world || { w: DEFAULT_WORLD_W, h: DEFAULT_WORLD_H, grid: DEFAULT_GRID },
     objects
   });
 }
@@ -1171,9 +1333,11 @@ function addRuntimeObject(objects, item, type, fallbackId, fallbackLabel) {
     affects: item.affects,
     defaultState: item.defaultState,
     activeState: item.activeState,
+    motionMode: item.motionMode,
     moveTargetX: item.moveTargetX,
     moveTargetY: item.moveTargetY,
-    periodSec: item.periodSec
+    periodSec: item.periodSec,
+    attachedTo: item.attachedTo
   });
 }
 
@@ -1244,7 +1408,7 @@ function duplicateSelected() {
   copy.x += map.world.grid * 2;
   copy.y += map.world.grid * 2;
   if (copy.type === "movingPlatform") {
-    copy.moveTargetX = number(copy.moveTargetX, object.x + 240) + map.world.grid * 2;
+    copy.moveTargetX = number(copy.moveTargetX, object.x + DEFAULT_GRID * 4) + map.world.grid * 2;
     copy.moveTargetY = number(copy.moveTargetY, object.y) + map.world.grid * 2;
   }
   map.objects.push(copy);
@@ -1252,10 +1416,50 @@ function duplicateSelected() {
   writeJson();
 }
 
+function rotateMovingPlatformTo(object, nextRotation) {
+  const current = normalizeRotation(object.rotation);
+  const next = normalizeRotation(nextRotation);
+  const delta = ((next - current) % 360 + 360) % 360;
+  if (delta !== 0) {
+    const center = centerOf(object);
+    const targetCenter = centerOf(movingPlatformTargetRect(object));
+    const dx = targetCenter.x - center.x;
+    const dy = targetCenter.y - center.y;
+    const rotatedOffset = rotateOffset(dx, dy, delta);
+    const oldW = object.w;
+    if ((delta / 90) % 2 === 1) {
+      object.w = object.h;
+      object.h = oldW;
+    }
+    object.x = snap(center.x - object.w / 2);
+    object.y = snap(center.y - object.h / 2);
+    object.moveTargetX = snap(center.x + rotatedOffset.x - object.w / 2);
+    object.moveTargetY = snap(center.y + rotatedOffset.y - object.h / 2);
+  }
+  object.rotation = next;
+}
+
+function rotateOffset(dx, dy, degrees) {
+  const rotation = normalizeRotation(degrees);
+  if (rotation === 90) return { x: -dy, y: dx };
+  if (rotation === 180) return { x: -dx, y: -dy };
+  if (rotation === 270) return { x: dy, y: -dx };
+  return { x: dx, y: dy };
+}
+
 function rotateSelected(delta = 90) {
   const object = selectedObject();
   if (!object) {
     setStatus("先选中一个物件再旋转。");
+    return;
+  }
+  if (object.type === "movingPlatform") {
+    rotateMovingPlatformTo(object, normalizeRotation((object.rotation || 0) + delta));
+    updateInspector();
+    updateValidation();
+    draw();
+    writeJson();
+    setStatus(`${object.id} 已旋转到 ${object.rotation}°。`);
     return;
   }
   const center = centerOf(object);
@@ -1279,6 +1483,7 @@ function deleteSelected() {
     object.links = object.links.filter((id) => id !== selectedId);
     if (object.requiredKey === selectedId) object.requiredKey = "";
     if (object.requiredButton === selectedId) object.requiredButton = "";
+    if (object.attachedTo === selectedId) object.attachedTo = "";
   }
   selectedId = null;
   updateInspector();
@@ -1320,14 +1525,19 @@ function makeBrief() {
     }
     if (object.type === "movingPlatform") {
       const target = movingPlatformTarget(object);
-      lines.push(`- 移动平台 ${object.id}: 控制按钮 ${controllingButtonId(object, byId) || "未绑定"}；按住向 (${target.x}, ${target.y}) 平移，松开回 (${object.x}, ${object.y})，移动时间 ${Math.max(0.5, number(object.periodSec, 3))}s`);
+      if (object.motionMode === "auto") {
+        lines.push(`- 自动移动平台 ${object.id}: 在 (${object.x}, ${object.y}) 和 (${target.x}, ${target.y}) 之间自动往返，单程 ${Math.max(0.5, number(object.periodSec, 3))}s`);
+      } else {
+        lines.push(`- 按钮移动平台 ${object.id}: 控制按钮 ${controllingButtonId(object, byId) || "未绑定"}；按住向 (${target.x}, ${target.y}) 平移，松开回 (${object.x}, ${object.y})，移动时间 ${Math.max(0.5, number(object.periodSec, 3))}s`);
+      }
     }
     if (object.type === "spike") {
       lines.push(`- 尖刺 ${object.id}: 影响 ${actorLabel(object.affects)}，分身通常应免疫`);
     }
     if (object.type === "laser") {
       const beam = laserBeamRect(object, editorLaserBlockers(object));
-      lines.push(`- 激光 ${object.id}: 影响 ${actorLabel(object.affects)}；方向 ${normalizeRotation(object.rotation)}°，射程 ${object.w}x${object.h}，当前被阻挡后光束 ${Math.round(beam.w)}x${Math.round(beam.h)}`);
+      const attached = object.attachedTo ? `；吸附在 ${object.attachedTo}` : "";
+      lines.push(`- 激光 ${object.id}: 影响 ${actorLabel(object.affects)}；方向 ${normalizeRotation(object.rotation)}°，射程 ${object.w}x${object.h}，当前被阻挡后光束 ${Math.round(beam.w)}x${Math.round(beam.h)}${attached}`);
     }
   }
   lines.push("");
@@ -1355,9 +1565,9 @@ function controlledBridgeIds(button, byId) {
 }
 
 function controlledMovingPlatformIds(button, byId) {
-  const ids = new Set(button.links.filter((id) => byId.get(id)?.type === "movingPlatform"));
+  const ids = new Set(button.links.filter((id) => byId.get(id)?.type === "movingPlatform" && byId.get(id)?.motionMode !== "auto"));
   for (const object of byId.values()) {
-    if (object.type === "movingPlatform" && object.requiredButton === button.id) ids.add(object.id);
+    if (object.type === "movingPlatform" && object.motionMode !== "auto" && object.requiredButton === button.id) ids.add(object.id);
   }
   return [...ids];
 }
@@ -1546,6 +1756,8 @@ function drawMovingPlatform(p, rect, info, object) {
   ctx.fillStyle = "rgba(139,209,124,0.12)";
   ctx.fillRect(targetScreen.x, targetScreen.y, rect.w, rect.h);
   ctx.strokeRect(targetScreen.x, targetScreen.y, rect.w, rect.h);
+  ctx.fillStyle = "rgba(139,209,124,0.82)";
+  ctx.fillRect(targetCenterScreen.x - 5, targetCenterScreen.y - 5, 10, 10);
   ctx.setLineDash([]);
   ctx.restore();
 
@@ -1556,13 +1768,14 @@ function drawMovingPlatform(p, rect, info, object) {
   ctx.strokeStyle = info.color;
   ctx.lineWidth = 2;
   ctx.strokeRect(p.x, p.y, rect.w, rect.h);
-  drawMiniText(`按住 ${Math.max(0.5, number(object.periodSec, 3))}s`, p.x + 6, p.y + rect.h - 7, info.color);
-  if (object.requiredButton) drawMiniText(object.requiredButton, p.x + 6, p.y - 3, info.color);
+  const moveMode = object.motionMode === "auto" ? "自动" : "按住";
+  drawMiniText(`${moveMode} ${Math.max(0.5, number(object.periodSec, 3))}s`, p.x + 6, p.y + rect.h - 7, info.color);
+  if (object.motionMode !== "auto" && object.requiredButton) drawMiniText(object.requiredButton, p.x + 6, p.y - 3, info.color);
 }
 
 function movingPlatformTarget(object) {
   return {
-    x: number(object.moveTargetX, object.x + 240),
+    x: number(object.moveTargetX, object.x + DEFAULT_GRID * 4),
     y: number(object.moveTargetY, object.y)
   };
 }
@@ -1614,7 +1827,7 @@ function laserBlockDistance(laser, blocker) {
 
 function laserEmitterRect(laser) {
   const rotation = normalizeRotation(laser.rotation);
-  const size = 14;
+  const size = 32;
   if (rotation === 90) return { x: laser.x, y: laser.y, w: laser.w, h: Math.min(size, laser.h) };
   if (rotation === 180) return { x: laser.x + Math.max(0, laser.w - size), y: laser.y, w: Math.min(size, laser.w), h: laser.h };
   if (rotation === 270) return { x: laser.x, y: laser.y + Math.max(0, laser.h - size), w: laser.w, h: Math.min(size, laser.h) };
@@ -1623,7 +1836,7 @@ function laserEmitterRect(laser) {
 
 function editorLaserBlockers(laser) {
   return map.objects
-    .filter((object) => object.id !== laser.id && (object.type === "platform" || object.type === "movingPlatform" || (object.type === "bridge" && object.defaultState !== "phantom")))
+    .filter((object) => object.id !== laser.id && object.id !== laser.attachedTo && (object.type === "platform" || object.type === "movingPlatform" || (object.type === "bridge" && object.defaultState !== "phantom")))
     .map(objectRect);
 }
 
@@ -1650,7 +1863,8 @@ function drawLaser(p, rect, info, object) {
   ctx.lineWidth = 2;
   ctx.strokeRect(p.x, p.y, rect.w, rect.h);
   ctx.restore();
-  drawMiniText("伤" + actorLabel(object.affects), p.x + 4, p.y - 3, info.color);
+  const attachText = object.attachedTo ? ` 附${object.attachedTo}` : "";
+  drawMiniText("伤" + actorLabel(object.affects) + attachText, p.x + 4, p.y - 3, info.color);
 }
 
 function drawSpikeTriangles(x, y, w, h, color, rotation = 0) {
@@ -1808,6 +2022,20 @@ function drawSelection() {
   ctx.setLineDash([]);
   ctx.fillStyle = "#f4c95d";
   ctx.fillRect(p.x + rect.w - 5, p.y + rect.h - 5, 10, 10);
+  if (object.type === "movingPlatform") {
+    const target = movingPlatformTargetRect(object);
+    const handle = movingPlatformTargetHandleRect(object);
+    const tp = worldToScreen(target.x, target.y);
+    const hp = worldToScreen(handle.x, handle.y);
+    ctx.fillStyle = "rgba(139,209,124,0.10)";
+    ctx.fillRect(tp.x - 4, tp.y - 4, target.w + 8, target.h + 8);
+    ctx.strokeStyle = "#8bd17c";
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(tp.x - 4, tp.y - 4, target.w + 8, target.h + 8);
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#8bd17c";
+    ctx.fillRect(hp.x, hp.y, handle.w, handle.h);
+  }
   ctx.restore();
 }
 
@@ -1918,7 +2146,14 @@ function makePlaytest(source) {
       progress: 0
     })),
     spikes: data.objects.filter((object) => object.type === "spike").map(runtimeObject),
-    lasers: data.objects.filter((object) => object.type === "laser").map(runtimeObject),
+    lasers: data.objects.filter((object) => object.type === "laser").map((object) => ({
+      ...runtimeObject(object),
+      homeX: object.x,
+      homeY: object.y,
+      attachOffsetX: 0,
+      attachOffsetY: 0,
+      attachedPlatform: null
+    })),
     keys: data.objects.filter((object) => object.type === "key").map((object) => ({
       ...runtimeObject(object),
       homeX: object.x,
@@ -1975,17 +2210,29 @@ function hydrateRuntimeRelations(runtime) {
     if (!button.bridges.length && button.channel) {
       button.bridges = runtime.bridges.filter((bridge) => bridge.channel === button.channel);
     }
-    button.movingPlatforms = runtime.movingPlatforms.filter((platform) => button.links.includes(platform.id) || platform.requiredButton === button.id);
+    button.movingPlatforms = runtime.movingPlatforms.filter((platform) => platform.motionMode !== "auto" && (button.links.includes(platform.id) || platform.requiredButton === button.id));
     if (!button.movingPlatforms.length && button.channel) {
-      button.movingPlatforms = runtime.movingPlatforms.filter((platform) => platform.channel === button.channel);
+      button.movingPlatforms = runtime.movingPlatforms.filter((platform) => platform.motionMode !== "auto" && platform.channel === button.channel);
     }
     button.controllerRef = buttons.get(button.id);
   }
   for (const platform of runtime.movingPlatforms) {
-    platform.controllers = runtime.buttons.filter((button) => button.links.includes(platform.id) || platform.requiredButton === button.id);
-    if (!platform.controllers.length && platform.channel) {
+    platform.controllers = platform.motionMode === "auto"
+      ? []
+      : runtime.buttons.filter((button) => button.links.includes(platform.id) || platform.requiredButton === button.id);
+    if (platform.motionMode !== "auto" && !platform.controllers.length && platform.channel) {
       platform.controllers = runtime.buttons.filter((button) => button.channel && button.channel === platform.channel);
     }
+    platform.direction = 1;
+  }
+  const movingPlatforms = new Map(runtime.movingPlatforms.map((platform) => [platform.id, platform]));
+  for (const laser of runtime.lasers) {
+    if (!laser.attachedTo) continue;
+    const platform = movingPlatforms.get(laser.attachedTo);
+    if (!platform) continue;
+    laser.attachedPlatform = platform;
+    laser.attachOffsetX = laser.x - platform.x;
+    laser.attachOffsetY = laser.y - platform.y;
   }
 }
 
@@ -2025,6 +2272,7 @@ function updatePlaytest(dt, now) {
   updatePlayGhost(now);
   updatePlayButtons(now);
   updatePlayMovingPlatforms(dt);
+  updatePlayAttachedLasers();
   if (!playtest.completed) updatePlayPlayer(dt, now);
   if (playtest.recording && now >= playtest.recording.expiresAt) expirePlayRecording();
   if (playtest.recording) samplePlayRecording(now);
@@ -2093,10 +2341,17 @@ function updatePlayPlayer(dt, now) {
 function updatePlayMovingPlatforms(dt) {
   for (const platform of playtest.movingPlatforms) {
     const target = movingPlatformTarget(platform);
-    const active = movingPlatformActive(platform);
     const duration = Math.max(0.5, number(platform.periodSec, 3));
     const step = dt / duration;
-    platform.progress = clampValue((platform.progress || 0) + (active ? step : -step), 0, 1);
+    if (platform.motionMode === "auto") {
+      const direction = platform.direction || 1;
+      platform.progress = clampValue((platform.progress || 0) + step * direction, 0, 1);
+      if (platform.progress >= 1) platform.direction = -1;
+      if (platform.progress <= 0) platform.direction = 1;
+    } else {
+      const active = movingPlatformActive(platform);
+      platform.progress = clampValue((platform.progress || 0) + (active ? step : -step), 0, 1);
+    }
     const nextX = lerpValue(platform.homeX, target.x, platform.progress);
     const nextY = lerpValue(platform.homeY, target.y, platform.progress);
     platform.dx = nextX - platform.x;
@@ -2107,8 +2362,18 @@ function updatePlayMovingPlatforms(dt) {
 }
 
 function movingPlatformActive(platform) {
+  if (platform.motionMode === "auto") return true;
   const controllers = platform.controllers || [];
   return controllers.length ? controllers.some((button) => button.active) : false;
+}
+
+function updatePlayAttachedLasers() {
+  for (const laser of playtest.lasers) {
+    const platform = laser.attachedPlatform;
+    if (!platform) continue;
+    laser.x = platform.x + laser.attachOffsetX;
+    laser.y = platform.y + laser.attachOffsetY;
+  }
 }
 
 function applyPlayWallSlide(player, left, right) {
@@ -2432,10 +2697,10 @@ function playBridgeSolid(bridge) {
   return state !== "phantom";
 }
 
-function playLaserBlockers() {
+function playLaserBlockers(laser) {
   const blockers = [
     ...playtest.platforms,
-    ...playtest.movingPlatforms
+    ...playtest.movingPlatforms.filter((platform) => platform.id !== laser?.attachedTo)
   ];
   for (const bridge of playtest.bridges) {
     if (playBridgeSolid(bridge)) blockers.push(bridge);
@@ -2444,7 +2709,7 @@ function playLaserBlockers() {
 }
 
 function playLaserBeamRect(laser) {
-  return laserBeamRect(laser, playLaserBlockers());
+  return laserBeamRect(laser, playLaserBlockers(laser));
 }
 
 function carryPlayerOnPlayGhost() {
@@ -2911,12 +3176,15 @@ window.addEventListener("keydown", (event) => {
   const object = selectedObject();
   if (!object) return;
   const amount = event.shiftKey ? map.world.grid : 1;
+  const beforeX = object.x;
+  const beforeY = object.y;
   if (event.key === "ArrowLeft") object.x -= amount;
   else if (event.key === "ArrowRight") object.x += amount;
   else if (event.key === "ArrowUp") object.y -= amount;
   else if (event.key === "ArrowDown") object.y += amount;
   else return;
   event.preventDefault();
+  if (object.type === "movingPlatform") moveAttachedLasersBy(object.id, object.x - beforeX, object.y - beforeY);
   updateInspector();
   updateValidation();
   draw();

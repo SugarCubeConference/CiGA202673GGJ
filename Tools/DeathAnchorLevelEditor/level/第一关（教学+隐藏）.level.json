@@ -1,0 +1,240 @@
+{
+  "schema": "death-anchor-level-v1",
+  "title": "第一关（教学+隐藏）",
+  "ruleNotes": "",
+  "experience": "",
+  "rules": {
+    "recordWindowSec": 5,
+    "maxGhosts": 1,
+    "ghostSolid": true,
+    "ghostCanStandOnPlayer": true,
+    "ghostCanPressButtons": true,
+    "ghostIgnoresHazards": true,
+    "playerWallSlide": true,
+    "wallSlideMaxSpeed": 125
+  },
+  "world": {
+    "w": 1024,
+    "h": 576,
+    "grid": 32
+  },
+  "player": {
+    "w": 32,
+    "h": 32,
+    "physics": {
+      "editorUnits": "px",
+      "playerWidth": 32,
+      "playerHeight": 32,
+      "gravity": 1500,
+      "fallGravityMultiplier": 1.22,
+      "moveSpeed": 285,
+      "groundAcceleration": 99999,
+      "airAcceleration": 99999,
+      "groundFriction": 99999,
+      "jumpSpeed": 670,
+      "maxFallSpeed": 700,
+      "coyoteTimeMs": 95,
+      "jumpBufferMs": 130,
+      "jumpCutMultiplier": 0.52,
+      "instantHorizontalMovement": true,
+      "wallSlideMaxSpeed": 125
+    },
+    "abilities": {
+      "wallSlide": true,
+      "wallSlideMaxSpeed": 125
+    }
+  },
+  "spawn": {
+    "id": "spawn",
+    "type": "spawn",
+    "label": "出生点",
+    "x": 64,
+    "y": 480,
+    "w": 32,
+    "h": 32,
+    "rotation": 0,
+    "channel": "",
+    "links": [],
+    "tags": [
+      "start"
+    ],
+    "notes": ""
+  },
+  "goals": [
+    {
+      "id": "goal",
+      "type": "goal",
+      "label": "出口",
+      "x": 928,
+      "y": 448,
+      "w": 64,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "goal"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "goal-1",
+      "type": "goal",
+      "label": "出口",
+      "x": 928,
+      "y": 32,
+      "w": 64,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "goal"
+      ],
+      "notes": ""
+    }
+  ],
+  "platforms": [
+    {
+      "id": "floor",
+      "type": "platform",
+      "label": "地面",
+      "x": 0,
+      "y": 512,
+      "w": 1024,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "ground"
+      ],
+      "notes": "按 32x32 地形块拼接。"
+    },
+    {
+      "id": "platform-1",
+      "type": "platform",
+      "label": "地形",
+      "x": 704,
+      "y": 96,
+      "w": 320,
+      "h": 224,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-2",
+      "type": "platform",
+      "label": "地形",
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 512,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-3",
+      "type": "platform",
+      "label": "地形",
+      "x": 32,
+      "y": 0,
+      "w": 992,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    }
+  ],
+  "movingPlatforms": [],
+  "spikes": [
+    {
+      "id": "spike-1",
+      "type": "spike",
+      "label": "尖刺",
+      "x": 384,
+      "y": 480,
+      "w": 224,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "spike"
+      ],
+      "notes": "",
+      "affects": "player"
+    }
+  ],
+  "lasers": [],
+  "keys": [
+    {
+      "id": "key-1",
+      "type": "key",
+      "label": "钥匙",
+      "x": 1024,
+      "y": 256,
+      "w": 32,
+      "h": 32,
+      "rotation": 0,
+      "channel": "A",
+      "links": [],
+      "tags": [
+        "key"
+      ],
+      "notes": ""
+    }
+  ],
+  "doors": [],
+  "buttons": [],
+  "bridges": [],
+  "anchorZones": [],
+  "notes": [
+    {
+      "id": "note-1",
+      "type": "note",
+      "label": "设计备注",
+      "x": 160,
+      "y": 352,
+      "w": 190,
+      "h": 62,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "note"
+      ],
+      "notes": "这里放教程，介绍死亡回归机制"
+    },
+    {
+      "id": "note-2",
+      "type": "note",
+      "label": "设计备注",
+      "x": 512,
+      "y": 32,
+      "w": 190,
+      "h": 62,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "note"
+      ],
+      "notes": "隐藏关卡，需要理解超级跳后再过来"
+    }
+  ]
+}

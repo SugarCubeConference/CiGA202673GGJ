@@ -1,0 +1,332 @@
+{
+  "schema": "death-anchor-level-v1",
+  "title": "不知道第几关（时间差和激光特性）",
+  "ruleNotes": "死亡锚点：倒计时内死亡会生成一个固定的实体循环分身。玩家贴墙时会慢速下滑。机关：钥匙开门；按钮按下时让桥变实，也让移动平台向按钮方向平移；松开时桥变虚，移动平台回原位。激光会被地形、实体桥、移动平台阻挡。",
+  "experience": "",
+  "rules": {
+    "recordWindowSec": 5,
+    "maxGhosts": 1,
+    "ghostSolid": true,
+    "ghostCanStandOnPlayer": true,
+    "ghostCanPressButtons": true,
+    "ghostIgnoresHazards": true,
+    "playerWallSlide": true,
+    "wallSlideMaxSpeed": 125
+  },
+  "world": {
+    "w": 1024,
+    "h": 576,
+    "grid": 32
+  },
+  "player": {
+    "w": 32,
+    "h": 32,
+    "physics": {
+      "editorUnits": "px",
+      "playerWidth": 32,
+      "playerHeight": 32,
+      "gravity": 1500,
+      "fallGravityMultiplier": 1.22,
+      "moveSpeed": 285,
+      "groundAcceleration": 99999,
+      "airAcceleration": 99999,
+      "groundFriction": 99999,
+      "jumpSpeed": 670,
+      "maxFallSpeed": 700,
+      "coyoteTimeMs": 95,
+      "jumpBufferMs": 130,
+      "jumpCutMultiplier": 0.52,
+      "instantHorizontalMovement": true,
+      "wallSlideMaxSpeed": 125
+    },
+    "abilities": {
+      "wallSlide": true,
+      "wallSlideMaxSpeed": 125
+    }
+  },
+  "spawn": {
+    "id": "spawn",
+    "type": "spawn",
+    "label": "出生点",
+    "x": 480,
+    "y": 480,
+    "w": 32,
+    "h": 32,
+    "rotation": 0,
+    "channel": "",
+    "links": [],
+    "tags": [
+      "start"
+    ],
+    "notes": ""
+  },
+  "goals": [
+    {
+      "id": "goal-1",
+      "type": "goal",
+      "label": "出口",
+      "x": 928,
+      "y": 320,
+      "w": 64,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "goal"
+      ],
+      "notes": ""
+    }
+  ],
+  "platforms": [
+    {
+      "id": "floor",
+      "type": "platform",
+      "label": "地面",
+      "x": 0,
+      "y": 512,
+      "w": 1024,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "ground"
+      ],
+      "notes": "按 32x32 地形块拼接。"
+    },
+    {
+      "id": "platform-1",
+      "type": "platform",
+      "label": "地形",
+      "x": 0,
+      "y": 128,
+      "w": 192,
+      "h": 384,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-2",
+      "type": "platform",
+      "label": "地形",
+      "x": 0,
+      "y": 0,
+      "w": 1024,
+      "h": 128,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-4",
+      "type": "platform",
+      "label": "地形",
+      "x": 576,
+      "y": 448,
+      "w": 448,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-5",
+      "type": "platform",
+      "label": "地形",
+      "x": 896,
+      "y": 384,
+      "w": 128,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-6",
+      "type": "platform",
+      "label": "地形",
+      "x": 320,
+      "y": 448,
+      "w": 32,
+      "h": 64,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "platform-3",
+      "type": "platform",
+      "label": "地形",
+      "x": 992,
+      "y": 128,
+      "w": 32,
+      "h": 256,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "platform"
+      ],
+      "notes": ""
+    }
+  ],
+  "movingPlatforms": [
+    {
+      "id": "movingPlatform-1",
+      "type": "movingPlatform",
+      "label": "移动平台",
+      "x": 256,
+      "y": 416,
+      "w": 32,
+      "h": 96,
+      "rotation": 90,
+      "channel": "B",
+      "links": [],
+      "tags": [
+        "movingPlatform"
+      ],
+      "notes": "",
+      "requiredButton": "button-2",
+      "moveTargetX": 256,
+      "moveTargetY": 224,
+      "periodSec": 2
+    }
+  ],
+  "spikes": [],
+  "lasers": [
+    {
+      "id": "laser-1",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 192,
+      "y": 416,
+      "w": 704,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player"
+    },
+    {
+      "id": "laser-2",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 192,
+      "y": 384,
+      "w": 704,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player"
+    },
+    {
+      "id": "laser-3",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 192,
+      "y": 352,
+      "w": 736,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player"
+    },
+    {
+      "id": "laser-4",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 192,
+      "y": 320,
+      "w": 736,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player"
+    },
+    {
+      "id": "laser-5",
+      "type": "laser",
+      "label": "激光发射器",
+      "x": 192,
+      "y": 288,
+      "w": 800,
+      "h": 32,
+      "rotation": 0,
+      "channel": "",
+      "links": [],
+      "tags": [
+        "laser"
+      ],
+      "notes": "",
+      "affects": "player"
+    }
+  ],
+  "keys": [],
+  "doors": [],
+  "buttons": [
+    {
+      "id": "button-2",
+      "type": "button",
+      "label": "按钮",
+      "x": 352,
+      "y": 480,
+      "w": 32,
+      "h": 32,
+      "rotation": 0,
+      "channel": "B",
+      "links": [
+        "movingPlatform-1"
+      ],
+      "tags": [
+        "button"
+      ],
+      "notes": "",
+      "mode": "hold",
+      "pressedBy": "both"
+    }
+  ],
+  "bridges": [],
+  "anchorZones": [],
+  "notes": []
+}

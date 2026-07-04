@@ -37,15 +37,15 @@
           </label>
           <label class="field">
             <span>世界宽</span>
-            <input id="worldWInput" type="number" min="800" step="20" />
+            <input id="worldWInput" type="number" min="1024" step="32" />
           </label>
           <label class="field">
             <span>世界高</span>
-            <input id="worldHInput" type="number" min="360" step="20" />
+            <input id="worldHInput" type="number" min="576" step="32" />
           </label>
           <label class="field">
             <span>网格</span>
-            <input id="gridInput" type="number" min="5" max="100" step="5" />
+            <input id="gridInput" type="number" min="16" max="64" step="16" />
           </label>
           <label class="check">
             <input id="snapInput" type="checkbox" checked />
@@ -74,7 +74,7 @@
       </aside>
 
       <main class="stage">
-        <canvas id="mapCanvas" width="1280" height="720" tabindex="0"></canvas>
+        <canvas id="mapCanvas" width="1024" height="576" tabindex="0"></canvas>
       </main>
 
       <aside class="side">
@@ -117,6 +117,6 @@
       </aside>
     </div>
 
-    <script src="./editor.js?v=unity-repo-editor1"></script>
+    <script src="./editor.js?v=auto-platform-no-button1"></script>
   </body>
 </html>

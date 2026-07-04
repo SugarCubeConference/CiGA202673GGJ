@@ -4,8 +4,8 @@
   "tileSizePx": 32,
   "pixelsPerUnit": 100,
   "editor": {
-    "playerWidthPx": 30,
-    "playerHeightPx": 42,
+    "playerWidthPx": 32,
+    "playerHeightPx": 32,
     "instantHorizontalMovement": true,
     "gravityPxPerSec2": 1500,
     "fallGravityMultiplier": 1.22,
@@ -21,8 +21,8 @@
     "wallSlideMaxSpeedPxPerSec": 125
   },
   "unity": {
-    "playerWidthUnits": 0.3,
-    "playerHeightUnits": 0.42,
+    "playerWidthUnits": 0.32,
+    "playerHeightUnits": 0.32,
     "gravityUnitsPerSec2": 15,
     "fallGravityMultiplier": 1.22,
     "moveSpeedUnitsPerSec": 2.85,
