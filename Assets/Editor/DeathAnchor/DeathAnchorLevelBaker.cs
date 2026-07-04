@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ public static class DeathAnchorLevelBaker
     private const string PrototypeLevelsDirectory = "D:/Users/LanluZ/Desktop/death-anchor-editor-gdd-handoff-20260704/levels";
     private const string OutputSceneDirectory = "Assets/Scenes/DeathAnchor";
     private const string ArtDirectory = "Assets/Art/DeathAnchor";
+    private const string BackgroundSpritePath = "Assets/Art/Background.png";
     private const string BakedRootName = "BakedLevelRoot";
 
     private static readonly Color PlatformColor = new Color(0.39f, 0.45f, 0.52f, 1f);
@@ -20,6 +22,10 @@ public static class DeathAnchorLevelBaker
     private static readonly Color PlayerColor = new Color(1f, 0.72f, 0.26f, 1f);
     private static readonly Color GhostColor = new Color(0.18f, 0.82f, 1f, 0.55f);
     private static readonly Color GoalColor = new Color(0.3f, 1f, 0.58f, 1f);
+    private static readonly Color PlayerLightColor = new Color(1f, 0.8f, 0.2f, 1f);
+    private static readonly Color GhostLightColor = new Color(0.2f, 0.8f, 1f, 1f);
+    private static readonly Color ExitLightColor = new Color(0.1f, 1f, 0.4f, 1f);
+    private static readonly Color GlobalLightColor = new Color(0.62f, 0.64f, 0.62f, 1f);
     private static readonly Color KeyColor = new Color(1f, 0.78f, 0.18f, 1f);
     private static readonly Color DoorColor = new Color(1f, 0.45f, 0.25f, 1f);
     private static readonly Color AnchorZoneColor = new Color(0.68f, 0.55f, 1f, 0.2f);
@@ -96,15 +102,17 @@ public static class DeathAnchorLevelBaker
         int interactableLayer = LayerOrDefault("Interactable");
 
         Dictionary<string, LinkedBridge> bridgesById = new Dictionary<string, LinkedBridge>();
+        Dictionary<string, MovingPlatform2D> movingPlatformsById = new Dictionary<string, MovingPlatform2D>();
 
         Transform environmentRoot = CreateChild(root.transform, "Environment");
         Transform interactableRoot = CreateChild(root.transform, "Interactables");
         Transform actorRoot = CreateChild(root.transform, "Actors");
 
         BakeObjects(level.platforms, environmentRoot, squareSprite, PlatformColor, groundLayer, AddStaticSolid);
-        BakeMovingPlatforms(level.movingPlatforms, environmentRoot, squareSprite, groundLayer);
+        BakeMovingPlatforms(level.movingPlatforms, environmentRoot, squareSprite, groundLayer, movingPlatformsById);
         BakeBridges(level.bridges, environmentRoot, squareSprite, groundLayer, bridgesById);
         BakeSpikes(level.spikes, environmentRoot, squareSprite, hazardLayer);
+        BakeLasers(level.lasers, environmentRoot, interactableLayer, Mask("Ground"));
         BakeAnchorZones(level.anchorZones, environmentRoot, squareSprite, interactableLayer);
 
         Transform spawnPoint = new GameObject("SpawnPoint").transform;
@@ -123,6 +131,9 @@ public static class DeathAnchorLevelBaker
             Mask("Ground", "Ghost"),
             level.rules == null || level.rules.playerWallSlide,
             WallSlideUnits(level));
+        player.AddComponent<AkGameObj>();
+        player.AddComponent<PlayerWwiseAudio>();
+        player.AddComponent<PlayerDustParticles>();
         player.transform.position = spawnPoint.position + Vector3.up * (PlayerHeight(level) * 0.5f);
         playerController.SpawnAtFootPosition(spawnPoint.position);
 
@@ -140,7 +151,7 @@ public static class DeathAnchorLevelBaker
 
         BakeKeys(level.keys, interactableRoot, squareSprite, interactableLayer);
         BakeDoors(level.doors, interactableRoot, squareSprite, groundLayer);
-        BakeButtons(level.buttons, interactableRoot, squareSprite, interactableLayer, bridgesById);
+        BakeButtons(level.buttons, interactableRoot, squareSprite, interactableLayer, bridgesById, movingPlatformsById);
         BakeGoals(level.goals, interactableRoot, squareSprite, interactableLayer);
 
         CreateCamera(root.transform, player.transform, level);
@@ -187,7 +198,7 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeMovingPlatforms(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
+    private static void BakeMovingPlatforms(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, MovingPlatform2D> movingPlatformsById)
     {
         if (objects == null)
         {
@@ -204,7 +215,12 @@ public static class DeathAnchorLevelBaker
             Vector2 target = item.moveTargetX != 0f || item.moveTargetY != 0f
                 ? Point(item.moveTargetX + item.w * 0.5f, item.moveTargetY + item.h * 0.5f)
                 : Center(item) + Vector2.right * 2f;
-            platform.Configure(target, item.periodSec > 0f ? item.periodSec : 3f);
+            string moveMode = string.IsNullOrEmpty(item.motionMode) ? item.mode : item.motionMode;
+            platform.Configure(target, item.periodSec > 0f ? item.periodSec : 3f, item.moveSpeed > 0f ? item.moveSpeed : 3f, moveMode);
+            if (!string.IsNullOrEmpty(item.id))
+            {
+                movingPlatformsById[item.id] = platform;
+            }
         }
     }
 
@@ -239,6 +255,39 @@ public static class DeathAnchorLevelBaker
             GameObject go = CreateBlock(item.id, parent, Center(item), Size(item), sprite, SpikeColor, layer);
             go.transform.rotation = Quaternion.Euler(0f, 0f, -item.rotation);
             go.AddComponent<HazardTrigger>();
+        }
+    }
+
+    private static void BakeLasers(DeathAnchorLevelObject[] objects, Transform parent, int layer, LayerMask blockMask)
+    {
+        if (objects == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < objects.Length; i++)
+        {
+            DeathAnchorLevelObject item = objects[i];
+            GameObject go = new GameObject(string.IsNullOrEmpty(item.id) ? "Laser" : item.id);
+            go.transform.SetParent(parent);
+            go.transform.position = Point(item.x, item.y);
+            go.layer = layer;
+
+            LineRenderer line = go.AddComponent<LineRenderer>();
+            line.positionCount = 2;
+            line.useWorldSpace = true;
+            line.sortingOrder = 20;
+            line.material = new Material(Shader.Find("Sprites/Default"));
+
+            LaserBeam laser = go.AddComponent<LaserBeam>();
+            Vector2 direction = new Vector2(item.dirX, item.dirY);
+            if (direction.sqrMagnitude <= 0.0001f)
+            {
+                direction = Vector2.right;
+            }
+
+            float distance = item.maxDistance > 0f ? item.maxDistance / PixelsPerUnit : 5f;
+            laser.Configure(direction, distance, blockMask, ColorFromRgb(item.beamColor, new Color(1f, 0.15f, 0.15f, 0.9f)));
         }
     }
 
@@ -292,7 +341,7 @@ public static class DeathAnchorLevelBaker
         }
     }
 
-    private static void BakeButtons(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, LinkedBridge> bridgesById)
+    private static void BakeButtons(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, Dictionary<string, LinkedBridge> bridgesById, Dictionary<string, MovingPlatform2D> movingPlatformsById)
     {
         if (objects == null)
         {
@@ -304,6 +353,7 @@ public static class DeathAnchorLevelBaker
             DeathAnchorLevelObject item = objects[i];
             GameObject go = CreateBlock(item.id, parent, Center(item), Size(item), sprite, KeyColor, layer);
             List<LinkedBridge> linked = new List<LinkedBridge>();
+            List<MovingPlatform2D> linkedPlatforms = new List<MovingPlatform2D>();
             if (item.links != null)
             {
                 for (int j = 0; j < item.links.Length; j++)
@@ -312,11 +362,16 @@ public static class DeathAnchorLevelBaker
                     {
                         linked.Add(bridge);
                     }
+
+                    if (movingPlatformsById.TryGetValue(item.links[j], out MovingPlatform2D platform))
+                    {
+                        linkedPlatforms.Add(platform);
+                    }
                 }
             }
 
             ButtonSwitch button = go.AddComponent<ButtonSwitch>();
-            button.Configure(item.id, item.pressedBy, linked.ToArray());
+            button.Configure(item.id, item.pressedBy, linked.ToArray(), linkedPlatforms.ToArray());
         }
     }
 
@@ -330,6 +385,8 @@ public static class DeathAnchorLevelBaker
         for (int i = 0; i < objects.Length; i++)
         {
             GameObject go = CreateBlock(objects[i].id, parent, Center(objects[i]), Size(objects[i]), sprite, GoalColor, layer);
+            ApplyLitShader(go, "Custom/ExitLit");
+            AddPointLight2D(go, "ExitLight", ExitLightColor, 3.5f, 2f, 5f, 0.5f);
             go.AddComponent<DeathAnchorGoalTrigger>();
         }
     }
@@ -352,6 +409,16 @@ public static class DeathAnchorLevelBaker
         SpriteRenderer renderer = visual.AddComponent<SpriteRenderer>();
         renderer.sprite = sprite;
         renderer.color = color;
+        renderer.sharedMaterial = CreateLitMaterial(ghost ? "Custom/GhostLit" : "Custom/PlayerLit");
+
+        AddPointLight2D(
+            go,
+            ghost ? "GhostLight" : "PlayerLight",
+            ghost ? GhostLightColor : PlayerLightColor,
+            ghost ? 2.5f : 3f,
+            ghost ? 1.4f : 0.87f,
+            ghost ? 3.5f : 5.47f,
+            ghost ? 0.5f : 0.26f);
 
         Rigidbody2D rb = go.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
@@ -378,6 +445,42 @@ public static class DeathAnchorLevelBaker
         return go;
     }
 
+    private static void ApplyLitShader(GameObject go, string shaderName)
+    {
+        SpriteRenderer renderer = go.GetComponent<SpriteRenderer>();
+        if (renderer == null)
+        {
+            return;
+        }
+
+        renderer.sharedMaterial = CreateLitMaterial(shaderName);
+    }
+
+    private static Material CreateLitMaterial(string shaderName)
+    {
+        Shader shader = Shader.Find(shaderName);
+        if (shader == null)
+        {
+            Debug.LogWarning($"[DeathAnchorLevelBaker] Shader '{shaderName}' not found. Falling back to default sprite material.");
+            return null;
+        }
+
+        return new Material(shader);
+    }
+
+    private static Light2D AddPointLight2D(GameObject go, string lightName, Color color, float intensity, float innerRadius, float outerRadius, float falloffIntensity)
+    {
+        Light2D light = go.AddComponent<Light2D>();
+        light.name = lightName;
+        light.lightType = Light2D.LightType.Point;
+        light.color = color;
+        light.intensity = intensity;
+        light.pointLightInnerRadius = innerRadius;
+        light.pointLightOuterRadius = outerRadius;
+        light.falloffIntensity = falloffIntensity;
+        return light;
+    }
+
     private static Transform CreateChild(Transform parent, string name)
     {
         GameObject child = new GameObject(name);
@@ -390,6 +493,27 @@ public static class DeathAnchorLevelBaker
         go.isStatic = true;
     }
 
+    private static void CreateBackground(Camera camera)
+    {
+        Sprite backgroundSprite = AssetDatabase.LoadAssetAtPath<Sprite>(BackgroundSpritePath);
+        if (backgroundSprite == null)
+        {
+            Debug.LogWarning($"[DeathAnchorLevelBaker] Background sprite not found at '{BackgroundSpritePath}'.");
+            return;
+        }
+
+        GameObject background = new GameObject("Background");
+        background.transform.SetParent(camera.transform, false);
+
+        SpriteRenderer renderer = background.AddComponent<SpriteRenderer>();
+        renderer.sprite = backgroundSprite;
+        renderer.color = Color.white;
+        renderer.sortingOrder = -100;
+
+        CameraBackgroundFitter fitter = background.AddComponent<CameraBackgroundFitter>();
+        fitter.Configure(camera, 10f);
+    }
+
     private static void CreateCamera(Transform root, Transform target, DeathAnchorLevelData level)
     {
         GameObject cameraObject = new GameObject("Main Camera");
@@ -398,8 +522,9 @@ public static class DeathAnchorLevelBaker
         Camera camera = cameraObject.AddComponent<Camera>();
         camera.orthographic = true;
         camera.orthographicSize = 3.6f;
-        camera.backgroundColor = new Color(0.12f, 0.13f, 0.16f, 1f);
+        camera.backgroundColor = new Color(0.22f, 0.23f, 0.23f, 1f);
         cameraObject.transform.position = new Vector3(target.position.x, target.position.y, -10f);
+        CreateBackground(camera);
         CameraFollow2D follow = cameraObject.AddComponent<CameraFollow2D>();
         float halfHeight = camera.orthographicSize;
         float halfWidth = halfHeight * 16f / 9f;
@@ -410,12 +535,12 @@ public static class DeathAnchorLevelBaker
 
     private static void CreateLight(Transform root)
     {
-        GameObject lightObject = new GameObject("Directional Light");
+        GameObject lightObject = new GameObject("GlobalLight2D");
         lightObject.transform.SetParent(root);
-        Light light = lightObject.AddComponent<Light>();
-        light.type = LightType.Directional;
-        light.intensity = 1f;
-        lightObject.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+        Light2D light = lightObject.AddComponent<Light2D>();
+        light.lightType = Light2D.LightType.Global;
+        light.color = GlobalLightColor;
+        light.intensity = 5.84f;
     }
 
     private static Text CreateCountdownUi(Transform root)
@@ -521,9 +646,19 @@ public static class DeathAnchorLevelBaker
         return new Vector2(Mathf.Max(0.05f, item.w / PixelsPerUnit), Mathf.Max(0.05f, item.h / PixelsPerUnit));
     }
 
+    private static Color ColorFromRgb(float[] rgb, Color fallback)
+    {
+        if (rgb == null || rgb.Length < 3)
+        {
+            return fallback;
+        }
+
+        return new Color(rgb[0], rgb[1], rgb[2], fallback.a);
+    }
+
     private static float PlayerWidth(DeathAnchorLevelData level)
     {
-        return (level.player != null && level.player.w > 0f ? level.player.w : 30f) / PixelsPerUnit;
+        return PlayerHeight(level);
     }
 
     private static float PlayerHeight(DeathAnchorLevelData level)
