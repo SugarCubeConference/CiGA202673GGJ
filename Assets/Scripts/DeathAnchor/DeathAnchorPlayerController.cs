@@ -45,6 +45,7 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     }
     public int Facing => facing;
     public bool Grounded => grounded;
+    public bool WallSliding { get; private set; }
 
     private void Awake()
     {
@@ -107,6 +108,7 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
             wallSliding = true;
             verticalSpeed = Mathf.Max(verticalSpeed, -wallSlideMaxSpeed);
         }
+        WallSliding = wallSliding;
 
         if (!wallSliding)
         {

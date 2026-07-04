@@ -19,6 +19,11 @@ public sealed class PlayerDustParticles : MonoBehaviour
     [Header("Land Dust")]
     [SerializeField] private int landDustCount = 12;
 
+    [Header("Wall Slide Dust")]
+    [SerializeField] private float wallDustInterval = 0.15f;
+    [SerializeField] private int wallDustCount = 2;
+    [SerializeField] private float wallDustOffsetX = 0.03f;
+
     [Header("Particle Look")]
     [SerializeField] private float particleStartSize = 0.04f;
     [SerializeField] private float particleLifetime = 0.4f;
@@ -28,6 +33,7 @@ public sealed class PlayerDustParticles : MonoBehaviour
     private ParticleSystem ps;
     private bool wasGrounded;
     private float nextWalkDustAt;
+    private float nextWallDustAt;
 
     private void Awake()
     {
@@ -167,15 +173,36 @@ public sealed class PlayerDustParticles : MonoBehaviour
             EmitAtFoot(landDustCount, 1.5f);
         }
 
+        // --- Wall slide dust: emit puffs from wall contact side ---
+        if (controller.WallSliding)
+        {
+            if (Time.time >= nextWallDustAt)
+            {
+                Vector3 wallPos = controller.FootPosition;
+                wallPos.x += -controller.Facing * wallDustOffsetX;
+                wallPos.y += 0.05f;
+                EmitAt(wallPos, wallDustCount, 0.5f);
+                nextWallDustAt = Time.time + Mathf.Max(0.05f, wallDustInterval);
+            }
+        }
+        else
+        {
+            nextWallDustAt = Time.time;
+        }
+
         wasGrounded = controller.Grounded;
     }
 
     private void EmitAtFoot(int count, float speedMultiplier)
     {
+        EmitAt(controller.FootPosition, count, speedMultiplier);
+    }
+
+    private void EmitAt(Vector3 position, int count, float speedMultiplier)
+    {
         if (ps == null) return;
 
-        Vector3 footPos = controller.FootPosition;
-        ps.transform.position = footPos;
+        ps.transform.position = position;
 
         var main = ps.main;
         float originalSpeed = main.startSpeed.constant;
