@@ -94,7 +94,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
 
         if (Time.time - recordingStartedAt > recordWindowSec)
         {
-            FinishRecording(false);
+            CancelRecording();
             return;
         }
 
@@ -130,6 +130,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         if (savedGhost)
         {
             SampleRecording();
+            CommitActiveAnchor();
             SpawnGhostFromRecording();
         }
         else if (isRecording)
@@ -212,8 +213,6 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         SampleRecording();
         SetCountdownVisible(true);
         UpdateCountdownText();
-        hasRespawnFootPosition = true;
-        respawnFootPosition = activeAnchorFootPosition;
     }
 
     private void CancelRecording()
@@ -237,27 +236,10 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         recordingFrames.Add(new DeathAnchorReplayFrame(elapsed, offset, player.Facing));
     }
 
-    private void FinishRecording(bool respawnPlayer)
+    private void CommitActiveAnchor()
     {
-        if (!isRecording)
-        {
-            return;
-        }
-
-        SampleRecording();
-
-        if (recordingFrames.Count >= 2)
-        {
-            SpawnGhostFromRecording();
-            if (respawnPlayer)
-            {
-                player.SpawnAtFootPosition(respawnFootPosition);
-            }
-        }
-        else
-        {
-            CancelRecording();
-        }
+        hasRespawnFootPosition = true;
+        respawnFootPosition = activeAnchorFootPosition;
     }
 
     private void SpawnGhostFromRecording()
