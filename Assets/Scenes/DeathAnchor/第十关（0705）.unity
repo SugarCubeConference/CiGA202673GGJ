@@ -1226,10 +1226,20 @@ MonoBehaviour:
   bridgeId: bridge-2
   defaultState: phantom
   activeState: solid
-  tilemap: {fileID: 0}
-  defaultTile: {fileID: 0}
-  activeTile: {fileID: 0}
-  tilePositions: []
+  tilemap: {fileID: 122854182}
+  defaultTile: {fileID: 11400000, guid: bcf190c1dee28af4dbea44836ba15071, type: 2}
+  activeTile: {fileID: 11400000, guid: f56bd6d46b07d4a439508aded26e0689, type: 2}
+  tilePositions:
+  - {x: 13, y: -10, z: 0}
+  - {x: 14, y: -10, z: 0}
+  - {x: 15, y: -10, z: 0}
+  - {x: 16, y: -10, z: 0}
+  - {x: 17, y: -10, z: 0}
+  - {x: 18, y: -10, z: 0}
+  - {x: 19, y: -10, z: 0}
+  - {x: 20, y: -10, z: 0}
+  - {x: 21, y: -10, z: 0}
+  - {x: 22, y: -10, z: 0}
 --- !u!61 &393588147
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2697,7 +2707,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 9d95db4c342003247b020bcc3e611767, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -8,6 +8,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	1900105048	Play_sfx_anchor_start			\Default Work Unit\Play_sfx_anchor_start	
 	2037741043	Play_sfx_player_land			\Default Work Unit\Play_sfx_player_land	
 	2258799967	Play_sfx_goal			\Default Work Unit\Play_sfx_goal	
+	2479442773	Play_theme			\Default Work Unit\Play_theme	
 	2484137795	Play_sfx_ui_select			\Default Work Unit\Play_sfx_ui_select	
 	3448000873	Play_sfx_door_unlock			\Default Work Unit\Play_sfx_door_unlock	
 	3507020163	Play_title_bgm			\Default Work Unit\Play_title_bgm	
@@ -22,6 +23,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	295088483	title_bgm	.cache\6B\{6B4B2EAC-249D-9B22-EFDC-B645447BD10F}.wem		\Containers\Default Work Unit\title_bgm		28290412
 	397741422	sfx_ui_focus	.cache\36\{3619D2F3-FCE2-E404-272F-15F59B5EA335}.wem		\Containers\Default Work Unit\UI\sfx_ui_focus		14632
 	468860864	sfx_ui_select	.cache\70\{700D9387-D0EE-6F16-0946-3040AC94D94D}.wem		\Containers\Default Work Unit\UI\sfx_ui_select		72700
+	494836012	theme	.cache\6A\{6AEAB630-B73C-4609-DD45-BA59A4B65F6C}.wem		\Containers\Default Work Unit\theme		19748716
 	548814894	sfx_anchor_start2	.cache\6E\{6E143A1F-D528-9882-D7BF-E5038F76E083}.wem		\Containers\Default Work Unit\interaction\sfx_anchor_start\sfx_anchor_start2		94656
 	656022254	sfx_player_move1	.cache\53\{53A6D420-1588-6658-AE0B-7E4CC4FFDDA7}.wem		\Containers\Default Work Unit\player\sfx_player_move\sfx_player_move1		415868
 	691402733	sfx_anchor_tick	.cache\7C\{7CDE690E-5E2B-87B2-816A-DA529072E1C9}.wem		\Containers\Default Work Unit\interaction\sfx_anchor_tick		4108332

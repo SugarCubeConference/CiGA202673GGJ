@@ -246,7 +246,8 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("No next level registered. Staying on the final level.", this);
+            // 最后一关，回到标题界面
+            CRTTransition.Ensure().TransitionToScene("mainUI", "Assets/Scenes/mainUI.unity");
         }
     }
 

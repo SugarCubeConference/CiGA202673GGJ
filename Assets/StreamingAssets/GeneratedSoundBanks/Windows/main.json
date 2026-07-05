@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{F704C104-801C-4C79-A745-1E87834C0D59}",
     "Language": "SFX",
-    "Hash": "{DD6C32F3-94B0-082A-39C2-692D2A3679EF}",
+    "Hash": "{13F52E48-15F7-710B-DBA0-19D112C17D96}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\main",
     "ShortName": "main",
     "Path": "main.bnk",
@@ -70,6 +70,14 @@
       "Location": "Memory",
       "ShortName": "UIClick_Sci Fi Alien Keyboard Tap 01_B00M_ONE.wav",
       "CachePath": "70/{700D9387-D0EE-6F16-0946-3040AC94D94D}.wem"
+     },
+     {
+      "Id": "494836012",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "theme.wav",
+      "CachePath": "6A/{6AEAB630-B73C-4609-DD45-BA59A4B65F6C}.wem"
      },
      {
       "Id": "548814894",
@@ -341,6 +349,18 @@
       ]
      },
      {
+      "Id": "2479442773",
+      "Name": "Play_theme",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_theme",
+      "GUID": "{AA19B8D4-D631-4FC1-BCAD-BB143DDCA727}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "494836012"
+       }
+      ]
+     },
+     {
       "Id": "3507020163",
       "Name": "Play_title_bgm",
       "ObjectPath": "\\Events\\Default Work Unit\\Play_title_bgm",
@@ -355,6 +375,6 @@
     ]
    }
   ],
-  "FileHash": "{9F002169-9F96-10B2-446E-04D648040707}"
+  "FileHash": "{EDD429A1-A471-01B0-401D-52D55CA72EA6}"
  }
 }
