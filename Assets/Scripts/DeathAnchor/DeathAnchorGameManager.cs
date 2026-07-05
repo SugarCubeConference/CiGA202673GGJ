@@ -97,6 +97,14 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             ClearFixedAnchor();
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (!CRTTransition.Instance.IsTransitioning)
+                {
+                    CRTTransition.Instance.TransitionToScene(0);
+                }
+            }
+
         }
 
         if (Input.GetKeyDown(KeyCode.R))
