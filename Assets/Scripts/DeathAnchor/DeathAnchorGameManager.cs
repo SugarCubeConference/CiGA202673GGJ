@@ -80,7 +80,13 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         SetCountdownVisible(false);
         UpdateCountdownUi(recordWindowSec);
     }
-
+    private void FixedUpdate()
+    {
+        if (ghost != null && ghost.gameObject.activeSelf && player != null)
+        {
+            MovePlayerAboveGhostIfMostlyOverlapping(player, ghost, 0.8f);
+        }
+    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
@@ -98,10 +104,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             CRTTransition.Ensure().RestartScene();
         }
 
-        if (ghost != null && ghost.gameObject.activeSelf && player != null)
-        {
-            MovePlayerAboveGhostIfMostlyOverlapping(player, ghost, 0.8f);
-        }
+        
 
         if (!isRecording)
         {
@@ -353,6 +356,15 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
 
         Vector2 footPosition = player.FootPosition;
         footPosition.y = ghostBounds.max.y + 0.01f;
+
+        // 安全检测：目标位置是否有 Ground 层墙体阻挡
+        Vector2 bodyCenter = footPosition + Vector2.up * playerCollider.bounds.size.y * 0.5f;
+        Collider2D wall = Physics2D.OverlapBox(bodyCenter, playerCollider.bounds.size, 0f, LayerMask.GetMask("Ground"));
+        if (wall != null && wall.GetComponent<GhostReplayController>() == null)
+        {
+            return false;
+        }
+
         player.SpawnAtFootPosition(footPosition);
         return true;
     }

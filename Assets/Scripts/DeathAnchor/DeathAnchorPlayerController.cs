@@ -300,8 +300,34 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
         GhostReplayController ghost = groundCollider.GetComponent<GhostReplayController>();
         if (ghost != null)
         {
-            rb.position += ghost.LastDelta;
+            // 安全检测：如果位移方向有墙体阻挡，则不执行移动，防止被带入墙内
+            Vector2 delta = ghost.LastDelta;
+            if (delta.magnitude > 0.0001f && !IsCarrierPathClear(delta))
+            {
+                return;
+            }
+            rb.position += delta;
         }
+    }
+
+    /// <summary>
+    /// BoxCast 检查从当前玩家位置沿 delta 方向是否有墙体阻挡。
+    /// 返回 true 表示路径畅通（无墙体）。
+    /// </summary>
+    private bool IsCarrierPathClear(Vector2 delta)
+    {
+        float mag = delta.magnitude;
+        Vector2 dir = delta / mag;
+        int count = box.Cast(dir, solidFilter, castHits, mag + box.size.x * 0.5f + skinWidth);
+        for (int i = 0; i < count; i++)
+        {
+            var h = castHits[i];
+            if (h.collider == null || h.collider.isTrigger) continue;
+            if (IsGhostCollider(h.collider)) continue;
+            if (IsInitialOverlap(h)) continue;
+            return false; // 碰到实体 → 不通
+        }
+        return true;
     }
 
     private bool IsTouchingWall(float direction)
@@ -365,6 +391,13 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
 
         return candidate.GetComponent<GhostReplayController>() != null
             || candidate.GetComponentInParent<GhostReplayController>() != null;
+    }
+
+    private bool IsInitialOverlap(RaycastHit2D hit)
+    {
+        if (hit.collider == null) return false;
+        ColliderDistance2D d = Physics2D.Distance(box, hit.collider);
+        return d.isOverlapped;
     }
 
     private bool ShouldCollideWithGhost(Vector2 direction, RaycastHit2D hit)
