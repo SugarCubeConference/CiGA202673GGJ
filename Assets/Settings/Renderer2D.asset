@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     cameraTag: MainCamera
-    pixelResolution: {x: 320, y: 180}
+    pixelResolution: {x: 640, y: 360}
     fisheyeStrength: 0.134
     sweepWidth: 0.131
     sweepIntensity: 0.412

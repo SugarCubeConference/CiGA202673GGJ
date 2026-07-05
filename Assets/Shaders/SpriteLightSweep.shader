@@ -74,6 +74,14 @@ Shader "Custom/SpriteLightSweep"
                 float _SweepPause;
             CBUFFER_END
 
+            float4 SpritePixelSnap(float4 positionCS)
+            {
+                float2 halfPixelCount = _ScreenParams.xy * 0.5;
+                float2 pixelPosition = floor((positionCS.xy / positionCS.w) * halfPixelCount + 0.5);
+                positionCS.xy = (pixelPosition / halfPixelCount) * positionCS.w;
+                return positionCS;
+            }
+
             Varyings SpriteVert(Attributes v)
             {
                 Varyings o;
@@ -81,7 +89,7 @@ Shader "Custom/SpriteLightSweep"
                 o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
                 o.color = v.color * _Color;
                 #ifdef PIXELSNAP_ON
-                o.positionCS = PixelSnap(o.positionCS);
+                o.positionCS = SpritePixelSnap(o.positionCS);
                 #endif
                 return o;
             }
