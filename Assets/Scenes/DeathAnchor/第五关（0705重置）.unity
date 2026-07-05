@@ -7851,6 +7851,8 @@ MonoBehaviour:
   linkedBridges:
   - {fileID: 806260357}
   linkedPlatforms: []
+  normalSprite: {fileID: 21300000, guid: e4bc49dda2ff10d4c95b653b9f8daa4a, type: 3}
+  pressedSprite: {fileID: 21300000, guid: 1ac0860c80b87a847a82cb5baa5f6198, type: 3}
 --- !u!61 &1590765180
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8641,7 +8643,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 10}
-  m_LocalScale: {x: 1.0005531, y: 1, z: 1}
+  m_LocalScale: {x: 1.0000001, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1263265116}

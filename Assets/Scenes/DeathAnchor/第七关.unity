@@ -755,6 +755,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 321094367}
+  - component: {fileID: 321094368}
   m_Layer: 0
   m_Name: Environment
   m_TagString: Untagged
@@ -793,6 +794,18 @@ Transform:
   - {fileID: 1782377838}
   m_Father: {fileID: 784346802}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &321094368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 321094366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdd18cae2149757448b371e643d4e4af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!21 &323043973
 Material:
   serializedVersion: 8
@@ -1464,6 +1477,10 @@ MonoBehaviour:
   bridgeId: bridge-1
   defaultState: phantom
   activeState: solid
+  tilemap: {fileID: 0}
+  defaultTile: {fileID: 0}
+  activeTile: {fileID: 0}
+  tilePositions: []
 --- !u!61 &670463197
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2218,6 +2235,8 @@ MonoBehaviour:
   linkedBridges:
   - {fileID: 1601522058}
   linkedPlatforms: []
+  normalSprite: {fileID: 21300000, guid: e4bc49dda2ff10d4c95b653b9f8daa4a, type: 3}
+  pressedSprite: {fileID: 21300000, guid: 1ac0860c80b87a847a82cb5baa5f6198, type: 3}
 --- !u!61 &951590095
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2376,7 +2395,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 10}
-  m_LocalScale: {x: 0.99947035, y: 1, z: 1}
+  m_LocalScale: {x: 1.0000001, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 488080993}
@@ -3953,6 +3972,8 @@ MonoBehaviour:
   linkedBridges:
   - {fileID: 670463196}
   linkedPlatforms: []
+  normalSprite: {fileID: 21300000, guid: e4bc49dda2ff10d4c95b653b9f8daa4a, type: 3}
+  pressedSprite: {fileID: 21300000, guid: 1ac0860c80b87a847a82cb5baa5f6198, type: 3}
 --- !u!61 &1486983742
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4084,6 +4105,10 @@ MonoBehaviour:
   bridgeId: bridge-2
   defaultState: phantom
   activeState: solid
+  tilemap: {fileID: 0}
+  defaultTile: {fileID: 0}
+  activeTile: {fileID: 0}
+  tilePositions: []
 --- !u!61 &1601522059
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5907,6 +5932,16 @@ Tilemap:
       serializedVersion: 2
       m_TileIndex: 8
       m_TileSpriteIndex: 6
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: 15, y: -12, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 4
+      m_TileSpriteIndex: 4
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -8552,7 +8587,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 6949044bcc13ee042b0ad98c74bb7e14, type: 2}
   - m_RefCount: 83
     m_Data: {fileID: 11400000, guid: 9a42e3d0f467c5a499fdf83db5dd495a, type: 2}
-  - m_RefCount: 84
+  - m_RefCount: 85
     m_Data: {fileID: 11400000, guid: 6b2ea290edfc5304ba7dc0ba70fa9c20, type: 2}
   - m_RefCount: 0
     m_Data: {fileID: 0}
@@ -8579,7 +8614,7 @@ Tilemap:
     m_Data: {fileID: 21300000, guid: c91015f622c28164597fd7bc894ae82c, type: 3}
   - m_RefCount: 83
     m_Data: {fileID: 21300000, guid: e8b11436757a4a64fba1687f14d90574, type: 3}
-  - m_RefCount: 84
+  - m_RefCount: 85
     m_Data: {fileID: 21300000, guid: 941c6b2190ea35a46add2503e82a7f0b, type: 3}
   - m_RefCount: 0
     m_Data: {fileID: 0}
@@ -8598,7 +8633,7 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: 1e82c9f7f1de16c4b875cddf3daf514f, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 393
+  - m_RefCount: 394
     m_Data:
       e00: 1
       e01: 0
@@ -8653,7 +8688,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 399
+  - m_RefCount: 400
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
