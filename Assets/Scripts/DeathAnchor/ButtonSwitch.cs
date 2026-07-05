@@ -8,6 +8,8 @@ public sealed class ButtonSwitch : MonoBehaviour
     [SerializeField] private string pressedBy = "both";
     [SerializeField] private LinkedBridge[] linkedBridges;
     [SerializeField] private MovingPlatform2D[] linkedPlatforms;
+    [SerializeField] private Sprite normalSprite;
+    [SerializeField] private Sprite pressedSprite;
 
     private readonly HashSet<ActorIdentity> pressingActors = new HashSet<ActorIdentity>();
     private SpriteRenderer spriteRenderer;
@@ -27,7 +29,14 @@ public sealed class ButtonSwitch : MonoBehaviour
         bool pressed = IsPressed;
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = pressed ? new Color(1f, 0.78f, 0.18f, 1f) : new Color(1f, 0.78f, 0.18f, 0.45f);
+            if (normalSprite != null && pressedSprite != null)
+            {
+                spriteRenderer.sprite = pressed ? pressedSprite : normalSprite;
+            }
+            else
+            {
+                spriteRenderer.color = pressed ? new Color(1f, 0.78f, 0.18f, 1f) : new Color(1f, 0.78f, 0.18f, 0.45f);
+            }
         }
 
         if (pressed != _wasPressed)

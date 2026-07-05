@@ -7,6 +7,8 @@ public sealed class LinkedBridge : MonoBehaviour
     [SerializeField] private string bridgeId;
     [SerializeField] private string defaultState = "solid";
     [SerializeField] private string activeState = "solid";
+    [SerializeField] private Sprite normalSprite;
+    [SerializeField] private Sprite pressedSprite;
 
     private Collider2D bridgeCollider;
     private SpriteRenderer spriteRenderer;
@@ -62,9 +64,16 @@ public sealed class LinkedBridge : MonoBehaviour
 
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = solid
-                ? new Color(0.35f, 0.83f, 0.95f, 1f)
-                : new Color(0.35f, 0.83f, 0.95f, 0.25f);
+            if (normalSprite != null && pressedSprite != null)
+            {
+                spriteRenderer.sprite = solid ? normalSprite : pressedSprite;
+            }
+            else
+            {
+                spriteRenderer.color = solid
+                    ? new Color(0.35f, 0.83f, 0.95f, 1f)
+                    : new Color(0.35f, 0.83f, 0.95f, 0.25f);
+            }
         }
     }
 }
