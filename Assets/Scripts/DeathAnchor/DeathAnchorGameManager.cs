@@ -94,17 +94,19 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             BeginRecording();
         }
 
+
         if (Input.GetKeyDown(KeyCode.Q))
         {
             ClearFixedAnchor();
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (!CRTTransition.Instance.IsTransitioning)
-                {
-                    CRTTransition.Instance.TransitionToScene(0);
-                }
-            }
+        }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            var transition = CRTTransition.Ensure();
+            if (!transition.IsTransitioning)
+            {
+                transition.TransitionToScene(0);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -112,7 +114,6 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             CRTTransition.Ensure().RestartScene();
         }
 
-        
 
         if (!isRecording)
         {
