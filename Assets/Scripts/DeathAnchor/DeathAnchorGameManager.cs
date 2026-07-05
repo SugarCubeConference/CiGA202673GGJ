@@ -216,17 +216,29 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             return;
         }
 
-        levelComplete = true;        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.Goal);
+        levelComplete = true;
+        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.Goal);
 
-        int currentIndex = SceneManager.GetActiveScene().buildIndex;
-        int nextIndex = currentIndex + 1;
-        if (nextIndex >= 0 && nextIndex < SceneManager.sceneCountInBuildSettings)
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        int currentLevelIndex = LevelProgressSave.GetLevelIndexForScene(currentSceneName);
+        if (currentLevelIndex < 0)
         {
-            CRTTransition.Ensure().TransitionToScene(nextIndex);
+            Debug.LogWarning("Current scene is not registered as a Death Anchor level: " + currentSceneName, this);
+            return;
+        }
+
+        LevelProgressSave.UnlockLevelAndNext(currentSceneName);
+
+        int nextLevelIndex = currentLevelIndex + 1;
+        string nextSceneName;
+        string nextScenePath;
+        if (LevelProgressSave.TryGetLevelScene(nextLevelIndex, out nextSceneName, out nextScenePath))
+        {
+            CRTTransition.Ensure().TransitionToScene(nextSceneName, nextScenePath);
         }
         else
         {
-            Debug.Log("No next scene in Build Settings. Staying on the final level.", this);
+            Debug.Log("No next level registered. Staying on the final level.", this);
         }
     }
 

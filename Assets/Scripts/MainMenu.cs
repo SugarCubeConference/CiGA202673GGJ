@@ -1,6 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
@@ -18,20 +18,6 @@ public class MainMenu : MonoBehaviour
     private CanvasGroup _btnCG;
     private CanvasGroup _gridCG;
     private bool _isGridOpen;
-
-    private static readonly string[] LevelScenes = {
-        "第零关（0705重置）",
-        "第一关（0705重置）",
-        "第二关（0705重置）",
-        "第三关（0705重置）",
-        "第四关（0705重置）",
-        "第五关（0705重置）",
-        "第六关",
-        "第七关",
-        "第八关",
-        "第九关（0705重置）",
-        "第十关（0705）"
-    };
 
     void Awake()
     {
@@ -55,6 +41,8 @@ public class MainMenu : MonoBehaviour
             btn.onClick.AddListener(() => OnLevelClick(idx));
         }
 
+        RefreshLevelButtons();
+
         // Bind background click to close grid
         if (levelGridBackground != null)
         {
@@ -69,6 +57,7 @@ public class MainMenu : MonoBehaviour
     {
         if (_isGridOpen) return;
         _isGridOpen = true;
+        RefreshLevelButtons();
         DeathAnchorWwiseAudio.Post(startButton.gameObject, DeathAnchorWwiseEvents.UiSelect);
         StartCoroutine(FadeTransition(false, true));
     }
@@ -83,8 +72,19 @@ public class MainMenu : MonoBehaviour
     public void OnLevelClick(int levelIndex)
     {
         DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.UiSelect);
-        if (levelIndex >= 0 && levelIndex < LevelScenes.Length)
-            CRTTransition.Ensure().TransitionToScene(LevelScenes[levelIndex]);
+        if (!LevelProgressSave.IsLevelUnlocked(levelIndex))
+        {
+            Debug.LogWarning("[MainMenu] Level is locked: " + levelIndex);
+            RefreshLevelButtons();
+            return;
+        }
+
+        string sceneName;
+        string scenePath;
+        if (LevelProgressSave.TryGetLevelScene(levelIndex, out sceneName, out scenePath))
+        {
+            CRTTransition.Ensure().TransitionToScene(sceneName, scenePath);
+        }
     }
 
     public void OnQuit()
@@ -132,5 +132,28 @@ public class MainMenu : MonoBehaviour
         var cg = go.GetComponent<CanvasGroup>();
         if (cg == null) cg = go.AddComponent<CanvasGroup>();
         return cg;
+    }
+
+    private void RefreshLevelButtons()
+    {
+        if (levelGrid == null)
+        {
+            return;
+        }
+
+        HashSet<int> unlockedLevels = LevelProgressSave.LoadUnlockedLevels();
+        for (int i = 0; i < levelGrid.transform.childCount; i++)
+        {
+            Transform child = levelGrid.transform.GetChild(i);
+            bool isUnlocked = i < LevelProgressSave.LevelCount && unlockedLevels.Contains(i);
+
+            Button button = child.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = isUnlocked;
+            }
+
+            child.gameObject.SetActive(isUnlocked);
+        }
     }
 }
