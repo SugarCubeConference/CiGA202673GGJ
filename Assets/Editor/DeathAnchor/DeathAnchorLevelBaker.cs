@@ -19,6 +19,11 @@ public static class DeathAnchorLevelBaker
     private const string BackgroundSpritePath = "Assets/Art/Background.png";
     private const string PlayerPhysicsConfigPath = "Assets/StreamingAssets/DeathAnchor/player-physics.json";
     private const string BakedRootName = "BakedLevelRoot";
+    private const string PlayerIdleSpritePath = "Assets/Art/char & anchor/player/Idle/Idle-1.png";
+    private const string AnchorAppearSpritePath = "Assets/Art/char & anchor/anchor/appear/appear-1.png";
+    private const string PlayerAnimatorControllerPath = "Assets/Animations/Player/PlayerAnimator.controller";
+    private const string AnchorAnimatorControllerPath = "Assets/Animations/Anchor/AnchorAnimator.controller";
+    private static readonly Vector2 AnchorMarkerWorldSize = new Vector2(0.35f, 0.08f);
 
         // ===== 颜色常量 =====
 private static readonly Color PlatformColor = new Color(0.39f, 0.45f, 0.52f, 1f);
@@ -101,6 +106,10 @@ public static void BakeLevel(string jsonPath, string scenePath)
 
         DeathAnchorLevelData level = ReadLevel(jsonPath);
         Sprite squareSprite = EnsureSquareSprite();
+        Sprite playerSprite = LoadSpriteOrFallback(PlayerIdleSpritePath, squareSprite);
+        Sprite anchorSprite = LoadSpriteOrFallback(AnchorAppearSpritePath, squareSprite);
+        RuntimeAnimatorController playerAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(PlayerAnimatorControllerPath);
+        RuntimeAnimatorController anchorAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(AnchorAnimatorControllerPath);
 
         Scene scene = File.Exists(scenePath)
             ? EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single)
@@ -140,8 +149,10 @@ public static void BakeLevel(string jsonPath, string scenePath)
         managerObject.transform.SetParent(root.transform);
         DeathAnchorGameManager manager = managerObject.AddComponent<DeathAnchorGameManager>();
 
-        GameObject player = CreateActor("Player", actorRoot, squareSprite, PlayerColor, playerLayer, level, false);
+        GameObject player = CreateActor("PlayerLight", actorRoot, playerSprite, Color.white, playerLayer, level, false);
         DeathAnchorPlayerController playerController = player.AddComponent<DeathAnchorPlayerController>();
+        AssignPlayerVisual(playerController, player.transform.Find("Visual"));
+        AssignAnimatorController(player, playerAnimatorController);
         Vector2 playerColliderSize = PlayerColliderSize(level);
         playerController.Configure(
             playerColliderSize.x,
@@ -156,13 +167,14 @@ public static void BakeLevel(string jsonPath, string scenePath)
         player.transform.position = spawnPoint.position + Vector3.up * (playerColliderSize.y * 0.5f);
         playerController.SpawnAtFootPosition(spawnPoint.position);
 
-        GameObject ghost = CreateActor("Ghost", actorRoot, squareSprite, GhostColor, ghostLayer, level, true);
+        GameObject ghost = CreateActor("GhostLight", actorRoot, playerSprite, GhostColor, ghostLayer, level, true);
         GhostReplayController ghostReplay = ghost.AddComponent<GhostReplayController>();
         ghostReplay.Configure(playerColliderSize.x, playerColliderSize.y, Mask("Player"));
         ghost.SetActive(false);
 
-        GameObject anchorMarker = CreateBlock("AnchorMarker", root.transform, spawnPoint.position, new Vector2(0.35f, 0.08f), squareSprite, new Color(0.75f, 0.55f, 1f, 0.9f), interactableLayer);
+        GameObject anchorMarker = CreateBlock("AnchorMarker", root.transform, spawnPoint.position, AnchorMarkerWorldSize, anchorSprite, Color.white, interactableLayer);
         Object.DestroyImmediate(anchorMarker.GetComponent<Collider2D>());
+        AssignAnimatorController(anchorMarker, anchorAnimatorController);
         anchorMarker.SetActive(false);
 
         Camera camera = CreateCamera(root.transform, player.transform, level);
@@ -505,7 +517,7 @@ private static void BakeGoals(DeathAnchorLevelObject[] objects, Transform parent
         GameObject visual = new GameObject("Visual");
         visual.transform.SetParent(go.transform);
         visual.transform.localPosition = Vector3.zero;
-        visual.transform.localScale = new Vector3(size.x, size.y, 1f);
+        visual.transform.localScale = SpriteScaleForWorldSize(sprite, size);
         SpriteRenderer renderer = visual.AddComponent<SpriteRenderer>();
         renderer.sprite = sprite;
         renderer.color = color;
@@ -534,7 +546,7 @@ private static GameObject CreateBlock(string name, Transform parent, Vector2 cen
         GameObject go = new GameObject(string.IsNullOrEmpty(name) ? "BakedObject" : name);
         go.transform.SetParent(parent);
         go.transform.position = center;
-        go.transform.localScale = new Vector3(size.x, size.y, 1f);
+        go.transform.localScale = SpriteScaleForWorldSize(sprite, size);
         go.layer = layer;
 
         SpriteRenderer renderer = go.AddComponent<SpriteRenderer>();
@@ -544,6 +556,56 @@ private static GameObject CreateBlock(string name, Transform parent, Vector2 cen
         BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
         collider.size = Vector2.one;
         return go;
+    }
+
+    private static Sprite LoadSpriteOrFallback(string path, Sprite fallback)
+    {
+        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        return sprite != null ? sprite : fallback;
+    }
+
+    private static void AssignAnimatorController(GameObject target, RuntimeAnimatorController controller)
+    {
+        if (target == null || controller == null)
+        {
+            return;
+        }
+
+        Animator animator = target.GetComponent<Animator>();
+        if (animator == null)
+        {
+            animator = target.AddComponent<Animator>();
+        }
+
+        animator.runtimeAnimatorController = controller;
+    }
+
+    private static void AssignPlayerVisual(DeathAnchorPlayerController controller, Transform visual)
+    {
+        if (controller == null || visual == null)
+        {
+            return;
+        }
+
+        SerializedObject serializedController = new SerializedObject(controller);
+        SerializedProperty visualProperty = serializedController.FindProperty("visualTransform");
+        if (visualProperty != null)
+        {
+            visualProperty.objectReferenceValue = visual;
+            serializedController.ApplyModifiedPropertiesWithoutUndo();
+        }
+    }
+
+    private static Vector3 SpriteScaleForWorldSize(Sprite sprite, Vector2 worldSize)
+    {
+        if (sprite == null || sprite.pixelsPerUnit <= 0f || sprite.rect.width <= 0f || sprite.rect.height <= 0f)
+        {
+            return new Vector3(worldSize.x, worldSize.y, 1f);
+        }
+
+        float spriteWorldWidth = sprite.rect.width / sprite.pixelsPerUnit;
+        float spriteWorldHeight = sprite.rect.height / sprite.pixelsPerUnit;
+        return new Vector3(worldSize.x / spriteWorldWidth, worldSize.y / spriteWorldHeight, 1f);
     }
 
         // ===== 着色器和灯光 =====

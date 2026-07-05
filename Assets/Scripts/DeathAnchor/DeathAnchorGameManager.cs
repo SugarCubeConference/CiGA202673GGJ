@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -28,6 +29,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
     private Vector2 respawnFootPosition;
     private bool hasRespawnFootPosition;
     private bool hasFixedAnchor;
+    private bool respawnInProgress;
 
     public Vector2 ActiveAnchorFootPosition => activeAnchorFootPosition;
     public bool IsRecording => isRecording;
@@ -56,6 +58,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             if (player != null)
             {
                 player.SpawnAtFootPosition(respawnFootPosition);
+                player.ResetDeath();
             }
         }
 
@@ -151,6 +154,11 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
 
     public void KillPlayer()
     {
+        if (player == null || respawnInProgress)
+        {
+            return;
+        }
+
         bool savedGhost = isRecording && recordingFrames.Count >= 2 && Time.time - recordingStartedAt <= recordWindowSec;
         if (savedGhost)
         {
@@ -171,7 +179,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
             ? respawnFootPosition
             : (spawnPoint != null ? (Vector2)spawnPoint.position : player.FootPosition);
 
-        player.SpawnAtFootPosition(targetFoot);
+        StartCoroutine(RespawnPlayerAfterDeath(targetFoot));
     }
 
     public void KillPlayer(Vector3 hazardPosition)
@@ -221,7 +229,7 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
 
     private void BeginRecording()
     {
-        if (player == null)
+        if (player == null || respawnInProgress)
         {
             return;
         }
@@ -242,6 +250,26 @@ public sealed class DeathAnchorGameManager : MonoBehaviour
         SampleRecording();
         SetCountdownVisible(true);
         UpdateCountdownUi(recordWindowSec);
+    }
+
+    private IEnumerator RespawnPlayerAfterDeath(Vector2 targetFoot)
+    {
+        respawnInProgress = true;
+        player.TriggerDeath();
+
+        float waitSeconds = Mathf.Max(0f, player.DeathAnimationSeconds);
+        if (waitSeconds > 0f)
+        {
+            yield return new WaitForSeconds(waitSeconds);
+        }
+
+        if (player != null)
+        {
+            player.SpawnAtFootPosition(targetFoot);
+            player.ResetDeath();
+        }
+
+        respawnInProgress = false;
     }
 
     private void CancelRecording()

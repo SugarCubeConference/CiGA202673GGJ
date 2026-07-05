@@ -23,6 +23,10 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     [SerializeField] private LayerMask solidMask;
     [SerializeField] private float skinWidth = 0.02f;
 
+    [Header("Animation")]
+    [SerializeField] private Transform visualTransform;
+    [SerializeField] private float deathAnimationSeconds = 0.6f;
+
     private readonly RaycastHit2D[] castHits = new RaycastHit2D[8];
 
     private Rigidbody2D rb;
@@ -34,6 +38,9 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     private int facing = 1;
     private bool grounded;
     private Collider2D groundCollider;
+    private Animator animator;
+    private SpriteRenderer visualSpriteRenderer;
+    private bool isDead;
 
     public Vector2 FootPosition
     {
@@ -46,6 +53,7 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     public int Facing => facing;
     public bool Grounded => grounded;
     public bool WallSliding { get; private set; }
+    public float DeathAnimationSeconds => deathAnimationSeconds;
 
     private void Awake()
     {
@@ -63,10 +71,22 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
             useTriggers = false,
             layerMask = solidMask
         };
+
+        animator = GetComponent<Animator>();
+        if (visualTransform != null)
+        {
+            visualSpriteRenderer = visualTransform.GetComponent<SpriteRenderer>();
+        }
     }
 
     private void Update()
     {
+        if (isDead)
+        {
+            UpdateAnimator();
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow))
         {
             lastJumpPressedAt = Time.time;
@@ -76,10 +96,19 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
         {
             verticalSpeed *= jumpCutMultiplier;
         }
+
+        UpdateAnimator();
     }
 
     private void FixedUpdate()
     {
+        if (isDead)
+        {
+            verticalSpeed = 0f;
+            WallSliding = false;
+            return;
+        }
+
         float dt = Time.fixedDeltaTime;
         float horizontalInput = GetHorizontalInput();
 
@@ -195,6 +224,7 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
         rb.position = bodyPosition;
         verticalSpeed = 0f;
         lastJumpPressedAt = -999f;
+        WallSliding = false;
     }
 
     private void EnsureCachedComponents()
@@ -340,5 +370,45 @@ public sealed class DeathAnchorPlayerController : MonoBehaviour
     private bool ShouldCollideWithGhost(Vector2 direction, RaycastHit2D hit)
     {
         return direction.y < 0f && hit.normal.y > 0.45f;
+    }
+
+    private void UpdateAnimator()
+    {
+        if (animator == null) return;
+
+        bool isMoving = !isDead && Mathf.Abs(GetHorizontalInput()) > 0.01f;
+        animator.SetBool("IsMoving", isMoving);
+        animator.SetBool("IsGrounded", grounded);
+        animator.SetBool("IsWallSliding", WallSliding);
+        animator.SetBool("IsDead", isDead);
+
+        // Flip visual based on facing
+        if (visualSpriteRenderer != null)
+        {
+            visualSpriteRenderer.flipX = facing < 0;
+        }
+    }
+
+    public void TriggerDeath()
+    {
+        isDead = true;
+        verticalSpeed = 0f;
+        WallSliding = false;
+        lastJumpPressedAt = -999f;
+
+        if (animator != null)
+        {
+            animator.SetBool("IsDead", true);
+        }
+    }
+
+    public void ResetDeath()
+    {
+        isDead = false;
+
+        if (animator != null)
+        {
+            animator.SetBool("IsDead", false);
+        }
     }
 }
