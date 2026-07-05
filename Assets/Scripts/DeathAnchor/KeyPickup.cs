@@ -10,6 +10,7 @@ public sealed class KeyPickup : MonoBehaviour
     private Transform carrier;
     private Vector3 homePosition;
     private Collider2D keyCollider;
+    private Animator animator;
 
     public string Id => keyId;
     public bool IsCarried => carrier != null;
@@ -19,6 +20,7 @@ public sealed class KeyPickup : MonoBehaviour
         keyCollider = GetComponent<Collider2D>();
         keyCollider.isTrigger = true;
         homePosition = transform.position;
+        animator = GetComponent<Animator>();
         gameManager = FindObjectOfType<DeathAnchorGameManager>();
         if (gameManager != null)
         {
@@ -57,7 +59,12 @@ public sealed class KeyPickup : MonoBehaviour
         ActorIdentity actor = other.GetComponent<ActorIdentity>();
         if (actor != null && actor.IsPlayer)
         {
-            carrier = other.transform;        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.KeyPickup);
+            carrier = other.transform;
+            if (animator != null)
+            {
+                animator.SetBool("IsCollected", true);
+            }
+            DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.KeyPickup);
 
         }
     }

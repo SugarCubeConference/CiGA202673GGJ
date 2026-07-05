@@ -25,7 +25,7 @@ MonoBehaviour:
     vignetteSmoothness: 2.74
     brightness: 0.84
     contrast: 1.2
-    rgbPixelSize: 2.5
+    rgbPixelSize: 2
     renderPassEvent: 600
 --- !u!114 &11400000
 MonoBehaviour:
@@ -117,5 +117,5 @@ MonoBehaviour:
     sweepNoise: 0.02
     sweepBrightness: 0.163
     sweepSpeed: 0.35
-    borderIntensity: 0.22
+    borderIntensity: 0.342
     renderPassEvent: 600

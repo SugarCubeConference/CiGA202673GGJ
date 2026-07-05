@@ -8,12 +8,14 @@ public sealed class KeyDoor : MonoBehaviour
     private Collider2D[] colliders;
     private SpriteRenderer spriteRenderer;
     private bool opened;
+    private Animator animator;
 
     private void Awake()
     {
         gameManager = FindObjectOfType<DeathAnchorGameManager>();
         colliders = GetComponents<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
     public void Configure(string requiredKey)
@@ -39,7 +41,12 @@ public sealed class KeyDoor : MonoBehaviour
 
     private void Open()
     {
-        opened = true;        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.DoorUnlock);
+        opened = true;
+        if (animator != null)
+        {
+            animator.SetBool("IsOpen", true);
+        }
+        DeathAnchorWwiseAudio.Post(gameObject, DeathAnchorWwiseEvents.DoorUnlock);
 
         for (int i = 0; i < colliders.Length; i++)
         {

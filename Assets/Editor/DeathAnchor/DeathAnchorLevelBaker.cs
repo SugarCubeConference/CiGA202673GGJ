@@ -23,6 +23,8 @@ public static class DeathAnchorLevelBaker
     private const string AnchorAppearSpritePath = "Assets/Art/char & anchor/anchor/appear/appear-1.png";
     private const string PlayerAnimatorControllerPath = "Assets/Animations/Player/PlayerAnimator.controller";
     private const string AnchorAnimatorControllerPath = "Assets/Animations/Anchor/AnchorAnimator.controller";
+    private const string DoorAnimatorControllerPath = "Assets/Animations/Door&Key/DoorAnimator.controller";
+    private const string KeyAnimatorControllerPath = "Assets/Animations/Door&Key/KeyAnimator.controller";
     private static readonly Vector2 AnchorMarkerWorldSize = new Vector2(0.35f, 0.08f);
 
         // ===== 颜色常量 =====
@@ -110,6 +112,8 @@ public static void BakeLevel(string jsonPath, string scenePath)
         Sprite anchorSprite = LoadSpriteOrFallback(AnchorAppearSpritePath, squareSprite);
         RuntimeAnimatorController playerAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(PlayerAnimatorControllerPath);
         RuntimeAnimatorController anchorAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(AnchorAnimatorControllerPath);
+        RuntimeAnimatorController doorAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(DoorAnimatorControllerPath);
+        RuntimeAnimatorController keyAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(KeyAnimatorControllerPath);
 
         Scene scene = File.Exists(scenePath)
             ? EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single)
@@ -181,8 +185,8 @@ public static void BakeLevel(string jsonPath, string scenePath)
         AnchorCountdownHud countdownHud = CreateCountdownUi(camera.transform, squareSprite);
         manager.Configure(level.rules != null ? level.rules.recordWindowSec : 5f, playerController, ghostReplay, spawnPoint, anchorMarker.transform, countdownHud, null);
 
-        BakeKeys(level.keys, interactableRoot, squareSprite, interactableLayer);
-        BakeDoors(level.doors, interactableRoot, squareSprite, groundLayer);
+        BakeKeys(level.keys, interactableRoot, squareSprite, interactableLayer, keyAnimatorController);
+        BakeDoors(level.doors, interactableRoot, squareSprite, groundLayer, doorAnimatorController);
         BakeButtons(level.buttons, level.bridges, level.movingPlatforms, interactableRoot, squareSprite, interactableLayer, bridgesById, movingPlatformsById);
         BakeGoals(level.goals, interactableRoot, squareSprite, interactableLayer);
         BakeNotes(level.notes, interactableRoot);
@@ -352,7 +356,7 @@ private static void BakeAnchorZones(DeathAnchorLevelObject[] objects, Transform 
     }
 
         /// <summary>烘焙钥匙</summary>
-private static void BakeKeys(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
+private static void BakeKeys(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, RuntimeAnimatorController controller)
     {
         if (objects == null)
         {
@@ -363,13 +367,14 @@ private static void BakeKeys(DeathAnchorLevelObject[] objects, Transform parent,
         {
             DeathAnchorLevelObject item = objects[i];
             GameObject go = CreateBlock(item.id, parent, Center(item), Size(item), sprite, KeyColor, layer);
+            AssignAnimatorController(go, controller);
             KeyPickup key = go.AddComponent<KeyPickup>();
             key.Configure(item.id);
         }
     }
 
         /// <summary>烘焙钥匙门</summary>
-private static void BakeDoors(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer)
+private static void BakeDoors(DeathAnchorLevelObject[] objects, Transform parent, Sprite sprite, int layer, RuntimeAnimatorController controller)
     {
         if (objects == null)
         {
@@ -381,6 +386,7 @@ private static void BakeDoors(DeathAnchorLevelObject[] objects, Transform parent
             DeathAnchorLevelObject item = objects[i];
             GameObject go = CreateBlock(item.id, parent, Center(item), Size(item), sprite, DoorColor, layer);
             AddStaticSolid(go);
+            AssignAnimatorController(go, controller);
             BoxCollider2D trigger = go.AddComponent<BoxCollider2D>();
             trigger.size = Vector2.one * 1.08f;
             trigger.isTrigger = true;
